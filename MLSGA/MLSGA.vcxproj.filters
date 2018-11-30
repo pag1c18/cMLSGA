@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Imported">
+      <UniqueIdentifier>{d0e979f8-0270-49c3-abe9-77bd9ce5a705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Imported">
+      <UniqueIdentifier>{2868b9fb-4686-44df-bb7c-8f8fea78c9d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Imported\SVM">
+      <UniqueIdentifier>{77a58fab-2f0e-4e57-9937-7b974a34f20e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Imported\SVM">
+      <UniqueIdentifier>{620ebab5-3e34-4bd7-b3f8-086a6af1ad43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{85056ca4-9f18-472c-892e-996371e9d049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{fae13d5f-f95d-4e0c-9cb0-b732529b6d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Imported\OpenCV">
+      <UniqueIdentifier>{64ec77af-5e14-4d82-bf30-9f5a79788ffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tools\Grouping methods">
+      <UniqueIdentifier>{2872de9f-0284-46a6-97fb-891dd3d64b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\Grouping methods">
+      <UniqueIdentifier>{a4778e08-8750-4814-8d7c-7cab62dacc84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\Resluts processing">
+      <UniqueIdentifier>{9f7c0c96-15f4-4623-85d3-f4abd470cb87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tools\Results Processing">
+      <UniqueIdentifier>{c1d877ba-4586-429d-95f8-d50833658864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Augments">
+      <UniqueIdentifier>{29b57501-68b6-42e8-aec1-cfcb21dbf7f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Augments">
+      <UniqueIdentifier>{1c43707e-e099-481f-a292-a6765fea8d04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Imported\WFG">
+      <UniqueIdentifier>{6277dc74-6811-4e22-ae0a-578d595f4657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Imported\WFG">
+      <UniqueIdentifier>{0c0c1130-bb0c-4782-9557-f335bf1ab145}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Imported\HV_metric">
+      <UniqueIdentifier>{4174046e-b3ae-4a09-98f7-b42286d9365a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Imported\HV_metric">
+      <UniqueIdentifier>{e6404cad-7a8d-48c1-8875-36d02f476fd3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Const.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Selection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Crossover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\Chartsheet.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\SimpleXlsxDef.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\tchar.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\Workbook.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\Worksheet.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\XlsxHeaders.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\xmlwriter.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\zip.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="imported.h">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\kde.hpp">
+      <Filter>Header Files\Imported</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\svm_i.h">
+      <Filter>Header Files\Imported\SVM</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="MLSGA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GA_Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit_Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Support_Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Clustering.h">
+      <Filter>Header Files\Tools\Grouping methods</Filter>
+    </ClInclude>
+    <ClInclude Include="SVM.h">
+      <Filter>Header Files\Tools\Grouping methods</Filter>
+    </ClInclude>
+    <ClInclude Include="Contour_Plot.h">
+      <Filter>Header Files\Tools\Results Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="IGD.h">
+      <Filter>Header Files\Tools\Results Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="Video.h">
+      <Filter>Header Files\Tools\Results Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="Random_Label.h">
+      <Filter>Header Files\Tools\Grouping methods</Filter>
+    </ClInclude>
+    <ClInclude Include="MLSGA_Add_Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sobol.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="MOEAD.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="NSGAII.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="PAES.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="DMOEADD.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="MTS.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="Reinitialisation.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="TGM.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="BCE.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="HEIA.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="M2M.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\WFG.h">
+      <Filter>Header Files\Imported\WFG</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\Shape.h">
+      <Filter>Header Files\Imported\WFG</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\Transform.h">
+      <Filter>Header Files\Imported\WFG</Filter>
+    </ClInclude>
+    <ClInclude Include="Imported\hv_wfg.h">
+      <Filter>Header Files\Imported\HV_metric</Filter>
+    </ClInclude>
+    <ClInclude Include="UNSGAIII.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+    <ClInclude Include="IBEA.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Imported\Chartsheet.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\Workbook.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\Worksheet.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\XlsxHeaders.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\zip.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\kde.cpp">
+      <Filter>Source Files\Imported</Filter>
+    </ClCompile>
+    <ClCompile Include="Class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\svm_i.cpp">
+      <Filter>Source Files\Imported\SVM</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="MLSGA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GA_Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Fit_Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Support_Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Clustering.cpp">
+      <Filter>Source Files\Tools\Grouping methods</Filter>
+    </ClCompile>
+    <ClCompile Include="SVM.cpp">
+      <Filter>Source Files\Tools\Grouping methods</Filter>
+    </ClCompile>
+    <ClCompile Include="Contour_Plot.cpp">
+      <Filter>Source Files\Tools\Resluts processing</Filter>
+    </ClCompile>
+    <ClCompile Include="IGD.cpp">
+      <Filter>Source Files\Tools\Resluts processing</Filter>
+    </ClCompile>
+    <ClCompile Include="Video.cpp">
+      <Filter>Source Files\Tools\Resluts processing</Filter>
+    </ClCompile>
+    <ClCompile Include="Random_Label.cpp">
+      <Filter>Source Files\Tools\Grouping methods</Filter>
+    </ClCompile>
+    <ClCompile Include="MLSGA_Add_Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sobol.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="NSGAII.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="MOEAD.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="PAES.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="DMOEADD.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="MTS.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="Reinitialisation.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="TGM.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="BCE.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="HEIA.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="M2M.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\WFG.cpp">
+      <Filter>Source Files\Imported\WFG</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\Shape.cpp">
+      <Filter>Source Files\Imported\WFG</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\Transform.cpp">
+      <Filter>Source Files\Imported\WFG</Filter>
+    </ClCompile>
+    <ClCompile Include="Imported\hv_wfg.cpp">
+      <Filter>Source Files\Imported\HV_metric</Filter>
+    </ClCompile>
+    <ClCompile Include="UNSGAIII.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="IBEA.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Imported\svm_i.def">
+      <Filter>Header Files\Imported\SVM</Filter>
+    </None>
+  </ItemGroup>
+</Project>
