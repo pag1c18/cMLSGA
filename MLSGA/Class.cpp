@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #pragma once
 
 #include <sstream>			//for copying values from file
@@ -873,165 +892,150 @@ void pareto_front::Pareto_Search(const population & pop)
 	
 	//save the begin time
 	time_t temp31 = clock();
-	//copy the given population to the temp individuals vector
-	std::vector<individual> Pareto_Set = pop.Indiv_Show();		//temporary vector of the individuals - Pareto search vector
+	
 
-	//copy the current pareto front to the temp individuals vector
-	std::vector<individual> temp_p = indiv;						//temporary vector of the individuals
-
-	//Merge the two vectors
-	Pareto_Set.insert(Pareto_Set.end(), temp_p.begin(), temp_p.end());
-
-	//Delete the unnecessary vector
-	temp_p.clear();
-
-	//Erase the current PF
-	this->Erase();
-
-	//Get the size of the Pareto search vector
-	int par_size = Pareto_Set.size();
-
-	if (MLSGA_norm_obj == true)
-	{
-		for (int i = 0; i < par_size; i++)
-		{
-			Pareto_Set[i].Norm_Remove();
-		}
-	}
+	std::vector<individual> temp_indi = pop.Indiv_Show();
 
 
+	int temp_indi_size = temp_indi.size();
 
 	//Clear the solutions that are out of constrains
 	int ncons = pop.FCode_Show()[0].Cons();
 	if (ncons > 0)
 	{
-		for (int i = 0; i < par_size; i++)
+		for (int i = 0; i < temp_indi_size; i++)
 		{
-			for (int j = 0; j < ncons; j++)
+
+			if (temp_indi[i].Cons_Viol_Show())
 			{
-				if (Pareto_Set[i].Cons_Show()[j] < cons_check_param)
-				{
-					Pareto_Set.erase(Pareto_Set.begin() + i);
-					par_size--;
-					i--;
-					cons_viol_count++;
-					j = ncons;
-				}
+				temp_indi.erase(temp_indi.begin() + i);
+				i--;
+				temp_indi_size--;
+				cons_viol_count++;
+				continue;
+			}
+			temp_indi[i].Round_Up();
+			if (MLSGA_norm_obj == true)
+			{
+
+				temp_indi[i].Norm_Remove();
+
 			}
 		}
 	}
-	
+	else if (MLSGA_norm_obj == true)
+	{
+		for (int i = 0; i < temp_indi_size; i++)
+		{
+			temp_indi[i].Norm_Remove();
+		}
+	}
 
-	//Create the vectors for dominated and duplicated indexes
-	std::vector<short> Dom(par_size, 2);			//Vector for checking domination
-	std::vector<short> Dup(par_size, 0);			//Vector for checking duplication
-
-	//Round up the Pareto search vector - fitness values
-	for (int i = 0; i < par_size; i++)
-		Pareto_Set[i].Round_Up();
-
+	temp_indi_size = temp_indi.size();
 	//Get the number of objectives
-	int n_func = Pareto_Set[0].Fitness_Show().size();
+	int n_func = pop.FCode_Show()[0].Objs();
 
 
-	std::vector<std::vector<double>> Fitness;		//Temporary vector for the fitness storage
+	std::vector<std::vector<double>> Fitness_PF;		//Temporary vector for the fitness storage
 	
-	
-	for (int i = 0; i < par_size; i++)
-		Fitness.push_back(Pareto_Set[i].Fitness_Show());
+	std::vector<std::vector<double>> Fitness_temp;		//Temporary vector for the fitness storage
+
+
+	for (int i = 0; i < this->size; i++)
+		Fitness_PF.push_back(indiv[i].Fitness_Show());
+
+	for (int i = 0; i < temp_indi_size; i++)
+		Fitness_temp.push_back(temp_indi[i].Fitness_Show());
+
+	//Remove dominated solutions
+	for (int j = 0; j < temp_indi_size; j++)
+	{
+
+		//Find non-dominated points
+				//loop for each point
+		for (int i = j+1; i < temp_indi_size; i++)
+		{
+
+			short m_i = 0;			//temporary value for checking if i variable dominates
+			short m_j = 0;			//temporary value for checking if j variable dominates
+
+			//check, for every fitness, which point is dominated
+			for (short k = 0; k < n_func; k++)
+			{
+				//check if i dominates j
+				if (Fitness_temp[i][k] <= Fitness_temp[j][k])
+					m_i++;
+				//j dominates i
+				else
+					m_j++;
+			}
+			if (m_i == n_func)
+			{
+				temp_indi.erase(temp_indi.begin() + j);
+				Fitness_temp.erase(Fitness_temp.begin() + j);
+				j--;
+				temp_indi_size--;
+				break;
+			}
+			else if (m_j == n_func)
+			{
+				temp_indi.erase(temp_indi.begin() + i);
+				Fitness_temp.erase(Fitness_temp.begin() + i);
+				i--;
+				temp_indi_size--;
+			}
+		}
+	}
+
+
+
 
 	//Find non-dominated points
-	for (int i = 0; i < par_size; i++)		//loop for each point
+	for (int j = 0; j < temp_indi_size; j++)
 	{
-		//Check if the current point wasn't previousely found as a dominated
-		if (Dom[i] != 0)
-		{
-			//Find non-dominated points
-			for (int j = 0; j < par_size; j++)		//loop for each point
-			//for (int j = i + 1; j < par_size; j++)		//loop for each point
-			{
-				//check if the same point wasn't taken twice
-				if (i != j)
-				{
-					int val = 0;			//temporary value for result saving
-					short m_i = 0;			//temporary value for checking if i variable dominates
-					short n = 0;			//temporary value for checking if variables are the same
-					short m_j = 0;			//temporary value for checking if j variable dominates
-					
-					//check, for every fitness, which point is dominated
-					for (short k = 0; k < n_func; k++)
-					{
-						//check if i dominates j
-						if (Fitness[i][k] <= Fitness[j][k])
-							m_i++;
-						//j dominates i
-						else
-							m_j++;
-						//check if are the same - approx.
-						if (abs(Fitness[j][k] - Fitness[i][k]) < pow(10, -PF_res))
-							n++;
-					}
-					//check if domination or duplication occures (occures if all fitnesses are dominated or all are the same)
-					if (m_i == n_func || m_j == n_func || n == n_func)
-					{
-						if (n == n_func)
-							val = 4;					//both are the same
-						else if (m_i > m_j)
-							val = 1;					//i dominates j
-						else
-							val = 2;					//j dominates i
-					}
-					else
-						val = 3;			//both are nondominated
-					if (val == 2)			//j dominates i
-						Dom[i] = 0;
-					else if (val == 1)	//i dominates j
-						Dom[j] = 0;
-					else if (val == 3 || val == 4)
-					{
-						if (Dom[j] != 0)
-							Dom[j] = 3;
-						if (val == 4)
-						{
-							Dup[i] = 0;
-							Dup[j] = 1;
-						}
-					}
-				}
-			}
-		}
 
-	}
-	/*Pareto_Set.clear();				//for adding real values to PF instead of rounded ones
-	Pareto_Set = pop.Indiv_Show();
-	for (int i = 0; i < size; i++)
-		Pareto_Set.push_back(Indiv_Show(i));*/
-	
-	//Add the individuals to the pareto front
-	for (int i = 0; i < par_size; i++)
-	{
-		//check if is nondominated
-		if (Dom[i] == 3)
+		//Find non-dominated points
+				//loop for each point
+		for (int i = 0; i < this->size; i++)
 		{
-			//check if is not duplicated
-			if (Dup[i] != 1)
+
+			short m_i = 0;			//temporary value for checking if i variable dominates
+			short m_j = 0;			//temporary value for checking if j variable dominates
+
+			//check, for every fitness, which point is dominated
+			for (short k = 0; k < n_func; k++)
 			{
-				//Add the individual
-				Add(Pareto_Set[i]);
+				//check if i dominates j
+				if (Fitness_PF[i][k] <= Fitness_temp[j][k])
+					m_i++;
+				//j dominates i
+				else
+					m_j++;
+			}
+			if (m_i == n_func)
+			{
+				temp_indi.erase(temp_indi.begin()+j);
+				Fitness_temp.erase(Fitness_temp.begin() + j);
+				j--;
+				temp_indi_size--;
+				break;
+			}
+			else if (m_j == n_func)
+			{
+				this->Remove(i);
+				Fitness_PF.erase(Fitness_PF.begin() + i);
+				i--;
 			}
 		}
-		else if (Dom[i] == 2)
-		{
-			//Add the individual
-			Add(Pareto_Set[i]);
-		}
 	}
+
+	this->Add(temp_indi);
 
 	//Calculate the time
 	PF_t += clock() - temp31;
 
 	//Check if PF is not too big
-	if (indiv.size() > (PF_refine_size+200))
+	if (indiv.size() > (PF_refine_size+1000))
 		//refine PF to the desired size
 		this->Pareto_Refine(PF_refine_size);
 
@@ -1061,7 +1065,6 @@ int pareto_front::Pareto_Search(individual & ind)
 	//copy the values
 	std::vector<double> ind_fit = temp_ind.Fitness_Show();
 	std::vector<double> ind_cons = temp_ind.Cons_Show();
-	int n_cons = this->f_code[0].Cons();	//number of constrains
 	for (int i = 0; i < indiv.size(); i++)
 	{
 		int val = 0;			//temporary value for result saving
@@ -1084,14 +1087,6 @@ int pareto_front::Pareto_Search(individual & ind)
 				m_i++;
 			//given point dominates i
 			else if (PF_ind_fit[j] > ind_fit[j])
-				m_j++;
-			
-		}
-		for (int j = 0; j < n_cons; j++)
-		{
-			if (PF_ind_cons[j] >= cons_check_param && ind_cons[j] < cons_check_param)
-				m_i++;
-			else if (PF_ind_cons[j] < cons_check_param && ind_cons[j] >= cons_check_param)
 				m_j++;
 			
 		}
@@ -1123,27 +1118,7 @@ int pareto_front::Pareto_Search(individual & ind)
 */
 void pareto_front::Pareto_Refine(int size)
 {
-	//Clear the solutions that are out of constrains
-	int ncons = FCode_Show()[0].Cons();
-	if (ncons > 0)
-	{
-		int par_size = indiv.size();
-		for (int i = 0; i < par_size; i++)
-		{
-			for (int j = 0; j < ncons; j++)
-			{
-				if (indiv[i].Cons_Show()[j] < cons_check_param)
-				{
-					indiv.erase(indiv.begin() + i);
-					par_size--;
-					this->size--;
-					i--;
-					cons_viol_count++;
-					j = ncons;
-				}
-			}
-		}
-	}
+	
 	//Do pareto search only for many objective optimisation
 	if (ONE_OBJ_OVERRIDE == true)
 		abort();
@@ -1167,77 +1142,23 @@ void pareto_front::Pareto_Refine(int size)
 			//find the point in the most crowded area
 			for (int i = 1; i < (this->size - 1); i++)
 			{
-				double temp_min = 0;
-				double temp_min2 = 0;
 
 				//copy the individual fitness
 				std::vector<double> ind_fit = indiv[i].Fitness_Show();
 				std::vector<double> ind_fit_prev = indiv[i - 1].Fitness_Show();
 				std::vector<double> ind_fit_next = indiv[i + 1].Fitness_Show();
 
-				if (size == PF_size)
-				{
-					if (i == 1)
-					{
-						bool loop_brake = false;
-						for (int i_obj = 0; i_obj < n_obj; i_obj++)
-						{
-							if (abs(ind_fit[i_obj] - ind_fit_prev[i_obj]) < pow(10, -6))
-							{
-								temp_min_storage[1] = 0;
-								loop_brake = true;
-								break;
-							}
-						}
-						if (loop_brake == true)
-							break;
-					}
-					else if (i == this->size - 2)
-					{
-						bool loop_brake = false;
-						for (int i_obj = 0; i_obj < n_obj; i_obj++)
-						{
-							if (abs(ind_fit[i_obj] - ind_fit_prev[i_obj]) < pow(10, -6))
-							{
-								temp_min_storage[1] = this->size - 1;
-								loop_brake = true;
-								break;
-							}
-						}
-						if (loop_brake == true)
-							break;
-					}
-				}
-
 
 				//calculate the distance of the point to it's neighbour points
-				temp_min = Distance(ind_fit, ind_fit_prev);
-				temp_min2 = Distance(ind_fit, ind_fit_next);
+				double temp_min = Distance(ind_fit, ind_fit_prev);
+				double temp_min2 = Distance(ind_fit, ind_fit_next);
 
 				if (temp_min == 0 || temp_min2 == 0)
-					abort();
-				//Check if the first point (or last point) is very far away from the real PF, if it is remove it - do this only for the final refinement
-				if (size == PF_size) 
 				{
-					if (i == 1)
-					{
-						//check if this point is far away
-						if (temp_min > 100.*temp_min2)
-						{
-							//remove this point and break the loop
-							temp_min_storage[1] = 0;
-							break;
-						}
-					}
-					else if (i == this->size - 2)
-					{
-						if (100*temp_min <temp_min2)
-						{
-							temp_min_storage[1] = this->size - 1;
-							break;
-						}
-					}
+					temp_min_storage[1] = i;
+					break;
 				}
+				
 				//check which distance is greater
 				if (temp_min2 > temp_min)
 					temp_min = temp_min2;

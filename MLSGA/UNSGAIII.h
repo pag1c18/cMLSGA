@@ -1,12 +1,17 @@
+/*CODE BASED ON THE ORIGINAL NSGAII CODE FROM THE WEBSITE*/
+
 #pragma once
 #ifndef UNSGAIII_H
 #define UNSGAIII_H
-#include "NSGAII.h"
+#include "Class.h"
 
-namespace UNSGAIII
-{
-
+namespace UNSGAIII {
+	/*
+	Calculate individuals using NSGAII algorithm
+	@param Col - address of a given collective
+	@param iGen - current generation
+	*/
+	void UNSGAIII_Calc(collective & col);
 }
 
-
-#endif // !UNSGAIII_H
+#endif // !UNSGAII_H

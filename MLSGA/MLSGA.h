@@ -1,3 +1,35 @@
+/*MLSGA framework
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This program is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+/***MSLGA***/
+/***Original idea by Adam Sobey***/
+/***Written by Przemyslaw Grudniewski***/
+/***Updates and additional ideas by Przemyslaw Grudniewski***/
+/*[1] A.J.Sobey and P.A.Grudniewski, “Re - inspiring the genetic algorithm with multi - level selection theory : Multi - level selection genetic algorithm”, Bioinspiration and Biomimetics, vol. 13, no. 5, pp. 1–13, 2018.
+
+[2] P.A.Grudniewski and A.J.Sobey, “Behaviour of Multi - Level Selection Genetic Algorithm(MLSGA) using different individual - level selection mechanisms”, Swarm Evol.Comput., vol. 44, no.September 2018, pp. 852–862, 2018.
+
+[3] P.A.Grudniewski and A.J.Sobey, "cMLSGA: co-evolutionary Multi-Level Selection Genetic Algorithm", 2019*/
+
+
+/*If You have any questions regarding the code, please contact
+Przemyslaw A. Grudniewski	at	pag1c18@soton.ac.uk		or
+Adam J. Sobey				at	ajs502@soton.ac.uk
+*/
+
 //****************************************
 //				MSLGA header
 //****************************************
@@ -12,8 +44,6 @@
 #include "Support_Functions.h"
 #include "NSGAII.h"
 #include "MOEAD.h"
-#include "PAES.h"
-#include "DMOEADD.h"
 #include "MTS.h"
 #include "BCE.h"
 #include "HEIA.h"
@@ -24,26 +54,11 @@
 #include "Video.h"
 #include "IGD.h"
 #include "Imported/hv_wfg.h"
-//*****To DO
-/*
-Clean:
-Class.h
-Crossover.h
-Fit_function.h
-GA_functions.h
-Mutation.h
-Selection.h
-*/
 
 
 
 //****************************************
-//				Notes
-//****************************************
-//Selection only for 1st objective fitness
-
-//****************************************
-//				Content
+//				Content - outdated
 //****************************************
 //Class_h - Contain main GA classes
 //Const_H - Containts algorithm parameters
@@ -64,13 +79,7 @@ Selection.h
 /*
 MLS 1 - (f1 + f2)/2 on both levels
 MLS 2 - f1 and f2 separated
-MLS 3 - f1 and f2 separated among different collectives, collective var[0]
-MLS 4 - col as MLS1 and indi as MLS2
-MLS 5 - col as MLS2 and indi as MLS1
-MLS 6 - in some col MLS2 in some MLS2R
 MLS 7 - in some col MLS2 in some MLS2R in some MLS1
-MLS 8 - in individual level (f1 + f2)/2 and on collective f1 or f2
-MLS 9 - combination of MLS7 and MLS 8
 */
 
 
@@ -79,7 +88,7 @@ MLS 9 - combination of MLS7 and MLS 8
 //****************************************
 
 //****************************************
-//				Error list
+//				Error list - outdated
 //****************************************
 //ERROR#01: INDIVIDUAL - CREATION
 //ERROR#02: FUNCTION - CREATION
@@ -97,11 +106,3 @@ MLS 9 - combination of MLS7 and MLS 8
 //ERROR#14: SVM - LABEL
 //ERROR#15: VIDEO - LABEL SIZE
 //ERROR#16: ELITISM
-
-
-
-
-//****************************************
-//	  To Do - optimisation of code
-//****************************************
-//Copy the population wherever it is used (instead of calling the individuals)

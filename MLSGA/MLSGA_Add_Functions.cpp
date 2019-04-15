@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "MLSGA_Add_Functions.h"
@@ -629,16 +648,9 @@ mutation<short> * Mut_Type(short ix, std::string Mode)
 	{
 		if (ix == 1)
 		{
-			if (Mode == "DMOEADD" && (!DMOEADD_NEW || !DMEADD_MUTATE_ALL))
-			{
-				mutation_2<short> *M2 = new mutation_2<short>;
-				return M2;
-			}
-			else
-			{
-				mutation_1<short> *M1 = new mutation_1<short>;
-				return M1;
-			}
+
+			mutation_1<short> *M1 = new mutation_1<short>;
+			return M1;
 		}
 		if (ix == 2)
 		{
@@ -896,10 +908,10 @@ void Print(FILE * Pipe, int ir, int index_r_max, std::string date, double t, boo
 	print_temp.clear();
 
 	if (CONTOUR_PLOT == true && FITNESS_ALL == true)
-		Contour_Plot(ir);
+		Contour_Plot(ir,t);
 	// CONTOUR_PLOT
 	//FILE *plotPipe = _popen("C:\\gnuplot\\bin\\gnuplot.exe -persistent", "w");
-	fprintf(Pipe, "set xlabel \"Fitness 1\"\nset ylabel \"Fitness 2\"\n");
+	fprintf(Pipe, "set xlabel \"Objective 1\"\nset ylabel \"Objective 2\"\n");
 	print_temp = "set term wxt 0 size ";
 	print_temp += std::to_string(frame_w);
 	print_temp += ",";
@@ -991,9 +1003,9 @@ void Print(FILE * Pipe, int ir, int index_r_max, std::string date, double t, boo
 		}*/
 		print_temp = "set term png font arial 30 size 3840,2160 \nset output ";
 		print_temp += F_Name_Get("\"Results\\\\", date, "\\\\");
-		print_temp += Name_Get("Contour_Plot.jpg", std::string(), ir);
+		print_temp += Name_Get("Contour_Plot.jpg", std::string(), ir,t);
 		print_temp += "\nsplot \"Temp\\\\";
-		print_temp += Name_Get("graph2", ir);
+		print_temp += Name_Get("CP", ir, t);
 		print_temp += "\" \n";
 		print_temp += "set term wxt 2 \nunset pm3d \n";
 		fprintf(Pipe, print_temp.c_str());
@@ -1138,13 +1150,14 @@ void Directory_Create(std::string &date)
 			//Add the MLSt part only when MLSGA occur
 			if (MLSGA_occ == true)
 			{
+
 				date += " MLS";
 				//If the only one value - add only one value
-				if (n_MLS_b == n_MLS_e)
-					date += std::to_string(n_MLS_b);
+				if (MLSGA_n_MLS_b == MLSGA_n_MLS_e)
+					date += std::to_string(MLSGA_n_MLS_b);
 				//Else add the range
 				else
-					date += std::to_string(n_MLS_b) + "-" + std::to_string(n_MLS_e);
+					date += std::to_string(MLSGA_n_MLS_b) + "-" + std::to_string(MLSGA_n_MLS_e);
 			}
 			//Add the selected 
 			std::string temp_date;
@@ -1210,6 +1223,10 @@ void Directory_Create(std::string &date)
 			{
 				date += " " + std::to_string(max_generations) + "gen";
 			}
+			else if (T_con == "ntime")
+			{
+				date += " " + std::to_string(max_time) + "sec";
+			}
 
 			//Save the number of collectives
 			//If the only one value - add only one value
@@ -1264,12 +1281,11 @@ extern std::ofstream file;
 SimpleXlsx::CWorksheet sheet1, sheet2, sheet3, sheet4;						//For saving data to excel
 SimpleXlsx::CWorkbook book1;												//Book - for all data	
 
-void Time_Save(int ir, double IGD_val, double HV_val, double min_fitness, double end_generation, std::string MODE)
+void Time_Save(int ir, double IGD_val, double HV_val, double min_fitness, int end_generation,int iteration, std::string MODE)
 {
 	/*************Time calculation and saving************/
 
-	run_time = ((clock() - run_t) * 1000 / CLOCKS_PER_SEC);
-	run_time /= 1000;
+	
 	float mut_time = (mut_t * 1000 / CLOCKS_PER_SEC);
 	mut_time /= 1000;
 	float cross_time = (cross_t * 1000 / CLOCKS_PER_SEC);
@@ -1343,6 +1359,7 @@ void Time_Save(int ir, double IGD_val, double HV_val, double min_fitness, double
 		sheet3.AddCell(std::to_string(HV_val));
 	}
 	sheet3.AddCell(std::to_string(end_generation));
+	sheet3.AddCell(std::to_string(iteration));
 	if (ONE_OBJ_OVERRIDE == true)
 	{
 		sheet3.AddCell(std::to_string(min_fitness));
@@ -1440,6 +1457,7 @@ void Excel_F_Row(int indexr, std::vector<std::string> MODE, bool dyn, bool IGD_o
 			excel_begin3.push_back("HV");
 		}
 		excel_begin3.push_back("End generation");
+		excel_begin3.push_back("End iteration");
 		if (ONE_OBJ_OVERRIDE == true)					//Fitness only for one objective
 		{
 			excel_begin3.push_back("Fitness");
@@ -1498,6 +1516,10 @@ void Excel_F_Row(int indexr, std::vector<std::string> MODE, bool dyn, bool IGD_o
 		excel_begin4.push_back("Max generation");
 		excel_begin4.push_back("Average generation");
 		excel_begin4.push_back("Std deviation (generations)");
+		excel_begin4.push_back("Min iteration");
+		excel_begin4.push_back("Max iteration");
+		excel_begin4.push_back("Average iteration");
+		excel_begin4.push_back("Std deviation (iterations)");
 		if (ONE_OBJ_OVERRIDE == true)				//Fitness only for one objective
 		{
 			excel_begin4.push_back("Min fitness");
@@ -1560,6 +1582,11 @@ void Excel_S_Row(function & fcode, GA_parameters & gapara, mutation<short> & mco
 	{
 		sheet1.AddCell("Generations");
 		sheet1.AddCell(std::to_string(max_generations));
+	}
+	else if (T_con == "ntime")
+	{
+		sheet1.AddCell("Time");
+		sheet1.AddCell(std::to_string(max_time));
 	}
 	if (Normal_on == true)
 		sheet1.AddCell(scode.Name_Show());
@@ -1645,6 +1672,11 @@ void Excel_S_Row(function & fcode, GA_parameters & gapara, mutation<short> & mco
 	{
 		sheet2.AddCell("Generations");
 		sheet2.AddCell(std::to_string(max_generations));
+	}
+	else if (T_con == "ntime")
+	{
+		sheet2.AddCell("Time");
+		sheet2.AddCell(std::to_string(max_time));
 	}
 	if (Normal_on == true)
 		sheet2.AddCell(scode.Name_Show());
@@ -1768,6 +1800,10 @@ void Excel_GA_data(int success_num, GA_data<float> & data, bool dyn, bool IGD_on
 	sheet4.AddCell(std::to_string(data.Show_Generation_Struct().max));
 	sheet4.AddCell(std::to_string(data.Show_Generation_Struct().avg));
 	sheet4.AddCell(std::to_string(data.Show_Generation_Struct().std_deviation));
+	sheet4.AddCell(std::to_string(data.Show_Iteration_Struct().min));
+	sheet4.AddCell(std::to_string(data.Show_Iteration_Struct().max));
+	sheet4.AddCell(std::to_string(data.Show_Iteration_Struct().avg));
+	sheet4.AddCell(std::to_string(data.Show_Iteration_Struct().std_deviation));
 	//if one objective optimisatiom add fitness
 	if (ONE_OBJ_OVERRIDE == true)
 	{
@@ -1815,14 +1851,14 @@ void Error_Check()
 			//Check if correct mode is selected
 			if (MODE == "Normal")
 			{
-				if (MLSGA_Hybrid != true)
+				/*if (MLSGA_Hybrid != true)
 				{
 					std::cout << "**********************************\n"
 						<< "Wrong mode chosen. Check Const.h\nProgram will terminate"
 						<< "\n**********************************\n";
 					system("pause");
 					abort();
-				}
+				}*/
 
 
 				//Check number of collectives
@@ -2082,14 +2118,6 @@ void Error_Check()
 				system("pause");
 				abort();
 			}
-			if (n_mode != 1 && MODE != "PAES")
-			{
-				std::cout << "**********************************\n"
-					<< "Wrong n_mode chosen. Cannot be greater than 1 for non PAES. Check Const.h\nProgram will terminate"
-					<< "\n**********************************\n";
-				system("pause");
-				abort();
-			}
 		}
 	}
 
@@ -2146,7 +2174,10 @@ void Error_Check()
 	}
 	//Check if GA parameters are not out of bounds
 	for (int i = n_func_b; i <= n_func_e; i++)
-		Func_Type(i);
+	{
+		function * f_temp = Func_Type(i);
+		delete f_temp;
+	}
 	for (int i = 1; i <= n_mut; i++)
 		Mut_Type(i, "Normal");
 	for (int i = 0; i < GA_mode.size(); i++)
@@ -2249,13 +2280,15 @@ int Show_Iter()
 	}
 
 	//calculate the number of runs 
-	short n_col_e = 1, n_col_b = 1;
+	short n_col_e = 1, n_col_b = 1, n_MLS_b = 1, n_MLS_e = 1;
 	if (MLSGA_Hybrid == true)
 	{
 		n_col_b = MLSGA_n_col_b;
 		n_col_e = MLSGA_n_col_e;
+		n_MLS_b = MLSGA_n_MLS_b;
+		n_MLS_e = MLSGA_n_MLS_e;
 	}
-	long long index_r_max = n_runs * GA_mode.size() * Reinit_Mode.size() * n_select * n_cross * n_mut * (n_func_e - n_func_b + 1)*(n_MLS_e - n_MLS_b + 1)* ((n_col_e - n_col_b) / 2 + 1) * n_pop_dyn*n_c_prob * n_m_prob * n_mode *n_TGM_mat * n_TGM_gmat;	//Number of iterations - MAX
+	long long index_r_max = n_runs * GA_mode.size() * Reinit_Mode.size() * n_select * n_cross * n_mut * (n_func_e - n_func_b + 1)*(n_MLS_e - n_MLS_b + 1)* ((n_col_e - n_col_b) / 2 + 1) * n_pop_dyn*n_c_prob * n_m_prob  *n_TGM_mat * n_TGM_gmat;	//Number of iterations - MAX
 	
 	//show number of runs
 	std::cout << "\nApprox. #" << index_r_max << " iterations;\n";
@@ -2512,6 +2545,19 @@ void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS)
 	short nobj = col[0].FCode_Show()[0].Objs();
 	short ncol = col.size();
 
+	if (MLS == 0)
+	{
+		std::vector<short> temp_fit_index_level;
+		for (short i_obj = 1; i_obj <= nobj; i_obj++)
+			temp_fit_index_level.push_back(i_obj);
+
+		std::vector<std::vector<short>> temp_fit_index{ temp_fit_index_level,temp_fit_index_level };
+
+		col[0].fit_index = temp_fit_index;
+
+		return;
+	}
+
 	if (nobj == 2)
 	{
 		if (MLS == 1)
@@ -2526,6 +2572,18 @@ void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS)
 		{
 			std::vector<std::vector<short>> temp_fit_index_n{ { fit_index_sel },{ fit_index_col_sel } };
 			std::vector<std::vector<short>> temp_fit_index{ { fit_index_sel, fit_index_col_sel },{ fit_index_col_sel } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				if (col[i_col].Mode_Show() == "Normal")
+					col[i_col].fit_index = temp_fit_index_n;
+				else
+					col[i_col].fit_index = temp_fit_index;
+			}
+		}
+		else if (MLS == 3)
+		{
+			std::vector<std::vector<short>> temp_fit_index_n{ { fit_index_col_sel },{ fit_index_sel } };
+			std::vector<std::vector<short>> temp_fit_index{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel } };
 			for (short i_col = 0; i_col < ncol; i_col++)
 			{
 				if (col[i_col].Mode_Show() == "Normal")
@@ -2568,7 +2626,33 @@ void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS)
 		else
 			abort();
 	}
-	else if (nobj == 3)
+	else
+	{
+		if (MLS == 7)
+		{
+			std::vector<short> temp_fit;
+			for (short i = 0; i < nobj; i++)
+				temp_fit.push_back(i + 1);
+			std::vector<std::vector<short>> temp_fit_index1{ temp_fit,temp_fit };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show() - 1;
+
+				short sw = col_index % (nobj + 1);
+				if (sw == 0)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else
+				{
+					col[i_col].fit_index = { temp_fit,{sw} };
+				}
+			}
+		}
+		else
+			abort();
+	}
+	/*else if (nobj == 3)
 	{
 		if (MLS == 1)
 		{
@@ -2622,9 +2706,240 @@ void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS)
 				}
 			}
 		}
+		else if (MLS == 7)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3 },{ 1,2,3 } };
+			std::vector<std::vector<short>> temp_fit_index2{ { 1, 2 },{ 2,3 } };
+			std::vector<std::vector<short>> temp_fit_index3{ { 2, 3 },{ 1,3 } };
+			std::vector<std::vector<short>> temp_fit_index4{ { 1, 3 },{ 1,2 } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 4 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 4 == 2)
+				{
+					col[i_col].fit_index = temp_fit_index2;
+				}
+				else if (col_index % 4 == 3)
+				{
+					col[i_col].fit_index = temp_fit_index3;
+				}
+				else
+				{
+					col[i_col].fit_index = temp_fit_index4;
+				}
+			}
+		}
+		else if (MLS == 8)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3 },{ 1,2,3 } };
+			std::vector<std::vector<short>> temp_fit_index2{ { 1, 2 },{ 3 } };
+			std::vector<std::vector<short>> temp_fit_index3{ { 2, 3 },{ 1 } };
+			std::vector<std::vector<short>> temp_fit_index4{ { 1, 3 },{ 2 } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 4 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 4 == 2)
+				{
+					col[i_col].fit_index = temp_fit_index2;
+				}
+				else if (col_index % 4 == 3)
+				{
+					col[i_col].fit_index = temp_fit_index3;
+				}
+				else
+				{
+					col[i_col].fit_index = temp_fit_index4;
+				}
+			}
+		}
+		else if (MLS == 9)
+		{
+		std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3 },{ 1,2,3 } };
+		std::vector<std::vector<short>> temp_fit_index2{ { 1,2,3 },{ 3 } };
+		std::vector<std::vector<short>> temp_fit_index3{ { 1,2,3 },{ 1 } };
+		std::vector<std::vector<short>> temp_fit_index4{ { 1,2,3 },{ 2 } };
+		for (short i_col = 0; i_col < ncol; i_col++)
+		{
+			short col_index = col[i_col].Index_Show();
+			if (col_index % 4 == 1)
+			{
+				col[i_col].fit_index = temp_fit_index1;
+			}
+			else if (col_index % 4 == 2)
+			{
+				col[i_col].fit_index = temp_fit_index2;
+			}
+			else if (col_index % 4 == 3)
+			{
+				col[i_col].fit_index = temp_fit_index3;
+			}
+			else
+			{
+				col[i_col].fit_index = temp_fit_index4;
+			}
+		}
+		}
 		else
 			abort();
 	}
-	else;
+	else if (nobj == 5)
+	{
+		if (MLS == 7)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3,4,5 },{ 1,2,3,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index2{ { 1, 2, 3 },{ 3,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index3{ { 2, 3, 4 },{ 1,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index4{ { 3, 4, 5 },{ 1,2,5 } };
+			std::vector<std::vector<short>> temp_fit_index5{ { 1, 4, 5 },{ 1,2,3 } };
+			std::vector<std::vector<short>> temp_fit_index6{ { 1, 2, 5 },{ 2,3,4 } };
+			std::vector<std::vector<short>> temp_fit_index7{ { 1, 2, 3 },{ 1,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index8{ { 3, 4, 5 },{ 1,2,3 } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 8 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 8 == 2)
+				{
+					col[i_col].fit_index = temp_fit_index2;
+				}
+				else if (col_index % 8 == 3)
+				{
+					col[i_col].fit_index = temp_fit_index3;
+				}
+				else if (col_index % 8 == 4)
+				{
+					col[i_col].fit_index = temp_fit_index4;
+				}
+				else if (col_index % 8 == 5)
+				{
+					col[i_col].fit_index = temp_fit_index5;
+				}
+				else if (col_index % 8 == 6)
+				{
+					col[i_col].fit_index = temp_fit_index6;
+				}
+				else if (col_index % 8 == 7)
+				{
+					col[i_col].fit_index = temp_fit_index7;
+				}
+				else
+				{
+					col[i_col].fit_index = temp_fit_index8;
+				}
+			}
+		}
+		else if (MLS == 8)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3,4,5 },{ 1,2,3,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index2{ { 1,2,3,4 },{ 5 } };
+			std::vector<std::vector<short>> temp_fit_index3{ { 1,2,3,5 },{ 4 } };
+			std::vector<std::vector<short>> temp_fit_index4{ { 1,2,4,5 },{ 3 } };
+			std::vector<std::vector<short>> temp_fit_index5{ { 1,3,4,5 },{ 2 } };
+			std::vector<std::vector<short>> temp_fit_index6{ { 2,3,4,5 },{ 1 } };
+			std::vector<std::vector<short>> temp_fit_index7{ { 1,3,4 },{ 2,5 } };
+			std::vector<std::vector<short>> temp_fit_index8{ { 2,3,5 },{ 1,4 } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 8 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 8 == 2)
+				{
+					col[i_col].fit_index = temp_fit_index2;
+				}
+				else if (col_index % 8 == 3)
+				{
+					col[i_col].fit_index = temp_fit_index3;
+				}
+				else if (col_index % 8 == 4)
+				{
+					col[i_col].fit_index = temp_fit_index4;
+				}
+				else if (col_index % 8 == 5)
+				{
+					col[i_col].fit_index = temp_fit_index5;
+				}
+				else if (col_index % 8 == 6)
+				{
+					col[i_col].fit_index = temp_fit_index6;
+				}
+				else if (col_index % 8 == 7)
+				{
+					col[i_col].fit_index = temp_fit_index7;
+				}
+				else
+				{
+					col[i_col].fit_index = temp_fit_index8;
+				}
+			}
+		}
+		else if (MLS == 9)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { 1,2,3,4,5 },{ 1,2,3,4,5 } };
+			std::vector<std::vector<short>> temp_fit_index2{ { 1,2,3,4,5 },{ 5 } };
+			std::vector<std::vector<short>> temp_fit_index3{ { 1,2,3,4,5 },{ 4 } };
+			std::vector<std::vector<short>> temp_fit_index4{ { 1,2,3,4,5 },{ 3 } };
+			std::vector<std::vector<short>> temp_fit_index5{ { 1,2,3,4,5 },{ 2 } };
+			std::vector<std::vector<short>> temp_fit_index6{ { 1,2,3,4,5 },{ 1 } };
+			std::vector<std::vector<short>> temp_fit_index7{ { 1,3,4 },{ 2,5 } };
+			std::vector<std::vector<short>> temp_fit_index8{ { 2,3,5 },{ 1,4 } };
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 8 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 8 == 2)
+				{
+					col[i_col].fit_index = temp_fit_index2;
+				}
+				else if (col_index % 8 == 3)
+				{
+					col[i_col].fit_index = temp_fit_index3;
+				}
+				else if (col_index % 8 == 4)
+				{
+					col[i_col].fit_index = temp_fit_index4;
+				}
+				else if (col_index % 8 == 5)
+				{
+					col[i_col].fit_index = temp_fit_index5;
+				}
+				else if (col_index % 8 == 6)
+				{
+					col[i_col].fit_index = temp_fit_index6;
+				}
+				else if (col_index % 8 == 7)
+				{
+					col[i_col].fit_index = temp_fit_index7;
+				}
+				else
+				{
+					col[i_col].fit_index = temp_fit_index8;
+				}
+			}
+		}
+		else
+			abort();
+	}
+	else
+		abort();*/
 }
+
+
+
 

@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #pragma once
 
 //****************************************
@@ -101,7 +120,7 @@ void Directory_Create(std::string &date);
 @param min_fitness - min fitness for the current run
 @param end_generation - end generation of the current run
 */
-void Time_Save(int ir, double IGD_val, double HV_val, double min_fitness, double end_generation, std::string MODE);
+void Time_Save(int ir, double IGD_val, double HV_val, double min_fitness, int end_generation, int iteration, std::string MODE);
 /*
 *Excel output generation - First row*
 @param - ir index of the run
@@ -166,6 +185,8 @@ void HV_Gen_Calc(std::vector<std::vector<double>> & HV_s, int index, std::string
 @param MLS - MLS mode selected
 */
 void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS);
+
+
 
 
 

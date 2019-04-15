@@ -40,9 +40,6 @@
     <Filter Include="Source Files\Tools\Grouping methods">
       <UniqueIdentifier>{a4778e08-8750-4814-8d7c-7cab62dacc84}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tools\Resluts processing">
-      <UniqueIdentifier>{9f7c0c96-15f4-4623-85d3-f4abd470cb87}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Tools\Results Processing">
       <UniqueIdentifier>{c1d877ba-4586-429d-95f8-d50833658864}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,9 @@
     </Filter>
     <Filter Include="Source Files\Imported\HV_metric">
       <UniqueIdentifier>{e6404cad-7a8d-48c1-8875-36d02f476fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\Results processing">
+      <UniqueIdentifier>{9f7c0c96-15f4-4623-85d3-f4abd470cb87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,12 +165,6 @@
     <ClInclude Include="NSGAII.h">
       <Filter>Header Files\Augments</Filter>
     </ClInclude>
-    <ClInclude Include="PAES.h">
-      <Filter>Header Files\Augments</Filter>
-    </ClInclude>
-    <ClInclude Include="DMOEADD.h">
-      <Filter>Header Files\Augments</Filter>
-    </ClInclude>
     <ClInclude Include="MTS.h">
       <Filter>Header Files\Augments</Filter>
     </ClInclude>
@@ -200,9 +194,6 @@
     </ClInclude>
     <ClInclude Include="Imported\hv_wfg.h">
       <Filter>Header Files\Imported\HV_metric</Filter>
-    </ClInclude>
-    <ClInclude Include="UNSGAIII.h">
-      <Filter>Header Files\Augments</Filter>
     </ClInclude>
     <ClInclude Include="IBEA.h">
       <Filter>Header Files\Augments</Filter>
@@ -255,13 +246,13 @@
       <Filter>Source Files\Tools\Grouping methods</Filter>
     </ClCompile>
     <ClCompile Include="Contour_Plot.cpp">
-      <Filter>Source Files\Tools\Resluts processing</Filter>
+      <Filter>Source Files\Tools\Results processing</Filter>
     </ClCompile>
     <ClCompile Include="IGD.cpp">
-      <Filter>Source Files\Tools\Resluts processing</Filter>
+      <Filter>Source Files\Tools\Results processing</Filter>
     </ClCompile>
     <ClCompile Include="Video.cpp">
-      <Filter>Source Files\Tools\Resluts processing</Filter>
+      <Filter>Source Files\Tools\Results processing</Filter>
     </ClCompile>
     <ClCompile Include="Random_Label.cpp">
       <Filter>Source Files\Tools\Grouping methods</Filter>
@@ -276,12 +267,6 @@
       <Filter>Source Files\Augments</Filter>
     </ClCompile>
     <ClCompile Include="MOEAD.cpp">
-      <Filter>Source Files\Augments</Filter>
-    </ClCompile>
-    <ClCompile Include="PAES.cpp">
-      <Filter>Source Files\Augments</Filter>
-    </ClCompile>
-    <ClCompile Include="DMOEADD.cpp">
       <Filter>Source Files\Augments</Filter>
     </ClCompile>
     <ClCompile Include="MTS.cpp">
@@ -313,9 +298,6 @@
     </ClCompile>
     <ClCompile Include="Imported\hv_wfg.cpp">
       <Filter>Source Files\Imported\HV_metric</Filter>
-    </ClCompile>
-    <ClCompile Include="UNSGAIII.cpp">
-      <Filter>Source Files\Augments</Filter>
     </ClCompile>
     <ClCompile Include="IBEA.cpp">
       <Filter>Source Files\Augments</Filter>

@@ -1,16 +1,36 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #include "Contour_Plot.h"
 #include <iostream>
 #include "imported.h"
 #include "Const.h"
 #include "Define.h"
 #include <string>
+#include "MLSGA_Add_Functions.h"
 static double max_cp;	//max z value for the contour plot
 
 /*
 *Contour plot generation*
 @param indexr index of the run for the current contour plot
 */
-void Contour_Plot(int indexr)
+void Contour_Plot(int indexr, double t)
 {
 	//Check if we have data to calculate contour plot
 	if (FITNESS_ALL == false)
@@ -32,7 +52,10 @@ void Contour_Plot(int indexr)
 	short pdf = 1;						//parameter
 	
 	//open source file
-	std::ifstream file("Temp/Graph_" + std::to_string(indexr) + ".x1");	//source file
+	std::ifstream file("Temp/" + Name_Get("graph", indexr, t));	//source file
+
+	if (!file.is_open())
+		abort();
 
 	//read the input file
 	while (std::getline(file, line))			
@@ -50,7 +73,10 @@ void Contour_Plot(int indexr)
 	file.close();
 
 	//open the output data file
-	std::ofstream file2("Temp/Graph2_" + std::to_string(indexr) + ".x1");
+	std::ofstream file2("Temp/" + Name_Get("CP", indexr, t));
+	if (!file2.is_open())
+		abort();
+
 	{
 		//copy the resolution
 		short nd = c_plot_res;						//resolution of the contour plot - define step size

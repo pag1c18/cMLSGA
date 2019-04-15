@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #pragma once
 
 //****************************************
@@ -12,16 +31,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define INF 1.0e14
 
-#define VIDEO false							//Video generation
+#define VIDEO false								//Video generation
 #define PERF_VAL_GEN false						//If IGD or HV value should be calculated every generation and stored to file
 #define AUTO_FOLDER_COMMENT true				//If the name of folder should be created automatically and containt the run parameters
-#define ENCODING "Binary"							//Encoding type "Binary", "Gray", "Real"
-#define MULTI_OBJ_O false						//If the multi-objective functions should be included or not
+#define ENCODING "Real"							//Encoding type "Binary", "Gray", "Real"
 
 #define PF_REFINE true							//If PF is refining at the end to the desired size (it will be refined anyway, if PF is too big - see const.h)
 #define DEBUG false								//For debugging purposes
 #define FITNESS_ALL	true						//save all fitness to the excel and show if not save only PF
-#define SKIP_GRAPHS	true						//skip making graphs for runs with index > 5; for very long dynamic runs to save memory
+#define SKIP_GRAPHS	false						//skip making graphs for runs with index > 5; for very long dynamic runs to save memory
 #define EXCEL_EXCEPTION true					//do not save fitness to excel - useful for very long runs
 #define ONE_OBJ_OVERRIDE false					//Calculating as a single objective (every objective have the same weight)										
 #define CONTOUR_PLOT false						//Contour plot generation (FITNESS_ALL have to be defined!!)
@@ -33,11 +51,7 @@
 //#define MOEAD_SEPARATE_WEIGHTS false			//define if each col will have different weight vectors
 #define GROUPING "SVM"
 #define MLS_OVERRIDE true						//if individual levle selection should calculate like NSGAII or MLS; if true NSGAII will not use MLS for selection
-#define DMEADD_MUTATE_ALL true					//if all individuals are mutated each run (if not only the offsprings are mutated)
-#define DMOEADD_OVERRIDE true					//if DMOEADD is calculated as non MLS (if true no MLS is applied to DMOEADD)
-#define DMOEADD_NEW false						//if dmoeadd use Metropolis criterion or only fitness (if true uses fitness)
 #define SKIP_LAST_GEN false						//if should skip the last generations (over 200k)
-#define COOEVOLUTION true						//Empty - using different GAs for different collectives
 #define TGM false								//If transgenerational memory would oocur
 
 #endif // !DEFINE_H

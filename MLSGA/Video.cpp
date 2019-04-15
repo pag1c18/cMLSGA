@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #include "Video.h"
 #include "Support_Functions.h"
 #include "Define.h"
@@ -35,7 +54,7 @@ void Video::Name_Get(int n, int indexr, double t)
 		x += "set key outside\n";
 
 		//set labels for x and y axis
-		x += "set xlabel \"Fitness 1\"\nset ylabel \"Fitness 2\"\n";
+		x += "set xlabel \"Objective 1\"\nset ylabel \"Objective 2\"\n";
 
 		//set title
 		x += "set title \" Generation #" + std::to_string(n) + "\"\n";
@@ -139,8 +158,8 @@ Video::Video(FILE * pipename, std::string ifile, std::string ofile, short nobj, 
 */
 void Video::Make_Frame(int n, int indexr, double t)
 {
-	if (n % frame_skip != 1 && (MODE == "PAES" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M"))
-		return;
+	//if (n % frame_skip != 1 && (MODE == "PAES" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M"))
+		//return;
 
 	//check if the video should be created
 	if (VIDEO == false || FITNESS_ALL == false)
@@ -169,8 +188,8 @@ void Video::Make_Video()
 	for (long i = 0; i < frames; i++)
 	{
 		int frame_skip_temp = 1;
-		if (MODE == "MOEAD" || MODE == "PAES" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M")
-			frame_skip_temp = frame_skip;
+		//if (MODE == "MOEAD" || MODE == "PAES" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M")
+			//frame_skip_temp = frame_skip;
 		//get the frame location
 		std::string img_name = "Temp/";
 		img_name += input_file;

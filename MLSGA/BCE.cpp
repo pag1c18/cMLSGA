@@ -1,3 +1,26 @@
+/*==========================================================================
+//  Implementation of the Bi-Criterion Evolution (BCE) framework with MOEA/D
+//  Last update 25, MAR, 2016
+//
+//  Please find details of BCE in the following paper
+//  M. Li, S. Yang, and X. Liu. Pareto or non-Pareto: Bi-criterion evolution in multi-objective optimization.
+//  IEEE Transactions on Evolutionary Computation, vol. 20, no. 5, pp. 645-665, 2016.
+//
+//  Please find details of this MOEA/D version in the following paper
+//  H. Li and Q. Zhang. Multiobjective optimization problems with complicated Pareto sets, MOEA/D and NSGA-II.
+//  IEEE Transactions on Evolutionary Computation, vol. 13, no. 2, pp. 284¨C302, 2009.
+//
+//  The source code of was implemented by Miqing Li (http://www.cs.bham.ac.uk/~limx)
+//
+//  The codes are free for reserach work.
+//  If you have any problem with the source codes, please contact
+//  Miqing Li at limitsing@gmail.com
+===========================================================================*/
+
+
+
+/*Modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "BCE.h"
@@ -56,7 +79,7 @@ std::vector<individual> BCE::BCE_Calc(collective & col, int iGen)
 	// individual exploration in the PC evolution
 	explore_PCpop(PC_pop[ix], col, temp_pop, iGen, col.fit_index[0]);
 
-	if (!((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && col.FCode_Show()[0].Time_Dep())) && T_con == "nfes"))
+	if (!(Termination_Check(col.FCode_Show()[0].Time_Dep())))
 	// NPC evolution
 		NPC_evolution(col, PC_pop[ix], iGen);
 
@@ -293,7 +316,7 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 
 			
 
-			if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && NPCp.FCode_Show()[0].Time_Dep())) && T_con == "nfes")
+			if (Termination_Check(NPCp.FCode_Show()[0].Time_Dep()))
 				return;
 		}
 	}
@@ -379,7 +402,7 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 
 		
 
-		if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && NPCp.FCode_Show()[0].Time_Dep())) && T_con == "nfes")
+		if (Termination_Check(NPCp.FCode_Show()[0].Time_Dep()))
 			break;
 	}
 }

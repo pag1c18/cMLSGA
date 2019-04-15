@@ -1,3 +1,21 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
 #pragma once
 
 //****************************************
@@ -82,7 +100,7 @@ public:
 	*/
 	individual(std::vector<bool> & Code, std::vector<double> & Code2, function & fcode) { code_bin = Code; code = Code2; };
 	/**Default copying constructor**/
-	individual(const individual & indi) { code = indi.code; code_bin = indi.code_bin; fitness = indi.fitness; TGM_fitness = indi.TGM_fitness; cons_violation = indi.cons_violation; cons_val = indi.cons_val; rank = indi.rank; crowd_dist = indi.crowd_dist; namda = indi.namda; table = indi.table; saved_fitness = indi.saved_fitness; utility = indi.utility; };
+	individual(const individual & indi) { code = indi.code; code_bin = indi.code_bin; fitness = indi.fitness; fitness_norm = indi.fitness_norm; TGM_fitness = indi.TGM_fitness; cons_violation = indi.cons_violation; cons_val = indi.cons_val; rank = indi.rank; crowd_dist = indi.crowd_dist; namda = indi.namda; table = indi.table; saved_fitness = indi.saved_fitness; utility = indi.utility; };
 	~individual() {};
 
 	/**Returning fitness**/

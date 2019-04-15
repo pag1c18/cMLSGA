@@ -1,9 +1,16 @@
+
+/*This code is based on: L.-Y. Tseng and C. Chen, “Multiple Trajectory Search for Multiobjective Optimization,” in 2007 IEEE Congress on Evolutionary Computation (CEC 2007), 2007, pp. 3609–3616.
+It has been modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "MTS.h"
 #include "Struct.h"
 #include "Random.h"
 #include <ctime>
+#include "Support_Functions.h"
+
+
 
 int LSCNT1 = 0;
 int LSCNT2 = 0;
@@ -15,6 +22,7 @@ extern int nfes;											//number of function evaluations for MOEAD and MTS
 pareto_front * PF_pointer;
 std::vector<int> foreground_size;
 function * fcode;
+bool dynamic_on;
 std::vector<std::vector<bool>> improve;
 int ncons;
 extern int pop_size;	//current population size
@@ -72,9 +80,11 @@ void MTS::MTS_Init(population & pop, pareto_front & PF, short ncol)
 	improve = std::vector<std::vector<bool>>(ncol, std::vector<bool>(3, true));
 
 
+	
 	fcode = pop.FCode_Show();
-	bound = pop.FCode_Show()[0].Bound();
-	int var_n = pop.FCode_Show()[0].Vars();
+	bound = fcode[0].Bound();
+	dynamic_on = fcode[0].Time_Dep();
+	int var_n = fcode[0].Vars();
 	std::vector<std::vector<unsigned int>> factor;
 	int psize = pop.Size_Show();
 	//loop for MTS initialisation - do not make any change actually
@@ -135,7 +145,7 @@ void MTS::MTS_Calc(collective & col)
 	//Evolve the population
 	for (int i = 0; i < col.Size_Show(); i++)
 	{
-		if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+		if (Termination_Check(dynamic_on))
 			break;
 		if (col.Indiv_Show(i).table[0] == 1)
 		{
@@ -157,7 +167,7 @@ void MTS::MTS_Calc(collective & col)
 			//perform local searches for given amount of iterations
 			for (int j = 0; j < MTS_LocalSearch_amount; j++)
 			{
-				if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+				if (Termination_Check(dynamic_on))
 					break;
 				switch (sw)
 				{
@@ -267,7 +277,7 @@ void MTS::ChooseSolution(collective & col)
 
 int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 {
-	if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+	if (Termination_Check(dynamic_on))
 		return 0;
 	double of;
 	bool AllMin;
@@ -319,7 +329,7 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 		//stopping criterion
 		if (nfes != 0)
 		{
-			if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+			if (Termination_Check(dynamic_on))
 			{
 				break;
 			}
@@ -339,7 +349,7 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 			//stopping criterion
 			if (nfes != 0)
 			{
-				if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+				if (Termination_Check(dynamic_on))
 				{
 					break;
 				}
@@ -374,7 +384,7 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 
 int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 {
-	if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+	if (Termination_Check(dynamic_on))
 		return 0;
 	int i, j, l = 0;
 	bool AllMin;
@@ -426,7 +436,7 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 		//stopping criterion
 		if (nfes != 0)
 		{
-			if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+			if (Termination_Check(dynamic_on))
 			{
 				break;
 			}
@@ -464,7 +474,7 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 			//stopping criterion
 			if (nfes != 0)
 			{
-				if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+				if (Termination_Check(dynamic_on))
 				{
 					break;
 				}
@@ -502,7 +512,7 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 
 int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 {
-	if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+	if (Termination_Check(dynamic_on))
 		return 0;
 	std::vector<double> U, L, dis;
 	int n_var = ind.Code_Show().size();			//amount of variables
@@ -525,7 +535,7 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 		//stopping criterion
 		if (nfes != 0)
 		{
-			if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+			if (Termination_Check(dynamic_on))
 			{
 				return 0;
 			}
@@ -536,7 +546,7 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 			//stopping criterion
 			if (nfes != 0)
 			{
-				if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+				if (Termination_Check(dynamic_on))
 				{
 					return 0;
 				}
@@ -566,7 +576,7 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 				//stopping criterion
 				if (nfes != 0)
 				{
-					if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+					if (Termination_Check(dynamic_on))
 					{
 						return 0;
 					}
@@ -607,7 +617,7 @@ int MTS::Object(individual & ind, bool save)
 	//Fix_Range(ind.Code_Set());
 	if (nfes != 0)
 	{
-		if ((nfes >= max_iterations || ((nfes % (pop_size *T_dyn) == 0) && fcode[0].Time_Dep())) && T_con == "nfes")
+		if (Termination_Check(dynamic_on))
 		{
 			return 0;
 		}

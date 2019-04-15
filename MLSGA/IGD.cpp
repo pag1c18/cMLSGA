@@ -1,3 +1,24 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+/*The IGD calculation is based on P. A. N. Bosman and D. Thierens, “The balance between proximity and diversity in multiobjective evolutionary algorithms,” IEEE Trans. Evol. Comput., vol. 7, no. 2, pp. 174–188, 2003.*/
+
+
 #include "IGD.h"
 #include "Support_Functions.h"
 #include <numeric>
@@ -13,6 +34,9 @@ double IGD_calc(pareto_front & PF, std::vector<std::vector<double>> & real_PF)
 	
 	//get the size of the pareto front
 	int Pareto_size = Pareto.size();						//size of the pareto front
+
+	if (Pareto_size == 0)
+		return INF;
 
 	//get the number of objectives
 	//short Obj_num = Pareto[0].Fitness_Show().size();		//number of objectives

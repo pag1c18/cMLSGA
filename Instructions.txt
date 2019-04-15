@@ -1,0 +1,55 @@
+/****************1. Installation****************/
+Download and extract the OpenCV (3.2.0 win release) and GNUplot directly to C:\ ("opencv" and "gnuplot" folders names respectively). OpenCV is for video and images generation and GNUplot is for graphs.
+
+Follow the instructions from "Install instructions" folder. If the attached VS project file is utilised, only the system.txt has to be followed, as OpenCV has to be added to system environmental variables.
+
+The main routine is in the MLSGA.cpp file.
+
+/****************2. Setting up operational parameters****************/
+The GAs behaviour and parameters are set up in const.h file, while the behaviour of overall program and result processing is set up in define.h. Each value has corresponding comment, explaining its purpose.
+
+/****************2a. Const.h****************/
+The preferred GA is set up in line 46, according to following rule: {{"GA name"}, {"GA name 2}}. Importantly the GAs are used one after another and not simultaneously. If the multiple GAs have to be used in the co-evolutionary approach, they have to be defined in the same bracket, and separated by commas: {{"GA name_a", "GA name_b"}}. Any combinations of normal GAs and co-evolutionary variants can be used. The list of implemented GAs is {"Normal"}, {"NSGAII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}.
+
+If MLSGA have to be utilised or co-evolutionary variant, cMLSGA, the line 47 have to be set to "true". Otherwise, the original algorithm will be utilised.
+
+The MLSGA parameters are defined in lines 49-53.
+
+The GAs parameters and utilised functions are defined in lines 59-71. The framework has implemented respectable loops for most of them so the min, max value and preferred step can be defined. 
+
+The first and last evaluated functions are defined in lines 62-63, according to assigned index (further explained in Section 3. Defining the problems). The list of currently implemented functions with corresponding indexes is provided in lines 17-44.
+
+Line 65 defines if the functions with specific amount of objectives should be skipped. Useful for automatic simulations.
+
+
+Line 75 defines how many times the simulation have to be repeated with the same parameters. Multiple runs allows obtaining more robust data.
+
+The termination condition is defined in line 76, with exact values defined in lines 77-79
+
+The performance evaluation method can be defined in line 82. However, for both of those metrics the final POF has to be known.
+
+
+/****************3. Defining the problems****************/
+The functions can be defined in separate header and source files or added to Fit_Functions.h and .cpp. All functions have to be separated classes and be children of "function" class as public.
+
+"function" class takes following arguments as a constructor ("name", "amount of variables", "amount of objectives", "index", "amount of constraints"). All of those have to be defined in the constructor of a new class (examples can be found in Fit_Functions.h). Furthermore, following functions have to be defined in the class  "void Bound_Set()", "std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);", "std::vector<double> Fitness_C(const std::vector<double> &code);", std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);" for boundary setting, creating true POF, Fitness calculations and constraints calculation respectively. The Cons_Calc have to be defined only if constraints are present. Furthermore, Bound_Set() have to be part of the default constructor. Examples of each function definitions can be found in Fit_Functions.h and corresponding implementations in Fit_Functions.cpp
+
+/****************3a. Bound_Set***************/
+In this function, all boundaries for corresponding objectives are set. However, it is advised that all boundaries should be in 0-1 range, and to be later translated according to optimised problem boundaries in Fitness_C function. This allows to maximise effectiveness of algorithm especially in problems with variables of different orders.
+
+All boundaries are stored in std::vector<STRUCTURES::boundaries> bound. Properties of STRUCTURES::boundaries can be found in Struct.h file, but it is simple {Max_val, min_val}. Therefore, all variables have to be defined as STRUCTURES::boundaries{max, min} and pushed to the boundaries vector. Finally the boundary vector have to be send to the parent "function" class by function::Bound_Set(bound) function. 
+
+Furthermore, the maximum and minimum values can of the objectives can be stored in similar fashion by function::Max_Min_Fit_Set(std::vector<STRUCTURES::boundaries> & max_min) in order to force all graphs (and videos) to have the same scales of all axis. However, this step is optional.
+
+/****************3b. Plot_PF***************/
+In this function, a real POF is generated or red from file. The POF have to be stored in std::vector<std::vector<double>> vector and returned at the end of routine. Optionally it can be saved to file in order to be included in all graphs and videos. The ofstream should have following structure "std::ofstream PF_real("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(0., 1) + ".x1")" in order for gnuplot to read it. The values for each objective should be separated by space " ", whereas each point be end of the line symbol "std::endl".
+
+/****************3c. Fitness_C***************/
+Here the all objectives are calculated and returned back as the fitness vector "std::vector<double> fitness". Therefore, all objectives have to be calculated separately and pushed to the vector in the corresponding order (obj1, obj2 etc.). It is possible that all objectives can be calculated in other source files, but later have to be included in this function, and the objectives have to be pushed to the given vector as explained before.
+
+/****************3d. Cons_Calc***************/
+Similarly, to Fitness_C but here the constrained values are calculated and returned back to main MLSGA routine via respectable vector. Importantly, in the current version of MLSGA, the constraints are considered met if the constraint value is lower or equal 0. Furthermore, values above 0 indicates the degree in which the constraint is not met, where greater value means a less feasible solution. However it is possible to simply calculate constraints by other means, but for the GA purposes the value of 0 have to be sent if the constraints are met, and any value above 0 (suggested here 1) if are not met.
+
+/****************3f. MLSGA_Add_Functions.cpp***************/
+Finally the new function class have to be added into the "function * Func_Type(short ix)" function in the MLSGA_Add_Functions.cpp. It have to be added at the end of the if check, with new index (ix) value. Importantly this ix value will enable function in const.h file lines 62-63. The function have to be added in following sub-routine: "else if (ix == new index) { new_function_class_name *temp_name = new new_function_class_name; return temp_name}.
+

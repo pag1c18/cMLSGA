@@ -1,8 +1,37 @@
-#define _CRT_SECURE_NO_WARNINGS
+/*MLSGA framework
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This program is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
 /***MSLGA***/
-/***Original idea by Adam Sobey and Przemyslaw Grudniewski***/
+/***Original idea by Adam Sobey***/
 /***Written by Przemyslaw Grudniewski***/
-/***Updates by Przemyslaw Grudniewski***/
+/***Updates and additional ideas by Przemyslaw Grudniewski***/
+/*[1] A.J.Sobey and P.A.Grudniewski, “Re - inspiring the genetic algorithm with multi - level selection theory : Multi - level selection genetic algorithm”, Bioinspiration and Biomimetics, vol. 13, no. 5, pp. 1–13, 2018.
+
+[2] P.A.Grudniewski and A.J.Sobey, “Behaviour of Multi - Level Selection Genetic Algorithm(MLSGA) using different individual - level selection mechanisms”, Swarm Evol.Comput., vol. 44, no.September 2018, pp. 852–862, 2018.
+
+[3] P.A.Grudniewski and A.J.Sobey, "cMLSGA: co-evolutionary Multi-Level Selection Genetic Algorithm", 2019*/
+
+/*If You have any questions regarding the code, please contact
+Przemyslaw A. Grudniewski	at	pag1c18@soton.ac.uk		or
+Adam J. Sobey				at	ajs502@soton.ac.uk
+*/
+
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "MLSGA.h"
 
 
@@ -46,7 +75,7 @@ int main()
 	double IGD2_val_final = 0;										//Final IGD value - for dynamic
 	double HV2_val_final = 0;										//Final HV value - for dynamic
 	double min_fitness = 0.;											//minimum fitness for current run - only for MLS1
-	double end_generation;										//generation at which solution was found
+	int end_generation;										//generation at which solution was found
 
 	//Create the vector of active functions
 	std::vector<bool> func_active = Func_Deactivate();
@@ -114,16 +143,20 @@ int main()
 	short n_col_b;
 	short n_col_e;
 	short n_col_elim;
+	short n_MLS_b, n_MLS_e;
 	if (MLSGA_Hybrid == true)
 	{
 		n_col_b = MLSGA_n_col_b;
 		n_col_e = MLSGA_n_col_e;
 		n_col_elim = MLSGA_n_col_elim;
+		n_MLS_b = MLSGA_n_MLS_b;
+		n_MLS_e = MLSGA_n_MLS_e;
+
 	}
 	else
 	{
 		n_col_e = n_col_b = 1;
-		n_col_elim = 0;
+		n_col_elim = n_MLS_b = n_MLS_e = 0;
 	}
 
 
@@ -140,24 +173,22 @@ int main()
 		{
 				
 			//Do only selected MLSt types
-			//if (MLSt != 1 && MLSt != 2 && MLSt != 7)
-				//continue;
+			if (MLS != 1 && MLS != 2 && MLS != 3 && MLS != 7 && MLS!=0)
+				continue;
 			for (n_col = n_col_b; n_col <= n_col_e; n_col += 2)										//loop for different col size
 			{
 				for (pop_size = Pop_size_b; pop_size <= Pop_size_e; pop_size += Pop_size_step)		//loop for different pop sizes
 				{
+					/*if (pop_size == 1000 || pop_size == 1800)
+						continue;*/
 					
-					//Do only selected population sizes
-					//if (pop_size != 400 && pop_size != 600 && pop_size != 800 && pop_size != 1000 && pop_size != 1200 && pop_size != 1400 && pop_size != 1600 && pop_size != 1800 && pop_size != 2000)
-						//continue;
 					//Initialise max_gen - termination criterion
 					int max_gen;
-					if (T_con == "nfes")
-					{
-						max_gen = max_iterations / pop_size*1000;
-					}
-					else if (T_con == "ngen")
+					
+					if (T_con == "ngen")
 						max_gen = max_generations;
+					else
+						max_gen = INF;
 						
 					for (short R_Mode = 0; R_Mode < Reinit_Mode.size(); R_Mode++)														//Loop for different mode types
 					{
@@ -177,17 +208,20 @@ int main()
 									if (!func_active[ftype - n_func_b])
 										continue;
 
-									if ((ftype >= 7 && ftype <= 13) || (ftype >= 60 && ftype <= 61))
-										continue;
+									//if (!((ftype >6 && ftype < 21)|| (ftype > 30 && ftype < 50) || ftype > 59) )
+										//continue;
 									function * Func = Func_Type(ftype);													//Function initialisation
 
+									bool dynamic_on = Func[0].Time_Dep();		//if the function is dynamic
+
+
 									//skip the cases for other reinitialisation modes for non dynamic functions
-									if (Func[0].Time_Dep() == false && R_Mode != 0)
+									if (dynamic_on == false && R_Mode != 0)
 										continue;
 
 									//If dynamic create the data for the first row of excel
 									std::vector<SimpleXlsx::CellDataStr> excelb1;		//First row of PF storage excel file
-									if (Func[0].Time_Dep())
+									if (dynamic_on)
 									{
 										for (int i = 0; i < Func[0].Objs(); i++)
 											excelb1.push_back("f" + std::to_string(i + 1));
@@ -227,6 +261,9 @@ int main()
 														std::vector<std::vector<double>> HV_storage;							//Storing the HV values over the runs
 														for (int iRun = 0; iRun < n_runs; iRun++)														//loop for number of runs- Last loop
 														{
+															std::cout << "Run #" << index_r << " started\n";
+
+
 															Clear_Ideal_and_Nadir(Func[0].Objs());
 
 															std::vector<double> IGD_storage_temp;								//Storing the IGD valus in the current run
@@ -244,7 +281,7 @@ int main()
 															cons_viol_count = 0;
 
 															//Plot real PF
-															if (Func[0].Time_Dep())
+															if (dynamic_on)
 															{
 																dyn_t = floor(dyn_tau / (double)T_dyn) / (double)n_steps_dyn;
 																//dyn_t = 0;
@@ -267,6 +304,7 @@ int main()
 															}
 															//Get the beginning time of the run
 															run_t = clock();
+															run_time = 0;
 
 															//Initialise the time variables
 															mut_t = pop_t = cross_t = SVM_t = PF_t = SVM_t = selec_t = elit_t = col_t = save_t = 0;
@@ -309,7 +347,7 @@ int main()
 															graph.open("Temp/" + Name_Get("graph", index_r, dyn_t));
 
 															//Create the First rows of the axcel
-															Excel_F_Row(index_r, MODE_vector, Func[0].Time_Dep(), IGD_on, HV_on);
+															Excel_F_Row(index_r, MODE_vector, dynamic_on, IGD_on, HV_on);
 
 															//Create the Second rows of the axcel
 															Excel_S_Row(*Func, GA_standard, Mutation_vect[0][0], *Selection, Crossover_vect[0][0], iRun, index_r, REINIT_MODE, MODE_vector, MLS);
@@ -349,11 +387,6 @@ int main()
 																{
 																	//initialise the MOEAD
 																	MOEAD::MOEAD_Init(Func[0].Objs(), p1);
-																}
-																else if (MODE == "PAES")
-																{
-																	//initialise the PAES
-																	PAES::PAES_Init(Func[0].Objs(), p1);
 																}
 																else if (MODE == "MTS")
 																{
@@ -417,7 +450,7 @@ int main()
 																//Calculate the time of SVM
 																SVM_t += clock() - SVM_t_temp;
 
-																std::cout << "Run #" << index_r << " started\n";
+																
 
 																std::cout << "\nSVM - complete!\n";
 
@@ -479,7 +512,7 @@ int main()
 																					temp_col[iCol].Add(temp_indi);
 
 																					//Remove it from the old one
-																					temp_col[biggest_col[0]].Remove();
+																					temp_col[biggest_col[0]].Remove(0);
 																				}
 																				//Correct the size of the biggest collective
 																				biggest_col[1] = temp_col[biggest_col[0]].Size_Show();
@@ -491,7 +524,7 @@ int main()
 																				{
 																					individual temp_indi = temp_col[biggest_col[2]].Indiv_Show(0);
 																					temp_col[iCol].Add(temp_indi);
-																					temp_col[biggest_col[2]].Remove();
+																					temp_col[biggest_col[2]].Remove(0);
 																				}
 																				biggest_col[3] = temp_col[biggest_col[2]].Size_Show();
 																			}
@@ -563,6 +596,7 @@ int main()
 																	
 																}
 															}
+
 															MLS_Col_Fit_Create(col, MLS);
 															
 															for (short iCol = 0; iCol < col.size(); iCol++)
@@ -572,6 +606,8 @@ int main()
 
 																if (coevol_amt != 1)
 																	col[iCol].Index_Set(col[iCol].index_vid);
+																else
+																	col[iCol].index_vid = iCol + 1;
 																if (VIDEO == true && FITNESS_ALL == true && Func[0].Objs() == 2)
 																{
 																	//Set the precision of the video data files
@@ -585,15 +621,12 @@ int main()
 																	//Calculate the fitness of individuals in the collective
 																	col[iCol].population::Fitness_Calc();
 																	nfes += col[iCol].Size_Show();
-																	if (MODE == "NSGAII" || MODE == "DMOEADD")
-																		col[iCol].save();
+																	
 																}
 																else if (MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF")
 																	//initialise the population for MOEAD
 																	MOEAD::Population_Init(Func[0].Objs(), col[iCol]);
-																else if (MODE == "PAES")
-																	//initialise the population for PAES
-																	PAES::PAES_Population_Init(Func[0].Objs(), col[iCol]);
+																
 																else if (MODE == "MTS")
 																	//initialise the collective parameters for MTS
 																	MTS::MTS_Init_Col(col[iCol]);
@@ -617,6 +650,9 @@ int main()
 																	//initialise the collective parameters for IBEA
 																	IBEA::IBEA_Pop_Init(Func[0].Objs(), col[iCol]);
 																}
+
+																if (MODE != "Normal")
+																	col[iCol].save();
 
 																if (MODE == "MOEADPSF" || MODE == "MOEADMSF" || MODE == "MOEADM2M" || MLSGA_norm_obj == true)
 																{
@@ -660,18 +696,10 @@ int main()
 																{
 																	col_size += col[iCol].Size_Show();
 																}
-																if (col_size != GA_standard.Pop_Size())
+																if (col_size != GA_standard.Pop_Size() || col_size != pop_size)
 																	abort();
 															}
-															int pop_size_temp = 0;
-															if (DEBUG == true)
-															{
-																for (short iCol = 0; iCol < n_col; iCol++)
-																	pop_size_temp += col[iCol].Size_Show();
-																if (pop_size_temp != pop_size)
-																	abort();
-															}
-
+															
 															//Initialize the population memory in case of tgmemory, or reinitialisation
 															std::vector<std::vector<collective>> col_past;		//memory of the previous populations
 
@@ -712,6 +740,7 @@ int main()
 
 															}
 															col_t += clock() - col_t_temp;
+
 															if (VIDEO == true && FITNESS_ALL == true && Func[0].Objs() == 2)
 															{
 																//close all of the video data files
@@ -735,8 +764,8 @@ int main()
 															unsigned short skip_gen = MLSGA_col_elim_limit;
 
 															//override for MTS
-															if (MODE == "MTS")
-																skip_gen = 1;
+															//if (MODE == "MTS")
+																//skip_gen = 1;
 
 															/************Genetic Algorithm***************/
 															for (int iGen = 1; iGen < GA_standard.Max_Gen(); iGen++)	//loop for number of generations
@@ -747,7 +776,7 @@ int main()
 																double HV_val_temp;
 																int dyn_change_param = 0;
 																//If dynamic function is used
-																if (Func[0].Time_Dep())
+																if (dynamic_on)
 																{
 
 																	//If function require additional "initial" generations
@@ -781,6 +810,9 @@ int main()
 																			if (dyn_change_param <= 0.1*pop_size || dyn_change_param >= (T_dyn*pop_size) - 0.1*pop_size)
 																				dyn_change_param = 0;
 																		}
+																		else
+																			//wrong criterion chosen
+																			abort();
 
 																		//for moead the number of iterations is lower per gneration so need more time before time change
 																		//if (MODE == "MOEAD" && )
@@ -866,6 +898,8 @@ int main()
 																			{
 																				dyn_t += 1. / (double)n_steps_dyn;
 																			}
+																			else
+																				abort();
 
 
 
@@ -910,7 +944,7 @@ int main()
 
 
 																	//Reinitialisation/fitness calculation for dynamic change - only for dynamic problems
-																	if (dyn_change_param == 0 && Func[0].Time_Dep() && !((ftype >= 29 && ftype <= 38) && iGen < JY_const_window))
+																	if (dyn_change_param == 0 && dynamic_on && !((ftype >= 29 && ftype <= 38) && iGen < JY_const_window))
 																	{
 
 																		//Reinitialisation routine
@@ -920,13 +954,11 @@ int main()
 
 																	}
 
-																	//Get the index of the current collective
-																	short col_index = col[iCol].index_vid - 1;
 
 																	if (VIDEO == true && FITNESS_ALL == true && Func[0].Objs() == 2)
 																	{
 																		//Set the pointer to the current video data file
-																		graph_v = &graph_v_vector[col_index];
+																		graph_v = &graph_v_vector[col[iCol].index_vid - 1];
 																	}
 
 																	if (MODE == "Normal")
@@ -987,11 +1019,11 @@ int main()
 																		}
 
 																		//Calculate the offspring collective
-																		NSGAII::NSGAII_Calc(col[iCol], iGen);
+																		NSGAII::NSGAII_Calc(col[iCol]);
 
 																		//Get PF
 																		//Check if multi objective optimisation
-																		if (ONE_OBJ_OVERRIDE != true && (Func[0].Time_Dep() || PERF_VAL_GEN == true || MLS_OVERRIDE == false || (MLS_OVERRIDE == true && n_col != 1)))
+																		if (ONE_OBJ_OVERRIDE != true && (dynamic_on || PERF_VAL_GEN == true || MLS_OVERRIDE == false || (MLS_OVERRIDE == true && n_col != 1)))
 																		{
 																			//Search for pareto front
 																			Pareto_F.Pareto_Search(col[iCol]);		//PF search
@@ -1029,43 +1061,6 @@ int main()
 																		}
 																		MTS::MTS_Calc(col[iCol]);
 
-																		//Check if max number of fit evaluations reached
-																		if ((nfes >= max_iterations || (nfes % (pop_size *T_dyn) == 0 && Func[0].Time_Dep())) && T_con == "nfes")
-																		{
-
-																			//stop the process
-																			iCol = n_col;
-																			break;
-																		}
-																	}
-																	else if (MODE == "DMOEADD")
-																	{
-																		//calculate new population and save potential PF to temp storage vector
-																		std::vector <individual> temp_PF_storage = DMOEADD::DMOEADD_Calc(col[iCol]);
-																		//insert temp storage vector to strage vector
-																		PF_storage.insert(PF_storage.end(), temp_PF_storage.begin(), temp_PF_storage.end());
-
-																	}
-																	else if (MODE == "PAES")
-																	{
-																		//Get the index of the current collective
-																		short col_index = col[iCol].index_vid - 1;
-
-
-																		if (VIDEO == true && FITNESS_ALL == true && Func[0].Objs() == 2)
-																		{
-																			//Open the video data file
-																			graph_v_vector[col_index].open("Temp/" + Name_Get("graph_v_" + std::to_string(index_r) + "_c" + std::to_string(col_index + 1), iGen + 1));
-
-
-																			//Set the pointer to the current video data file
-																			graph_v = &graph_v_vector[col_index];
-																		}
-
-																		//calculate new population and save potential PF to temp storage vector
-																		std::vector <individual> temp_PF_storage = PAES_Calc(col[iCol], 0, Selection[0]);
-																		//insert temp storage vector to strage vector
-																		PF_storage.insert(PF_storage.end(), temp_PF_storage.begin(), temp_PF_storage.end());
 																	}
 																	else if (MODE == "BCE")
 																	{
@@ -1115,15 +1110,14 @@ int main()
 																		else
 																			return -1;
 																	}
-																	//Check the stopping criterion and size of PF storage for some versions
-																	if (MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M" || MODE == "DMOEADD" || MODE == "PAES" || MODE == "BCE" || MODE == "HEIA" || MODE == "IBEA")
-																	{
 
+																	if (MODE != "Normal" && MODE != "NSGAII")
+																	{
 																		//Check if multi objective optimisation
 																		if (ONE_OBJ_OVERRIDE != true && (n_col != 1))   //(n_col != 1 || (n_col == 1 && Func[0].Cons() >0)))
 																		{	//Search for pareto front
 																			//Check potential PF only when reach certain size
-																			if (PF_storage.size() >= 200)
+																			if (PF_storage.size() >= 200 || Termination_Check(dynamic_on))
 																			{
 																				Pareto_F.Pareto_Search(population{ PF_storage, col[iCol] });
 																				PF_storage.clear();
@@ -1131,37 +1125,29 @@ int main()
 
 																		}
 																		//if original algorithm clear the PF_storage as only the final solution matters
-																		else if (ONE_OBJ_OVERRIDE != true && n_col == 1 && !Func[0].Time_Dep() && !PERF_VAL_GEN && MODE != "BCE" && MODE != "HEIA" && MODE != "IBEA") // && Func[0].Cons() >0)
+																		else if (ONE_OBJ_OVERRIDE != true && n_col == 1 && !dynamic_on && !PERF_VAL_GEN && MODE != "BCE" && MODE != "HEIA" && MODE != "IBEA") // && Func[0].Cons() >0)
 																		{
 																			PF_storage.clear();
 																		}
-
-																		//Check if max number of fit evaluations reached
-																		if ((nfes >= max_iterations || (nfes % (pop_size *T_dyn) == 0 && Func[0].Time_Dep())) && T_con == "nfes")
-																		{
-																			//Check potential PF
-																			if (ONE_OBJ_OVERRIDE != true && (n_col != 1)) // || (n_col == 1 && Func[0].Cons() >0)))
-																			{
-																				Pareto_F.Pareto_Search(population{ PF_storage, col[iCol] });
-																				PF_storage.clear();
-																			}
-																			//stop the process
-																			iCol = n_col;
-																			break;
-																		}
+																	}
+																	else if (Termination_Check(dynamic_on))
+																	{
+																		//stop the process
+																		iCol = n_col;
+																		break;
 																	}
 
 																	if (MODE == "MOEADPSF" || MODE == "MOEADMSF" || MODE == "MOEADM2M" || MLSGA_norm_obj == true)
 																	{
 																		if (iCol == 0)
 																		{
-																			Create_Nadir(Func[0].Objs());
-																			Update_Nadirpoint(col[iCol].Indiv_Show(), 1);
+																			//Create_Nadir(Func[0].Objs());
+																			Update_Nadirpoint(col[iCol].Indiv_Show(), 2);
 																		}
 																		else if (col[iCol - 1].Mode_Show() != "MOEADPSF" & col[iCol - 1].Mode_Show() != "MOEADMSF" & col[iCol - 1].Mode_Show() != "MOEADM2M" & MLSGA_norm_obj != true)
 																		{
-																			Create_Nadir(Func[0].Objs());
-																			Update_Nadirpoint(col[iCol].Indiv_Show(), 1);
+																			//Create_Nadir(Func[0].Objs());
+																			Update_Nadirpoint(col[iCol].Indiv_Show(), 2);
 																		}
 																		else
 																			Update_Nadirpoint(col[iCol].Indiv_Show(), 2);
@@ -1183,7 +1169,7 @@ int main()
 
 
 																/*****Collectives elimination and selection*****/
-																if (iGen % skip_gen == 0 && n_col_elim != 0 && !(dyn_change_param == 0 && Func[0].Time_Dep() && !((ftype >= 29 && ftype <= 38) && iGen < JY_const_window)))
+																if (iGen % skip_gen == 0 && n_col_elim != 0 && !(dyn_change_param == 0 && dynamic_on && !((ftype >= 29 && ftype <= 38) && iGen < JY_const_window)))
 																{
 																	//Sort the collectives according to fitness
 																	std::sort(col.begin(), col.end(), collective::Sort);
@@ -1202,7 +1188,7 @@ int main()
 																		col[iCol].population::Sort_Individuals2();
 																	}
 																	int iIndivSource = -1;	//index of individual which will be taken to new collective
-																	int iIndivSourceMax = (pop_size / (n_col * 3)* Func[0].Cons());
+																	int iIndivSourceMax = (pop_size / (n_col * 3));
 																	for (short iElim = 0; iElim < n_col_elim; iElim++)
 																	{
 
@@ -1372,7 +1358,7 @@ int main()
 																		HV_storage_temp.push_back(HV_val_temp);
 																	}
 																	//If Function is dynamic save the IGD values
-																	//if (Func[0].Time_Dep())
+																	//if (dynamic_on)
 																	//{
 
 
@@ -1404,12 +1390,12 @@ int main()
 																		//}
 																}
 																//Additional termination criterion check - for overall loop of number of generations
-
-																if (nfes >= max_iterations && T_con == "nfes")
+																
+																if (Termination_Check())
 																{
 																	if (n_col != 1)
 																	{
-																		if (!(PERF_VAL_GEN == true || Func[0].Time_Dep()))
+																		if (!(PERF_VAL_GEN == true || dynamic_on))
 																		{
 																			Pareto_F.Pareto_Search(population{ PF_storage, col[0] });
 																			PF_storage.clear();
@@ -1434,35 +1420,7 @@ int main()
 																Pareto_F.Pareto_Refine();
 															time_t save_t_temp = clock();
 
-															if (!FITNESS_ALL && !ONE_OBJ_OVERRIDE)
-															{
-																//Save the data
-																for (int g = 0; g < Pareto_F.Size_Show(); g++)
-																{
-																	std::vector<SimpleXlsx::CellDataStr> data;
-																	SimpleXlsx::CellDataStr cellStr;
-																	for (short h = 1; h <= Func->Objs(); h++)
-																	{
-																		std::ostringstream out;
-																		out << std::fixed;
-																		out.precision(prec);
-																		double fitness_temp = Pareto_F.Indiv_Show(g).Fitness_Show(h - 1);
-
-																		out << fitness_temp;
-
-																		cellStr.value = out.str();
-																		if (VIDEO == true && Func[0].Objs() == 2)
-																		{
-																			graph << fitness_temp << " ";
-																			graph_v[0] << fitness_temp << " ";
-																		}
-																		data.push_back(cellStr);
-																		//pRange->Item[excel][h] = p1.Indiv_Show(g).Fitness_Show(h-1);
-																	}
-																	//excel++;
-																	sheet1.AddRow(data);
-																}
-															}
+															
 															if (ONE_OBJ_OVERRIDE != true)
 															{
 																if (SKIP_GRAPHS != true || iRun <= 4)
@@ -1485,7 +1443,7 @@ int main()
 																	double IGD_val_temp = IGD_calc(Pareto_F, real_PF);
 
 																	//If dynamic calculate the average IGD during the run
-																	if (Func[0].Time_Dep())
+																	if (dynamic_on)
 																	{
 																		//Calculate the value for every function change
 																		for (int i = 0; i < IGD_val.size(); i++)
@@ -1513,7 +1471,7 @@ int main()
 																	double HV_val_temp = HV::HV_calc(Pareto_F, real_PF);
 
 																	//If dynamic calculate the average HV during the run
-																	if (Func[0].Time_Dep())
+																	if (dynamic_on)
 																	{
 																		//Calculate the value for every function change
 																		for (int i = 0; i < HV_val.size(); i++)
@@ -1544,8 +1502,17 @@ int main()
 															IGD_stream.close();
 															HV_stream.close();
 
+															if (T_con != "ntime")
+															{
+																run_time = ((clock() - run_t) * 1000 / CLOCKS_PER_SEC);
+																run_time /= 1000.;
+															}
+
 															//Save the time values
-															Time_Save(index_r, IGD_val_final, HV_val_final, min_fitness, end_generation, MODE_vector[0]);
+															Time_Save(index_r, IGD_val_final, HV_val_final, min_fitness, end_generation, nfes, MODE_vector[0]);
+
+
+
 
 															//Make video
 															if (Func[0].Objs() == 2)
@@ -1559,12 +1526,12 @@ int main()
 
 															//Save the run data
 															if (ONE_OBJ_OVERRIDE == true)
-																run_data.Add(run_time, GA_time, IGD_val_final, HV_val_final, end_generation, IGD2_val_final, HV2_val_final, min_fitness);
+																run_data.Add(run_time, GA_time, IGD_val_final, HV_val_final, end_generation,nfes, IGD2_val_final, HV2_val_final, min_fitness);
 															else
-																run_data.Add(run_time, GA_time, IGD_val_final, HV_val_final, end_generation, IGD2_val_final, HV2_val_final);
+																run_data.Add(run_time, GA_time, IGD_val_final, HV_val_final, end_generation,nfes, IGD2_val_final, HV2_val_final);
 
 															//Save the obtained PFs during run
-															/*if (Func[0].Time_Dep())
+															/*if (dynamic_on)
 																book2.Save(F_Name_Get("Results/", date, "/") + Name_Get("PF_dyn.xlsx", date, index_r));*/
 
 															index_r++;
@@ -1584,7 +1551,7 @@ int main()
 														
 
 														//Save data to the excel sheet
-														Excel_GA_data(GA_success, run_data, Func[0].Time_Dep(), IGD_on, HV_on);
+														Excel_GA_data(GA_success, run_data, dynamic_on, IGD_on, HV_on);
 
 														static int temp_remove_i = 1;
 														if (index_r / temp_data_size >= temp_remove_i)
@@ -1601,6 +1568,7 @@ int main()
 											} //end of loop for different selection types
 										}//end of loop for different mutation types
 									} //end of loop for different crossover types
+									delete Func;
 								} //end of loop for different functions
 							}//end loop for different grandmaternal effect
 						}//end loop for different maternal effect

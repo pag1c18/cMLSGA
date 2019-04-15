@@ -1,3 +1,11 @@
+/*
+This code is based on the NSGA-II code provided by the Kanpur Genetic Algorithms Laboratory (https://www.iitk.ac.in/kangal/codes.shtml). Copyright(C) 2011  Kanpur Genetic Algorithms Laboratory.
+
+Modified by Przemyslaw Grudniewski for the purposes of MLSGA-framework 2019
+*/
+
+
+
 #include "NSGAII.h"
 #include "Define.h"
 #include "Const.h"
@@ -47,7 +55,7 @@ namespace NSGAII {
 *Calculate new collective using NSGAII algorithm*
 @param Col - address of a given collective
 */
-void NSGAII::NSGAII_Calc(collective & col, int iGen)
+void NSGAII::NSGAII_Calc(collective & col)
 {
 	//Copy the parent vector
 	std::vector<individual> parent_pop = col.Indiv_Show();		//parent population

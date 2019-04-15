@@ -1,3 +1,21 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
 #include "Fit_Functions.h"
 #include "Support_Functions.h"
 #include "Define.h"
@@ -157,7 +175,7 @@ void ZDT1::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 7,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -254,7 +272,7 @@ void ZDT2::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 7,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -357,7 +375,7 @@ void ZDT3::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,-1 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 7,-1 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -759,7 +777,7 @@ void ZDT6::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0.28 };								// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1,0};								// t1 - max and min boundary for f1
 	max_min.push_back(t1);
 	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
@@ -880,9 +898,9 @@ void DTLZ1::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 100,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -988,7 +1006,7 @@ void DTLZ2::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1092,9 +1110,9 @@ void DTLZ3::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,-1 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 100,-1 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1207,7 +1225,7 @@ void DTLZ4::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 150,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1329,7 +1347,7 @@ void DTLZ5::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1495,9 +1513,9 @@ void DTLZ6::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0.28 };								// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1,0 };								// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 15,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1645,7 +1663,7 @@ void DTLZ7::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0.28 };								// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1,0 };								// t1 - max and min boundary for f1
 	max_min.push_back(t1);
 	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
@@ -1814,7 +1832,7 @@ void MOP1::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -1919,7 +1937,7 @@ void MOP2::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2024,7 +2042,7 @@ void MOP3::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,-1 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2129,7 +2147,7 @@ void MOP4::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 150,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2241,7 +2259,7 @@ void MOP5::Bound_Set()
 	//set boundaries for the fitness
 	STRUCTURES::boundaries t1{ 1,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 8,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2348,7 +2366,7 @@ void MOP6::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0.28 };								// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1,0 };								// t1 - max and min boundary for f1
 	max_min.push_back(t1);
 	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
@@ -2448,7 +2466,7 @@ void MOP7::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 1,0.28 };								// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1,0 };								// t1 - max and min boundary for f1
 	max_min.push_back(t1);
 	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
@@ -2556,9 +2574,9 @@ void UF1::Bound_Set()
 	}
 	
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 4,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 4,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2671,9 +2689,9 @@ void UF2::Bound_Set()
 		abort();
 	}
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 4,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 4,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -2907,9 +2925,9 @@ void UF4::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 2,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1.5,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 2,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 1.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -3026,9 +3044,9 @@ void UF5::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 15,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 15,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -3318,9 +3336,9 @@ void UF7::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 4.5,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 4.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4044,9 +4062,9 @@ void WFG1::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 4,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4139,9 +4157,9 @@ void WFG2::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4279,9 +4297,9 @@ void WFG3::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4373,9 +4391,9 @@ void WFG4::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4457,9 +4475,9 @@ void WFG5::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4541,9 +4559,9 @@ void WFG6::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4625,9 +4643,9 @@ void WFG7::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4709,9 +4727,9 @@ void WFG8::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4793,9 +4811,9 @@ void WFG9::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -4895,9 +4913,9 @@ void IMB1::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5005,9 +5023,9 @@ void IMB2::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 3,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5115,9 +5133,9 @@ void IMB3::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 3,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5228,9 +5246,9 @@ void IMB4::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5543,9 +5561,9 @@ void IMB7::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5659,9 +5677,9 @@ void IMB8::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -5775,9 +5793,9 @@ void IMB9::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -6811,7 +6829,7 @@ void CF6::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 19,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
 	STRUCTURES::boundaries t2{ 1.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
@@ -7774,9 +7792,9 @@ void DTLZ8::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 1.5,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 1.5,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -7804,7 +7822,8 @@ std::vector<std::vector<double>> DTLZ8::Plot_PF(int indexr, int size)
 		double f = (1 - f_m) / 4.;			//PF value
 
 		if (2 * f_m + 2 * f - 1 < 0)
-			break;
+			if (n_obj != 2)
+				break;
 
 
 		std::vector<double> temp_vect;		//temporary vector of fitness
@@ -8004,9 +8023,9 @@ void DTLZ9::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -8167,9 +8186,9 @@ void IMB11::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 2,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 3,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -8297,9 +8316,9 @@ void IMB12::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 2,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -8426,9 +8445,9 @@ void IMB13::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 3,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 3,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors

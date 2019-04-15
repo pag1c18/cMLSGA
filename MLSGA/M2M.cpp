@@ -1,3 +1,8 @@
+
+/*This code is based on: H. Liu, F. Gu, and Q. Zhang, “Decomposition of a Multiobjective Optimization Problem into a Number of Simple Multiobjective Subproblems,” IEEE Trans. Evol. Comput., vol. 18, no. 3, pp. 450–455, 2014.
+It has been modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+
+
 #include "M2M.h"
 #include "Support_Functions.h"
 #include "MOEAD.h"
@@ -61,7 +66,7 @@ std::vector<individual> M2M::M2M_Calc(collective & col, int iGen)
 		}
 		else if (M2M_method == "NSGAII")
 		{
-			NSGAII::NSGAII_Calc(temp_col, iGen);
+			NSGAII::NSGAII_Calc(temp_col);
 			temp_PF = temp_col.Indiv_Show();
 		}
 		else if (M2M_method == "MTS")

@@ -1,3 +1,16 @@
+/*
+ Copyright (C) 2010 Lyndon While, Lucas Bradstreet, Wesley Cox. 
+
+This program is free software (software libre). You can redistribute it and/or modify it under 
+the terms of the GNU General Public License as published by the Free Software Foundation; 
+either version 2 of the License, or (at your option) any later version. 
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+*/
+/*This code has been modified by Przemyslaw Grudniewski for the puposes of the MLSGA-framework 2019*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -579,7 +592,10 @@ double HV::HV_calc(pareto_front & PF, std::vector<std::vector<double>> & Real_PF
 	double HV_val = 0;		//output
 	maxm = PF.Size_Show();		
 	maxn = Real_PF[0].size();		
-
+	if (maxm == 0)
+		return 0;
+	if (maxn == 0)
+		abort();
 	//evaluate the reference point
 	//find the max values of each objective for the Real_PF
 	std::vector<double> Real_PF_max_f(maxn, -1e30);
@@ -690,6 +706,31 @@ double HV::HV_calc(pareto_front & PF, std::vector<std::vector<double>> & Real_PF
 	//totaltime += tv2.tv_sec + tv2.tv_usec * 1e-6 - tv1.tv_sec - tv1.tv_usec * 1e-6;
 //}
 //printf("Total time = %f (s)\n", totaltime);
+	
+	for (int i = 0; i < maxdepth; i++) 
+	{
+	
+		for (int j = 0; j < maxm; j++) 
+		{
+			free(fs[i].points[j].objectives);
+		}
+		free(fs[i].points);
+	}
+	for (long j = 0; j < maxm; j++)
+	{
+		free(f->points[j].objectives);
+	}
+	free(f->points);
+
+	/*for (int i = 0; i < maxdepth; i++) 
+	{
+		free(nextp[i]);
+	}
+	for (int i = 0; i < maxdepth; i++) 
+	{
+		free(prevp[i]);
+	}*/
+
 
 	free(fs);    // memory management stuff 
 	fr = 0;   // current depth 
@@ -698,6 +739,8 @@ double HV::HV_calc(pareto_front & PF, std::vector<std::vector<double>> & Real_PF
 	safe = 0;     // the number of points that don't need sorting
 	free(nextp);
 	free(prevp);
+
+
 	free(f);
 	free(firstp);
 	free(lastp);

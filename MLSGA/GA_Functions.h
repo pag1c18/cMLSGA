@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #pragma once
 
 //****************************************
@@ -95,6 +114,8 @@ private:
 	std::vector<tname> HV2;		//HV for the run - for dynamic calcualted every gen not only during change like in HV_val
 	std::vector<tname> fitness;	//Min fitness of the current run
 	std::vector<int> generation;	//generation at which min fitness was achieved
+	std::vector<int> iteration;	//generation at which min fitness was achieved
+
 	bool IGD_on;	//if IGD is calculated
 	bool HV_on;		//if HV is calculated
 
@@ -106,6 +127,7 @@ private:
 	STRUCTURES::min_max_avg_std<tname> HV2_struct; //stucture with min,max and average HV2
 	STRUCTURES::min_max_avg_std<tname> fitness_struct; //stucture with min,max and average fitness
 	STRUCTURES::min_max_avg_std<int> generation_struct; //stucture with min,max and average number of generations
+	STRUCTURES::min_max_avg_std<int> iteration_struct; //stucture with min,max and average number of generations
 protected:
 	/**Calculate the average values**/
 	void Average_Calc();
@@ -124,7 +146,7 @@ public:
 	@param IGD2_val IGD for the current run - for dynamic calcualted every gen not only during change like in IGD_val
 	@param fitness_val fitness for the current run
 	*/
-	void Add(tname time_val, tname GA_time_val, tname IGD_val, tname HV_val, int generation_val, tname IGD2_val, tname HV2_val, tname fitness_val = 0 );
+	void Add(tname time_val, tname GA_time_val, tname IGD_val, tname HV_val, int generation_val, int iteration, tname IGD2_val, tname HV2_val, tname fitness_val = 0 );
 
 	
 	/**Calculate the standard deviation**/
@@ -145,6 +167,7 @@ public:
 	STRUCTURES::min_max_avg_std<tname> Show_Fitness_Struct() const { return fitness_struct; }
 	/**Returning generation structure**/
 	STRUCTURES::min_max_avg_std<int> Show_Generation_Struct() const { return generation_struct; }
+	STRUCTURES::min_max_avg_std<int> Show_Iteration_Struct() const { return iteration_struct; }
 
 };
 

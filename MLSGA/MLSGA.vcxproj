@@ -141,7 +141,6 @@
     <ClInclude Include="Contour_Plot.h" />
     <ClInclude Include="Crossover.h" />
     <ClInclude Include="Define.h" />
-    <ClInclude Include="DMOEADD.h" />
     <ClInclude Include="Fit_Functions.h" />
     <ClInclude Include="Class.h" />
     <ClInclude Include="GA_Functions.h" />
@@ -152,7 +151,6 @@
     <ClInclude Include="Imported\Transform.h" />
     <ClInclude Include="Imported\WFG.h" />
     <ClInclude Include="M2M.h" />
-    <ClInclude Include="UNSGAIII.h" />
     <ClInclude Include="TGM.h" />
     <ClInclude Include="IGD.h" />
     <ClInclude Include="imported.h" />
@@ -172,7 +170,6 @@
     <ClInclude Include="Mutation.h" />
     <ClInclude Include="MLSGA.h" />
     <ClInclude Include="NSGAII.h" />
-    <ClInclude Include="PAES.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Random_Label.h" />
     <ClInclude Include="Reinitialisation.h" />
@@ -191,7 +188,6 @@
     </ClCompile>
     <ClCompile Include="Clustering.cpp" />
     <ClCompile Include="Contour_Plot.cpp" />
-    <ClCompile Include="DMOEADD.cpp" />
     <ClCompile Include="Fit_Functions.cpp" />
     <ClCompile Include="GA_Functions.cpp" />
     <ClCompile Include="HEIA.cpp" />
@@ -214,8 +210,6 @@
     <ClCompile Include="MOEAD.cpp" />
     <ClCompile Include="MTS.cpp" />
     <ClCompile Include="NSGAII.cpp" />
-    <ClCompile Include="UNSGAIII.cpp" />
-    <ClCompile Include="PAES.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Random_Label.cpp" />
     <ClCompile Include="Reinitialisation.cpp" />

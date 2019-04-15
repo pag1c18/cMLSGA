@@ -1,12 +1,37 @@
+/*This code is based on HEIA.java
+//
+//  Author:
+//       Antonio J. Nebro <antonio@lcc.uma.es>
+//       Juan J. Durillo <durillo@lcc.uma.es>
+//
+//  Copyright (c) 2011 Antonio J. Nebro, Juan J. Durillo
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+//Originally published: Q. Lin et al., “A Hybrid Evolutionary Immune Algorithm for Multiobjective Optimization Problems,” IEEE Trans. Evol. Comput., vol. 20, no. 5, pp. 711–729, 2016.
+
+/*It was translated to C++ and modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "HEIA.h"
 #include "NSGAII.h"
 #include "MOEAD.h"
 #include <time.h>
+#include "Support_Functions.h"
 
-
-#define INF 1.0e14
 
 extern int nfes;
 extern time_t elit_t;
@@ -318,7 +343,7 @@ void HEIA::DE_Update(std::vector<individual> & DEpop, collective & col)
 
 	for (int i = 0; i < DEpop.size(); i++)
 	{
-		if (T_con == "nfes" && nfes >= max_iterations)
+		if (Termination_Check(col.FCode_Show()[0].Time_Dep()))
 			break;
 
 		std::vector<individual> parents;
@@ -388,7 +413,7 @@ void HEIA::SBX_Update(std::vector<individual> & SBXpop, collective & col)
 
 	for (int i = 0; i < SBXpop.size(); i++)
 	{
-		if (T_con == "nfes" && nfes >= max_iterations)
+		if (Termination_Check(col.FCode_Show()[0].Time_Dep()))
 			break;
 
 		std::vector<individual> parents;

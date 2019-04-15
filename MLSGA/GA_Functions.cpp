@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #include "GA_Functions.h"
 #include <numeric>
 #include "Define.h"
@@ -14,7 +33,7 @@
 @param fitness_val fitness for the current run
 */
 template<typename tname>
-void GA_data<tname>::Add(tname time_val, tname GA_time_val, tname IGD_val, tname HV_val, int generation_val, tname IGD2_val, tname HV2_val, tname fitness_val = 0)
+void GA_data<tname>::Add(tname time_val, tname GA_time_val, tname IGD_val, tname HV_val, int generation_val, int iteration_val, tname IGD2_val, tname HV2_val, tname fitness_val = 0)
 {
 	//push values to the vectors
 	time.push_back(time_val);
@@ -33,6 +52,7 @@ void GA_data<tname>::Add(tname time_val, tname GA_time_val, tname IGD_val, tname
 		}
 	}
 	generation.push_back(generation_val);
+	iteration.push_back(iteration_val);
 	if (ONE_OBJ_OVERRIDE == true)
 		fitness.push_back(fitness_val);
 
@@ -53,6 +73,7 @@ void GA_data<tname>::Add(tname time_val, tname GA_time_val, tname IGD_val, tname
 			HV2_struct.max = HV2_struct.min = HV2_val;
 		}
 		generation_struct.max = generation_struct.min = generation_val;
+		iteration_struct.max = iteration_struct.min = iteration_val;
 		fitness_struct.max = fitness_struct.min = fitness_val;
 	}
 	else
@@ -83,6 +104,15 @@ void GA_data<tname>::Add(tname time_val, tname GA_time_val, tname IGD_val, tname
 		else if (generation_val < generation_struct.min)
 			//assign as min
 			generation_struct.min = generation_val;
+
+		//check if value is bigger then max
+		if (iteration_val > iteration_struct.max)
+			//assign as max
+			iteration_struct.max = iteration_val;
+		//check if value is lower than min
+		else if (iteration_val < iteration_struct.min)
+			//assign as min
+			iteration_struct.min = iteration_val;
 
 		//if multi objective calculate values for IGD - no IGD for one objective
 		if (ONE_OBJ_OVERRIDE != true)
@@ -155,6 +185,7 @@ void GA_data<tname>::Average_Calc()
 	time_struct.avg = std::accumulate(time.begin(), time.end(), 0.0) / (tname)size;
 	GA_time_struct.avg = std::accumulate(GA_time.begin(), GA_time.end(), 0.0) / (tname)size;
 	generation_struct.avg = std::accumulate(generation.begin(), generation.end(), 0.0) / (tname)size;
+	iteration_struct.avg = std::accumulate(iteration.begin(), iteration.end(), 0.0) / (tname)size;
 
 	//if multi objective calculate values for IGD - no IGD for one objective
 	if (ONE_OBJ_OVERRIDE != true)
@@ -186,7 +217,7 @@ void GA_data<tname>::Std_Dev_Calculation()
 	//get the size of the data
 	int size = time.size();
 
-	tname time_std_temp = 0, GA_time_std_temp = 0, IGD_std_temp = 0, IGD2_std_temp = 0, HV_std_temp = 0, HV2_std_temp = 0, generation_std_temp = 0, fitness_std_temp = 0;		//temporary value for the std deviation calculation
+	tname time_std_temp = 0, GA_time_std_temp = 0, IGD_std_temp = 0, IGD2_std_temp = 0, HV_std_temp = 0, HV2_std_temp = 0, generation_std_temp = 0, iteration_std_temp = 0, fitness_std_temp = 0;		//temporary value for the std deviation calculation
 	//calculate the sum of squares
 	for (int i = 0; i < size; i++)
 	{
@@ -194,6 +225,7 @@ void GA_data<tname>::Std_Dev_Calculation()
 		time_std_temp += pow(time[i] - time_struct.avg, 2);
 		GA_time_std_temp += pow(GA_time[i] - GA_time_struct.avg, 2);
 		generation_std_temp += pow(generation[i] - generation_struct.avg, 2);
+		iteration_std_temp += pow(iteration[i] - iteration_struct.avg, 2);
 
 		//if multi objective calculate values for IGD - no IGD for one objective
 		if (ONE_OBJ_OVERRIDE != true)
@@ -217,6 +249,7 @@ void GA_data<tname>::Std_Dev_Calculation()
 	time_struct.std_deviation = (tname)sqrt(time_std_temp / (tname)size);
 	GA_time_struct.std_deviation = (tname)sqrt(GA_time_std_temp / (tname)size);
 	generation_struct.std_deviation = (tname)sqrt(generation_std_temp / (tname)size);
+	iteration_struct.std_deviation = (tname)sqrt(iteration_std_temp / (tname)size);
 
 	//if multi objective calculate values for IGD - no IGD for one objective
 	if (ONE_OBJ_OVERRIDE != true)

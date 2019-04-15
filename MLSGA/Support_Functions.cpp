@@ -1,3 +1,22 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
 #include "Support_Functions.h"
 #include "Class.h"
 #include <sstream>
@@ -394,10 +413,16 @@ double Fitness_Function_TCH(std::vector <double> &fit, std::vector <double> &nam
 
 	int nobj = fit_indexes.size();
 
+	std::vector<double> idealpoint_temp(nobj,0.);
+
+	if (MLSGA_norm_obj == false)
+		idealpoint_temp = idealpoint;
+
+
 	for (int n = 0; n<nobj; n++)
 	{
 		short fit_ix = fit_indexes[n] - 1;
-		double diff = fabs(fit[fit_ix] - idealpoint[fit_ix]);
+		double diff = fabs(fit[fit_ix] - idealpoint_temp[fit_ix]);
 		double feval;
 		if (namda[fit_ix] == 0)
 			feval = 0.0001*diff;
@@ -445,12 +470,17 @@ double Fitness_Function_PSF(std::vector <double> &fit, std::vector <double> &nam
 
 	//Get the number of objectives
 	int nobj = fit_indexes.size();
+	std::vector<double> idealpoint_temp(nobj, 0.);
+
+	if (MLSGA_norm_obj == false)
+		idealpoint_temp = idealpoint;
+
 
 	//if (nobj > 2) eps = 1.0e-3;
 	for (int n = 0; n<nobj; n++)
 	{
 		short fit_ix = fit_indexes[n] - 1;
-		double diff = fabs(fit[fit_ix] - idealpoint[fit_ix]);
+		double diff = fabs(fit[fit_ix] - idealpoint_temp[fit_ix]);
 		double feval;
 		if (namda[fit_ix] == 0.)
 		{
@@ -477,7 +507,7 @@ double Fitness_Function_PSF(std::vector <double> &fit, std::vector <double> &nam
 	for (int n = 0; n < nobj; n++)
 	{
 		short fit_ix = fit_indexes[n] - 1;
-		realA[n] = (fit[fit_ix] - idealpoint[fit_ix]);
+		realA[n] = (fit[fit_ix] - idealpoint_temp[fit_ix]);
 		temp_namda.push_back(namda[fit_ix]);
 	}
 
@@ -796,4 +826,37 @@ double innerproduct(std::vector<double> &vec1, std::vector<double> &vec2)
 		sum += vec1[i] * vec2[i];
 	return sum;
 }
+
+
+bool Termination_Check(bool param)
+{
+	extern int nfes;
+	extern time_t run_t;										//Time of run
+	extern float run_time;
+	extern int pop_size;
+
+	if (T_con == "ngen")
+		return false;
+	else if (T_con == "ntime")
+	{
+		run_time = ((clock() - run_t) * 1000 / CLOCKS_PER_SEC);
+		run_time /= 1000.;
+
+		if (run_time >= max_time)
+			return true;
+	}
+	else if (T_con == "nfes")
+	{
+		if (nfes >= max_iterations)
+			return true;
+		else if (param)
+			if (nfes % (pop_size *T_dyn) == 0)
+				return true;
+	}
+	else
+		abort();
+
+	return false;
+}
+
 
