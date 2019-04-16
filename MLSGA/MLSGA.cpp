@@ -14,10 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.If not, see < https://www.gnu.org/licenses/>. */
 
-/***MSLGA***/
-/***Original idea by Adam Sobey***/
-/***Written by Przemyslaw Grudniewski***/
-/***Updates and additional ideas by Przemyslaw Grudniewski***/
 /*[1] A.J.Sobey and P.A.Grudniewski, “Re - inspiring the genetic algorithm with multi - level selection theory : Multi - level selection genetic algorithm”, Bioinspiration and Biomimetics, vol. 13, no. 5, pp. 1–13, 2018.
 
 [2] P.A.Grudniewski and A.J.Sobey, “Behaviour of Multi - Level Selection Genetic Algorithm(MLSGA) using different individual - level selection mechanisms”, Swarm Evol.Comput., vol. 44, no.September 2018, pp. 852–862, 2018.
