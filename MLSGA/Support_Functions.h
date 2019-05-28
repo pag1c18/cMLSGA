@@ -66,6 +66,17 @@ Return:
 */
 int Dominance_Check(individual &ind1, individual &ind2, std::vector<short> &fit_indexes);
 /*
+*Check Dominance - without constraint check
+@param ind1 - first individual
+@param ind2 - 2nd individual
+@param ix - inx of the collective
+Return:
+1 - ind1 dominates
+-1 - ind2 dominates
+0 - both nondominated
+*/
+int Dominance_Check_NCons(individual &ind1, individual &ind2, std::vector<short> &fit_indexes);
+/*
 *Check Dominance for MLSt*
 @param ind1 - first individual
 @param ind2 - 2nd individual

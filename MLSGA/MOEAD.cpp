@@ -1,5 +1,30 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
+
+/*This code is based on the c++ code by Hui Li[1]
+Modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (2019)*/
+
+
+
 /*==========================================================================
-//  C++ Implementation of MOEA/D Based on Differential Evolution (DE) for Contest Multiobjective
+// [1] C++ Implementation of MOEA/D Based on Differential Evolution (DE) for Contest Multiobjective
 //  Problems in CEC2009
 //
 //  Author: Hui Li
@@ -21,7 +46,6 @@
 //
 // ===========================================================================*/
 
-/*Modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
 
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -149,7 +173,7 @@ void MOEAD::MOEAD_Init(short n_obj, population & pop)
 			//Generate by uniform method
 			else if (MOEAD_weight_generator == "Uniform")
 			{
-				weight_vector = Uniform_Weights_Generate(psize, nobj, 1);
+				weight_vector = Uniform_Weights_Generate(psize, nobj, 3);
 			}
 			//Generate by sobol
 			else if (MOEAD_weight_generator == "Sobol")

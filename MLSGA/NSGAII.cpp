@@ -1,8 +1,28 @@
 /*
-This code is based on the NSGA-II code provided by the Kanpur Genetic Algorithms Laboratory (https://www.iitk.ac.in/kangal/codes.shtml). Copyright(C) 2011  Kanpur Genetic Algorithms Laboratory.
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
-Modified by Przemyslaw Grudniewski for the purposes of MLSGA-framework 2019
-*/
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
+
+/*This code is based on C code by  by the Kanpur Genetic Algorithms Laboratory (https://www.iitk.ac.in/kangal/codes.shtml) [1]
+Translated to C++ and modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (2019)*/
+
+
+/*[1] Copyright (c) 2011  Kanpur Genetic Algorithms Laboratory*/
 
 
 
@@ -30,20 +50,12 @@ namespace NSGAII {
 
 
 
-	struct list
-	{
-		int index;
-		list *parent;
-		list *child;
-	};
+	
 
 
-	std::vector<individual> Select(std::vector<individual> & old_pop, std::vector<short> &fit_indexes);
 	individual Tournament(individual & ind1, individual & ind2, std::vector<short> & fit_indexes);
-	void Nondominated_Sort_Fill(std::vector<individual> & mixed_pop, std::vector<individual> & new_pop, std::vector<short>& fit_indexes);
 	void Crowding_Fill(std::vector<individual> & mixed_pop, std::vector<individual> & new_pop, int count, int front_size, list *elite, int pop_size);
-	void Insert(list *node, int x);
-	list* Del(list *node);
+	
 	void Crowding_Distance_List_Assign(std::vector<individual> &pop, list *lst, int front_size);
 	void Crowding_Distance_Assign(std::vector<individual> &pop, std::vector<int> &dist, std::vector<std::vector<int>> &obj_array, int front_size);
 	void Front_Obj_Quicksort(std::vector<individual> &pop, int objcount, std::vector<int> &obj_array, int obj_array_size);

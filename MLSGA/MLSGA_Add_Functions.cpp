@@ -562,10 +562,15 @@ function * Func_Type(short ix)
 		CDF10 *CD10 = new CDF10;
 		return CD10;
 	}
-	else if (ix == 99)
+	else if (ix == 201)
 	{
 		GEN *gen = new GEN;
 		return gen;
+	}
+	else if (ix == 202)
+	{
+		GEN_pat *gen2 = new GEN_pat;
+		return gen2;
 	}
 	else
 	{
@@ -736,7 +741,7 @@ crossover<individual> * Cross_Type(short ix, std::string MODE)
 				return C1;
 			}
 
-			else if (MODE == "NSGAII" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M" || MODE == "PAES" || MODE == "DMOEADD" || MODE == "BCE" || MODE == "HEIA" || MODE == "IBEA")
+			else if (MODE == "UNSGAIII" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M" || MODE == "PAES" || MODE == "DMOEADD" || MODE == "BCE" || MODE == "HEIA" || MODE == "IBEA")
 			{
 				crossover_1b<individual> *C1 = new crossover_1b<individual>;
 				return C1;
@@ -1561,7 +1566,7 @@ void Excel_S_Row(function & fcode, GA_parameters & gapara, mutation<short> & mco
 		Modes += MODE[iMode] + " ";
 		if (MODE[iMode] == "Normal")
 			Normal_on = true;
-		else if (MODE[iMode] == "NSGAII")
+		else if (MODE[iMode] == "UNSGAIII")
 			NSGA_on = true;
 		else if (MODE[iMode] == "MOEAD" || MODE[iMode] == "MOEADMSF" || MODE[iMode] == "MOEADPSF" || MODE[iMode] == "MOEADM2M" || MODE[iMode] == "PAES")
 			MOEAD_on = true;
@@ -1916,7 +1921,7 @@ void Error_Check()
 					system("pause");
 				}*/
 			}
-			else if (MODE == "NSGAII")
+			else if (MODE == "UNSGAIII")
 			{
 				//Check number of objectives
 				if (ONE_OBJ_OVERRIDE != false)
@@ -2599,6 +2604,68 @@ void MLS_Col_Fit_Create(std::vector<collective> & col, short MLS)
 			std::vector<std::vector<short>> temp_fit_index2_n{ { fit_index_sel},{ fit_index_col_sel } };
 			std::vector<std::vector<short>> temp_fit_index3{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel } };
 			std::vector<std::vector<short>> temp_fit_index3_n{ { fit_index_col_sel },{ fit_index_sel } };
+
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 3 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 3 == 0)
+				{
+					if (col[i_col].Mode_Show() == "Normal")
+						col[i_col].fit_index = temp_fit_index2_n;
+					else
+						col[i_col].fit_index = temp_fit_index2;
+				}
+				else
+				{
+					if (col[i_col].Mode_Show() == "Normal")
+						col[i_col].fit_index = temp_fit_index3_n;
+					else
+						col[i_col].fit_index = temp_fit_index3;
+				}
+			}
+		}
+		else if (MLS == 8)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel, fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index2{ { fit_index_sel, fit_index_col_sel },{fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index2_n{ { fit_index_sel},{ fit_index_sel, fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index3{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel } };
+			std::vector<std::vector<short>> temp_fit_index3_n{ { fit_index_col_sel },{ fit_index_sel, fit_index_col_sel } };
+
+			for (short i_col = 0; i_col < ncol; i_col++)
+			{
+				short col_index = col[i_col].Index_Show();
+				if (col_index % 3 == 1)
+				{
+					col[i_col].fit_index = temp_fit_index1;
+				}
+				else if (col_index % 3 == 0)
+				{
+					if (col[i_col].Mode_Show() == "Normal")
+						col[i_col].fit_index = temp_fit_index2_n;
+					else
+						col[i_col].fit_index = temp_fit_index2;
+				}
+				else
+				{
+					if (col[i_col].Mode_Show() == "Normal")
+						col[i_col].fit_index = temp_fit_index3_n;
+					else
+						col[i_col].fit_index = temp_fit_index3;
+				}
+			}
+		}
+		else if (MLS == 9)
+		{
+			std::vector<std::vector<short>> temp_fit_index1{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel, fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index2{ { fit_index_sel, fit_index_col_sel },{fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index2_n{ { fit_index_sel, fit_index_col_sel } ,{ fit_index_col_sel } };
+			std::vector<std::vector<short>> temp_fit_index3{ { fit_index_sel, fit_index_col_sel },{ fit_index_sel } };
+			std::vector<std::vector<short>> temp_fit_index3_n{ { fit_index_sel, fit_index_col_sel } ,{ fit_index_sel } };
 
 			for (short i_col = 0; i_col < ncol; i_col++)
 			{

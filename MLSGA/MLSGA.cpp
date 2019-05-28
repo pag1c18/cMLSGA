@@ -171,7 +171,7 @@ int main()
 			//Do only selected MLSt types
 			if (MLS != 1 && MLS != 2 && MLS != 3 && MLS != 7 && MLS!=0)
 				continue;
-			for (n_col = n_col_b; n_col <= n_col_e; n_col += 2)										//loop for different col size
+			for (n_col = n_col_b; n_col <= n_col_e; n_col += 1)										//loop for different col size
 			{
 				for (pop_size = Pop_size_b; pop_size <= Pop_size_e; pop_size += Pop_size_step)		//loop for different pop sizes
 				{
@@ -204,8 +204,8 @@ int main()
 									if (!func_active[ftype - n_func_b])
 										continue;
 
-									//if (!((ftype >6 && ftype < 21)|| (ftype > 30 && ftype < 50) || ftype > 59) )
-										//continue;
+									/*if (((ftype >6 && ftype < 21)|| (ftype > 30 && ftype < 50) || ftype > 59) )
+										continue;*/
 									function * Func = Func_Type(ftype);													//Function initialisation
 
 									bool dynamic_on = Func[0].Time_Dep();		//if the function is dynamic
@@ -406,7 +406,10 @@ int main()
 																}
 																else if (MODE == "IBEA")
 																	IBEA::IBEA_Init(n_col, p1);
-
+																else if (MODE == "UNSGAIII")
+																{
+																	UNSGAIII::Init(Func[0].Objs(), n_col, p1);
+																}
 
 
 																//Initialise the vector for storaging real labels
@@ -612,7 +615,7 @@ int main()
 																	graph_v = &graph_v_vector[iCol];
 																}
 
-																if (MODE == "Normal" || MODE == "NSGAII" || MODE == "DMEADD")
+																if (MODE == "Normal" || MODE == "UNSGAIII" || MODE == "DMEADD")
 																{
 																	//Calculate the fitness of individuals in the collective
 																	col[iCol].population::Fitness_Calc();
@@ -1003,7 +1006,7 @@ int main()
 																			//Find min fitness for the collective
 																			min_fitness = col[iCol].Min_Fitness_Show(min_fitness);
 																	}
-																	else if (MODE == "NSGAII")
+																	else if (MODE == "UNSGAIII")
 																	{
 																		if (ONE_OBJ_OVERRIDE == true)
 																		{
@@ -1015,7 +1018,7 @@ int main()
 																		}
 
 																		//Calculate the offspring collective
-																		NSGAII::NSGAII_Calc(col[iCol]);
+																		UNSGAIII::UNSGAIII_Calc(col[iCol]);
 
 																		//Get PF
 																		//Check if multi objective optimisation
@@ -1107,7 +1110,7 @@ int main()
 																			return -1;
 																	}
 
-																	if (MODE != "Normal" && MODE != "NSGAII")
+																	if (MODE != "Normal" && MODE != "UNSGAIII")
 																	{
 																		//Check if multi objective optimisation
 																		if (ONE_OBJ_OVERRIDE != true && (n_col != 1))   //(n_col != 1 || (n_col == 1 && Func[0].Cons() >0)))

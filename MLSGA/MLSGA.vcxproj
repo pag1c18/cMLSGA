@@ -150,6 +150,7 @@
     <ClInclude Include="Imported\Shape.h" />
     <ClInclude Include="Imported\Transform.h" />
     <ClInclude Include="Imported\WFG.h" />
+    <ClInclude Include="LUP.h" />
     <ClInclude Include="M2M.h" />
     <ClInclude Include="TGM.h" />
     <ClInclude Include="IGD.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Struct.h" />
     <ClInclude Include="Support_Functions.h" />
     <ClInclude Include="SVM.h" />
+    <ClInclude Include="UNSGAIII.h" />
     <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +206,7 @@
     <ClCompile Include="Imported\Worksheet.cpp" />
     <ClCompile Include="Imported\XlsxHeaders.cpp" />
     <ClCompile Include="Imported\zip.cpp" />
+    <ClCompile Include="LUP.cpp" />
     <ClCompile Include="M2M.cpp" />
     <ClCompile Include="MLSGA.cpp" />
     <ClCompile Include="MLSGA_Add_Functions.cpp" />
@@ -217,6 +220,7 @@
     <ClCompile Include="Support_Functions.cpp" />
     <ClCompile Include="SVM.cpp" />
     <ClCompile Include="TGM.cpp" />
+    <ClCompile Include="UNSGAIII.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>

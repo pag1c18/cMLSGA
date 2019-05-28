@@ -61,11 +61,11 @@ FDA4
 FDA5
 */
 /*MLSGA setting*/
-const std::vector<std::vector<std::string>> GA_mode{ {"MOEADMSF", "HEIA"}};// {"Normal"}, {"NSGAII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}
+const std::vector<std::vector<std::string>> GA_mode{ {"HEIA"}, {"MOEADMSF"}, {"BCE"} ,{"MTS"},  {"UNSGAIII"} };// {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}
 const bool MLSGA_Hybrid = true;									//defines if the hybid algorithm is used or the original one
 const bool MLSGA_norm_obj = false;		//Default false			//Define if the objectives for fitness evaluations should be normalised (for MSF and PSF, but true makes PSF inoperative)
-const unsigned short MLSGA_n_col_b = 8;	//Default 8				//Numbers of collectives - begin ***with a choice of 4, 6, 8 (is overriden to 1 if MLSGA_Hybrid == false)
-const unsigned short MLSGA_n_col_e = 8;	//Default 8				//Numbers of collectives - end - step is always 2 (is overriden to 1 if MLSGA_Hybrid == false)
+const unsigned short MLSGA_n_col_b = 3;	//Default 8				//Numbers of collectives - begin ***with a choice of 4, 6, 8 (is overriden to 1 if MLSGA_Hybrid == false)
+const unsigned short MLSGA_n_col_e = 12;	//Default 8			//Numbers of collectives - end - step is always 2 (is overriden to 1 if MLSGA_Hybrid == false)
 const unsigned short MLSGA_n_col_elim = 1;	//Default 1			//Number of collectives elimiated ***with a choice of 1, 2  (is overriden to 0 if MLSGA_Hybrid == false)
 const unsigned short MLSGA_col_elim_limit = 10; //Default 10	//Define how many genrations have to pass before col elimination occurs - if 1 elimiantion will occur every generation - MTS have override that it change to 1 - line 494 in MLSGA.cpp
 const float MLSGA_elite_size = 0.1f; //Default 0.1				//How many individuals become elite <0.0-1.0>
@@ -76,11 +76,11 @@ const unsigned short MLSGA_n_MLS_e = 7; //Default 7				//Index of the last MLS t
 /*Parameter setting*/
 const int Pop_size_b = 1000;	//Default 1000	-300			//Population size - beginning
 const int Pop_size_e = 1000;	//Default 1000					//Population size - end
-const int Pop_size_step = 800;	//Default 200					//Step for population size change
+const int Pop_size_step = 200;	//Default 200					//Step for population size change
 const unsigned short n_func_b = 1;								//Index of the first function used
 const unsigned short n_func_e = 65; 							//Index of the last function used
-const unsigned short n_func_obj = 2;							//Number of objectives for the scalable problems - DTLZ, WFG
-const std::vector<std::string> func_skip{"Three_obj","Many_obj" };	//Decides if specific functions will be skipped "Two_obj", "Three_obj", "Many_obj" - DTLZ, WFG
+const unsigned short n_func_obj = 3;							//Number of objectives for the scalable problems - DTLZ, WFG
+const std::vector<std::string> func_skip{ "Three_obj", "Many_obj" };	//Decides if specific functions will be skipped "Two_obj", "Three_obj", "Many_obj" - DTLZ, WFG
 const float mut_prob_min = 0.08f; //Default 0.08				//Minimal mutation probability - for real coded it is the absolute value, for binary it is divided by number of variables
 const float mut_prob_max = 0.08f; //Default 0.08				//Maximal mutation probability
 const float mut_prob_step = 0.02f; //Default 0.1				//Mutation probability step
@@ -90,14 +90,14 @@ const float cross_prob_step = 0.10f; //Default 0.10				//Crossover probability s
 
 
 /*Termination conditions - only one is used depending on T_con*/
-const unsigned short n_runs = 30; //Default 30					//Number of runs
+const unsigned short n_runs = 10; //Default 30					//Number of runs
 const std::string T_con{ "nfes" };								//Which termination condition is used: "nfes" - iterations number (int max_iterations line 80); "ngen" - number of generations (int max_generations line 81); "ntime" - calculaion time in seconds (int max_time line 82)
 const int max_iterations = 300000;	//Default 300000			//max iterations
 const int max_generations = 300;	//Default 300				//max genenertaions
 const int max_time = 120;	//Default 300						//max genenertaions
 
 /*Performance evaluation*/
-const std::vector<std::string> perf_eval_type{ "IGD", "HV"};	//Which performance evaluation methods are used "IGD" - inverted generational distance, "HV" - hypervolume
+const std::vector<std::string> perf_eval_type{"IGD", "HV"};	//Which performance evaluation methods are used "IGD" - inverted generational distance, "HV" - hypervolume
 
 /*Additional benchmarking parameters*/
 const unsigned short n_mut = 1; //Default 1						//Number of mutation types
@@ -118,10 +118,10 @@ const int JY_const_window = 0;	//Default 0						//Window where JY functions rema
 const unsigned short Di_c = 20;	//Default 20					//Distribution index of crossover
 const unsigned short Di_m = 20;	//Default 20					//Distribution index of mutation - suttipong mut
 const double Di_m2 = 0.00001;	//Default 0.00001				//Distribution index of mutation - PG mut	(1. - random mutation, 0. - no mutation)
-static short fit_index_sel = 2;  //Default 2					//Which fitness is used for indiv selection
-static short fit_index_col_sel = 1;  //Default 1				//Which fitness is used for col selection 
+const short fit_index_sel = 2;  //Default 2					//Which fitness is used for indiv selection
+const short fit_index_col_sel = 1;  //Default 1				//Which fitness is used for col selection 
 const int Binary_string_size = 1;	//Default 1					//Lenght of each variable in binary string
-const int MPCross_size = 2;		//Default 2						//Defines how many separation points are in multi-point crossover (1 is two point crossver)
+const int MPCross_size = 5;		//Default 2						//Defines how many separation points are in multi-point crossover (1 is two point crossver)
 
 /*GA parameters - MOEAD*/
 const float MOEAD_niche_multi = 0.1f;	//Default 0.1			//multiplier of the neighbour size (* pop size)
@@ -150,7 +150,7 @@ const float HEIA_crossover_prob = 0.5f;	//Default 0.5f			//Crossover probabilty 
 /*GA parameters - M2M*/
 const short M2M_weight_method = 2;//Default 2					//Which weight method is used for weight creation (also used in other methods when nobj >= 3). 1 - reference point (not implemented); 2 - recusion point
 const short M2M_class_num = 10;	//Default 10					//How many classes are defined
-const std::string M2M_method{ "MOEAD" }; //Default "MOEAD"		//Which evolutionary method is used from: "M2M", "NSGAII", "MOEAD", "MTS";
+const std::string M2M_method{ "MOEAD" }; //Default "MOEAD"		//Which evolutionary method is used from: "M2M", "UNSGAIII", "MOEAD", "MTS";
 const float M2M_select_pro = 0.9f; //Default 0.9f
 const float M2M_global_pro = 0.7f; //Default 0.7f
 

@@ -31,6 +31,19 @@ namespace NSGAII {
 	void NSGAII_Calc(collective & col);
 	void Crowding_Distance_Indices_Assign(std::vector<individual> &pop, int c1, int c2);
 	void Rank_Crowding_Distance_Assign(std::vector<individual> & new_pop, std::vector<short>& fit_indexes);
+
+	void Nondominated_Sort_Fill(std::vector<individual> & mixed_pop, std::vector<individual> & new_pop, std::vector<short>& fit_indexes);
+	std::vector<individual> Select(std::vector<individual> & old_pop, std::vector<short> &fit_indexes);
+
+	struct list
+	{
+		int index;
+		list *parent;
+		list *child;
+	};
+
+	void Insert(list *node, int x);
+	list* Del(list *node);
 }
 
 #endif // !NSGAII_H

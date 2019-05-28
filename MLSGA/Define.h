@@ -49,7 +49,7 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #define SOBOL false								//if values are generated from sobol
 //#define MOEAD_SOBOL false						//if namda in MOEAD are calculated from sobol
 //#define MOEAD_SEPARATE_WEIGHTS false			//define if each col will have different weight vectors
-#define GROUPING "SVM"
+#define GROUPING "Random"
 #define MLS_OVERRIDE true						//if individual levle selection should calculate like NSGAII or MLS; if true NSGAII will not use MLS for selection
 #define SKIP_LAST_GEN false						//if should skip the last generations (over 200k)
 #define TGM false								//If transgenerational memory would oocur

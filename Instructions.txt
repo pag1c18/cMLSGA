@@ -9,7 +9,7 @@ The main routine is in the MLSGA.cpp file.
 The GAs behaviour and parameters are set up in const.h file, while the behaviour of overall program and result processing is set up in define.h. Each value has corresponding comment, explaining its purpose.
 
 /****************2a. Const.h****************/
-The preferred GA is set up in line 46, according to following rule: {{"GA name"}, {"GA name 2}}. Importantly the GAs are used one after another and not simultaneously. If the multiple GAs have to be used in the co-evolutionary approach, they have to be defined in the same bracket, and separated by commas: {{"GA name_a", "GA name_b"}}. Any combinations of normal GAs and co-evolutionary variants can be used. The list of implemented GAs is {"Normal"}, {"NSGAII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}.
+The preferred GA is set up in line 46, according to following rule: {{"GA name"}, {"GA name 2}}. Importantly the GAs are used one after another and not simultaneously. If the multiple GAs have to be used in the co-evolutionary approach, they have to be defined in the same bracket, and separated by commas: {{"GA name_a", "GA name_b"}}. Any combinations of normal GAs and co-evolutionary variants can be used. The list of implemented GAs is {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}.
 
 If MLSGA have to be utilised or co-evolutionary variant, cMLSGA, the line 47 have to be set to "true". Otherwise, the original algorithm will be utilised.
 

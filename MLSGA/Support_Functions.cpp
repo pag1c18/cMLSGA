@@ -165,6 +165,53 @@ int Dominance_Check(individual &ind1, individual &ind2, std::vector<short> &fit_
 }
 
 /*
+*Check Dominance - without constrained check*
+@param ind1 - first individual
+@param ind2 - 2nd individual
+Return:
+1 - ind1 dominates
+-1 - ind2 dominates
+0 - both nondominated
+*/
+int Dominance_Check_NCons(individual &ind1, individual &ind2, std::vector<short> &fit_indexes)
+{
+	int flag1, flag2;		//flags
+	flag1 = flag2 = 0;
+	int nobj = ind1.Fitness_Show().size();	//number of objectives
+
+	for (int i = 0; i < fit_indexes.size(); i++)
+	{
+		//Copy ith fitness of each individual
+		double fit_ind1;
+		double fit_ind2;
+
+		short fit_ind_ix = fit_indexes[i] - 1;
+
+		if (TGM == false)
+		{
+			fit_ind1 = ind1.Fitness_Show(fit_ind_ix);		//ith fitness of 1st individual
+			fit_ind2 = ind2.Fitness_Show(fit_ind_ix);		//ith fitness of 2nd individual
+		}
+		else
+		{
+			fit_ind1 = ind1.TGM_fitness[0][fit_ind_ix];		//ith fitness of 1st individual
+			fit_ind2 = ind2.TGM_fitness[0][fit_ind_ix];		//ith fitness of 2nd individual
+		}
+		//Check which fitness is greater
+		if (fit_ind1 < fit_ind2)
+			flag1 = 1;
+		else if (fit_ind1 > fit_ind2)
+			flag2 = 1;
+	}
+	//Check which individual dominate
+	if (flag1 == 1 && flag2 == 0)
+		return (1);
+	else if (flag1 == 0 && flag2 == 1)
+		return (-1);
+	else
+		return (0);
+}
+/*
 *Check Dominance for MLSt*
 @param ind1 - first individual
 @param ind2 - 2nd individual

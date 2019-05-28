@@ -38,7 +38,7 @@ Adam J. Sobey				at	ajs502@soton.ac.uk
 #include "Clustering.h"
 #include "Random_Label.h"
 #include "Support_Functions.h"
-#include "NSGAII.h"
+#include "UNSGAIII.h"
 #include "MOEAD.h"
 #include "MTS.h"
 #include "BCE.h"

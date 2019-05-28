@@ -15,19 +15,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
 #pragma once
-#ifndef UNSGAIII_H
-#define UNSGAIII_H
-#include "Class.h"
 
-namespace UNSGAIII {
-	/*
-	Calculate individuals using NSGAII algorithm
-	@param Col - address of a given collective
-	@param iGen - current generation
-	*/
-	void UNSGAIII_Calc(collective & col);
-	void Init(short n_obj, short n_col, population & pop);
-}
 
-#endif // !UNSGAII_H
+
+#include <vector>
+
+std::vector<double> LU_Solve(std::vector<std::vector<double>> matrix_A, std::vector<double> matrix_B);

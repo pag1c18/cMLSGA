@@ -245,7 +245,7 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 			{
 				//Calculate the fitness of individuals in the collective
 				col[iCol].population::Fitness_Calc();
-				if (mode == "NSGAII" || mode == "DMOEADD")
+				if (mode == "UNSGAIII" || mode == "DMOEADD")
 					col[iCol].save();
 			}
 			else if (mode == "MOEAD" || mode == "MOEADMSF" || mode == "MOEADPSF" || mode == "MOEADM2M")

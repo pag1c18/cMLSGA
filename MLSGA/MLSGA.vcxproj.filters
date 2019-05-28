@@ -198,6 +198,12 @@
     <ClInclude Include="IBEA.h">
       <Filter>Header Files\Augments</Filter>
     </ClInclude>
+    <ClInclude Include="LUP.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="UNSGAIII.h">
+      <Filter>Header Files\Augments</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imported\Chartsheet.cpp">
@@ -300,6 +306,12 @@
       <Filter>Source Files\Imported\HV_metric</Filter>
     </ClCompile>
     <ClCompile Include="IBEA.cpp">
+      <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="LUP.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="UNSGAIII.cpp">
       <Filter>Source Files\Augments</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,13 +1,50 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
-/*This code is based on: H. Liu, F. Gu, and Q. Zhang, “Decomposition of a Multiobjective Optimization Problem into a Number of Simple Multiobjective Subproblems,” IEEE Trans. Evol. Comput., vol. 18, no. 3, pp. 450–455, 2014.
-It has been modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
+
+/*This code is based on matlab code by Q. Lin [1]
+Translated to C++ and modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (2019)*/
+
+
+/*[1] Copyright (c) 2014 Q. Lin 
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Originally published: H. Liu, F. Gu, and Q. Zhang, “Decomposition of a Multiobjective Optimization Problem into a Number of Simple Multiobjective Subproblems,” IEEE Trans. Evol. Comput., vol. 18, no. 3, pp. 450–455, 2014.*/
 
 
 #include "M2M.h"
 #include "Support_Functions.h"
 #include "MOEAD.h"
 #include "MTS.h"
-#include "NSGAII.h"
+#include "UNSGAIII.h"
 #include <ctime>
 
 std::vector<std::vector<int>> subclass_index;
@@ -64,9 +101,9 @@ std::vector<individual> M2M::M2M_Calc(collective & col, int iGen)
 		{ 
 			temp_PF = MOEAD::MOEAD_Calc(temp_col, iGen);
 		}
-		else if (M2M_method == "NSGAII")
+		else if (M2M_method == "UNSGAIII")
 		{
-			NSGAII::NSGAII_Calc(temp_col);
+			UNSGAIII::UNSGAIII_Calc(temp_col);
 			temp_PF = temp_col.Indiv_Show();
 		}
 		else if (M2M_method == "MTS")

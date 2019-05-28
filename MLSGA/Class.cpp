@@ -96,7 +96,19 @@ void individual::Decode(function & fcode)
 	//Calculate the maximum value of binary string
 	long long int max_bit_val = pow(2, Binary_string_size) - 1;
 	std::vector<bool> code_bin_temp;
-	if (ENCODING == "Binary")
+	if (Binary_string_size == 1)
+	{
+		for (int i = 0; i < code.size(); i++)
+		{
+			double x = 0;
+			if (code_bin[i] == 1)
+				x = 1;
+			code[i] = fcode.Bound(i, "lower") + x * (fcode.Bound(i, "upper") - fcode.Bound(i, "lower"));
+		}
+		return;
+	}
+
+	else if (ENCODING == "Binary")
 		code_bin_temp = code_bin;
 	else if (ENCODING == "Gray")	//To decode the Gray it need to be first converted to binary in temporary sting
 	{
@@ -511,7 +523,7 @@ std::vector<individual> population::Crossover_NSGAII(std::vector<individual> sel
 	if (selected.size() <= 0)
 		return indiv;
 	//check if NSGAII selected
-	if (MODE != "NSGAII" && MODE != "BCE" && MODE !="HEIA" && MODE != "MOEADM2M" && MODE != "IBEA")
+	if (MODE != "UNSGAIII" && MODE != "BCE" && MODE !="HEIA" && MODE != "MOEADM2M" && MODE != "IBEA")
 	{
 		std::cout << "**********************************\n"
 			<< "Wrong MODE chosen.Cannot do Crossover_NSGAII for non NSGAII. Check Define.h\nProgram will terminate"
@@ -575,7 +587,7 @@ void population::Mutation(int indi)
 void population::Mutation_NSGAII(std::vector<individual> & pop)
 {
 	//check if NSGAII selected
-	if (MODE != "NSGAII" && MODE != "DMOEADD" & MODE != "MOEADM2M")
+	if (MODE != "UNSGAIII" && MODE != "DMOEADD" & MODE != "MOEADM2M")
 	{
 		std::cout << "**********************************\n"
 			<< "Wrong MODE chosen.Cannot do Crossover_NSGAII for non NSGAII or DMOEADD. Check Define.h\nProgram will terminate"

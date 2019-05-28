@@ -3738,7 +3738,7 @@ public:
 };
 
 //****************************************
-//				Function #99
+//				Function #201
 //					GEN
 //****************************************
 class GEN : public function
@@ -3754,7 +3754,7 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	GEN(const char * fname = "GEN", int varsn = 404668, short objsn = 2, short ix = 59, short consn = 1)
+	GEN(const char * fname = "GEN", int varsn = 3678, short objsn = 3, short ix = 201, short consn = 0)
 		: function(fname, varsn, objsn, ix, consn) {
 		Bound_Set();
 	};
@@ -3769,12 +3769,39 @@ public:
 	@param code vector with the code
 	*/
 	std::vector<double> Fitness_C(const std::vector<double> &code);
+};
+
+//****************************************
+//				Function #202
+//					GEN_pat
+//****************************************
+class GEN_pat : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
 	/*
-	*Constrain check - for contrained problems: returns true if constrains are violated*
-	@param code - vector with the code
-	@param fitness - vector with the fitness values
-	@param t -  current time
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	GEN_pat(const char * fname = "GEN_pat", int varsn = 3678, short objsn = 3, short ix = 202, short consn = 0)
+		: function(fname, varsn, objsn, ix, consn) {
+		Bound_Set();
+	};
+	~GEN_pat() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double> &code);
 };
 #endif // !FIT_FUNCTION_H

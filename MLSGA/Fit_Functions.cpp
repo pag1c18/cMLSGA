@@ -13354,26 +13354,32 @@ std::vector<double> CDF10::Cons_Calc(const std::vector<double> &code, const std:
 
 
 
-std::vector<double> key;
+std::vector<double> key_score;
+std::vector<double> key_std;
 /**********************GEN**************************/
 std::vector<double> GEN::Fitness_C(const std::vector<double> & code)
 {
-	double fit1 = 0;
-	int fit2 = 0;
-	for (int ix = 0; ix < Vars(); ix++)
+	double fit1 = 0, fit2 = 0, fit3 = 0;
+	short vars = Vars();
+	for (int ix = 0; ix < vars; ix++)
 	{
 		double temp_code = code[ix];
 		if (temp_code >= 0.5)
 		{
-			fit1 += key[ix];
-			fit2++;
+			fit1 += key_score[ix];
+			fit2 += key_std[ix];
+			fit3++;
 		}
 	}
 	if (fit2 != 0)
-		fit1 = fit1 / fit2;
+	{
+		fit1 /= 2.3955;
+		fit2 /= 6.0567;
+	}
 
-	fit1 = 2. - fit1;
-	fit2 = 1000 - fit2;
+	fit1 = 1 - fit1;
+	fit3 = (vars - fit3) / vars;
+
 	
 
 
@@ -13384,7 +13390,7 @@ std::vector<double> GEN::Fitness_C(const std::vector<double> & code)
 	//calculate the fitness and push it to the fitness vector
 	fitness.push_back(fit1);				//fitness 1
 	fitness.push_back(fit2);		//fitness 2
-
+	fitness.push_back(fit3);		//fitness 3
 													//check if the fitness has a proper size
 	if (fitness.size() != Objs())
 	{
@@ -13436,30 +13442,45 @@ std::vector<std::vector<double>> GEN::Plot_PF(int indexr, int size)
 
 	std::ifstream key_file;
 	std::string line;
-	key.clear();
+	key_score.clear();
+	key_std.clear();
 	//open the key file
-	key_file.open("input/gene/GENOTYPE_ALL_proc_score.csv");
+	key_file.open("input/gene/CADD_norm_gdi_proc_score_refined_0.01.csv");
+	int ix = 0;
 	while (std::getline(key_file, line))
 	{
+		if (ix == 0)
+		{
+			ix++;
+			continue;
+		}
 		int index = 0;
 		std::stringstream ss(line);
 
 		std::string val;
 		while (std::getline(ss, val, ','))
 		{
-			if (index == 1)
+			if (index == 11)
 			{
 				std::stringstream ss2(val);
 				double value;
 				ss2 >> value;
 
-				key.push_back(value);
+				key_std.push_back(value);
+			}
+			else if (index == 13)
+			{
+				std::stringstream ss2(val);
+				double value;
+				ss2 >> value;
+
+				key_score.push_back(value);
 			}
 			index++;
 		}
 	}
 
-	if (key.size() != Vars())
+	if (key_score.size() != Vars() || key_std.size() != Vars())
 		abort();
 
 
@@ -13472,8 +13493,8 @@ std::vector<std::vector<double>> GEN::Plot_PF(int indexr, int size)
 
 	//calculate the real PF points
 
-	double i = 2.;
-	double temp = 1000.;				//PF value
+	double i = 0;
+	double temp = 0;				//PF value
 
 	std::vector<double> temp_vect;			//temporary vector of fitness
 
@@ -13497,29 +13518,165 @@ std::vector<std::vector<double>> GEN::Plot_PF(int indexr, int size)
 	return PF_real_val;
 }
 
-
-std::vector<double> GEN::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
+/**********************GEN_pat**************************/
+std::vector<double> GEN_pat::Fitness_C(const std::vector<double> & code)
 {
-	double cons_value;					//Value for constrain check
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-	int fit2 = 0;
-	for (int ix = 0; ix < Vars(); ix++)
+	double fit1 = 0, fit2 = 0, fit3 = 0;
+	short vars = Vars();
+	for (int ix = 0; ix < vars; ix++)
 	{
 		double temp_code = code[ix];
 		if (temp_code >= 0.5)
 		{
-			fit2++;
+			fit1 += key_score[ix];
+			fit2 += key_std[ix];
+			fit3++;
 		}
 	}
-	//Calculate constrain value
-	cons_value = 1000 - fit2;
+	if (fit2 != 0)
+	{
+		fit1 /= 2.3955;
+		fit2 /= 6.4159;
+	}
 
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
+	fit1 = 1 - fit1;
+	fit3 = (vars - fit3) / vars;
 
-	//return vector
-	return cons_val_temp;
+
+
+
+
+
+	std::vector<double> fitness;					//fitness vector - output
+
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(fit1);				//fitness 1
+	fitness.push_back(fit2);		//fitness 2
+	fitness.push_back(fit3);		//fitness 3
+													//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
 }
 
+void GEN_pat::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+	//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 2,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 1000,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> GEN_pat::Plot_PF(int indexr, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+	std::ifstream key_file;
+	std::string line;
+	key_score.clear();
+	key_std.clear();
+	//open the key file
+	key_file.open("input/gene/CADD_norm_gdi_proc_score_refined_0.01.csv");
+	int ix = 0;
+	while (std::getline(key_file, line))
+	{
+		if (ix == 0)
+		{
+			ix++;
+			continue;
+		}
+		int index = 0;
+		std::stringstream ss(line);
+
+		std::string val;
+		while (std::getline(ss, val, ','))
+		{
+			if (index == 11)
+			{
+				std::stringstream ss2(val);
+				double value;
+				ss2 >> value;
+
+				key_std.push_back(value);
+			}
+			else if (index == 13)
+			{
+				std::stringstream ss2(val);
+				double value;
+				ss2 >> value;
+
+				key_score.push_back(value);
+			}
+			index++;
+		}
+	}
+
+	if (key_score.size() != Vars() || key_std.size() != Vars())
+		abort();
+
+
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(0., 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+	//calculate the real PF points
+
+	double i = 0;
+	double temp = 0;				//PF value
+
+	std::vector<double> temp_vect;			//temporary vector of fitness
+
+											//push values to the fitness vector
+	temp_vect.push_back(i);
+	temp_vect.push_back(temp);
+
+	//push the fitness vector to the PF vector
+	PF_real_val.push_back(temp_vect);
+
+	//save the fitness values to the file
+	if (indexr >= 0)
+	{
+		PF_real << i << " ";
+		PF_real << temp;
+		PF_real << std::endl;
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
 

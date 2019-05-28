@@ -57,7 +57,7 @@ private:
 	bool cons_violation;					//constrains violation - true if constrains are violated
 	std::vector<double> cons_val;			//Values of constrains
 
-	/*For NSGA II*/
+	/*For NSGA II / NSGA-III*/
 	double crowd_dist;						//crowding distance	(degree for BCE) ;
 	int rank;								//rank of the individual (Mark in BCE)
 	

@@ -1,6 +1,44 @@
+/*
+Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
-/*This code is based on: L.-Y. Tseng and C. Chen, “Multiple Trajectory Search for Multiobjective Optimization,” in 2007 IEEE Congress on Evolutionary Computation (CEC 2007), 2007, pp. 3609–3616.
-It has been modified by Przemyslaw Grudniewski for the purposed of MLSGA-framework, 2019*/
+This file is part of the MLSGA framework
+
+The MLSGA framework is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+The MLSGA framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>. */
+
+
+
+/*This code is based on C++ code byL.-Y. Tseng and C. Chen [1]
+Modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (2019)*/
+
+
+/*[1] Copyright (c) 2007 L.-Y. Tseng, C. Chen
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Originally published: L.-Y. Tseng and C. Chen, “Multiple Trajectory Search for Multiobjective Optimization,” in 2007 IEEE Congress on Evolutionary Computation (CEC 2007), 2007, pp. 3609–3616.*/
+
 
 #define _CRT_SECURE_NO_WARNINGS
 
