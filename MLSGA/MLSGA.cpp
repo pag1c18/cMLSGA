@@ -218,8 +218,8 @@ int main()
 
 									/*if (((ftype >6 && ftype < 21)|| (ftype > 30 && ftype < 50) || ftype > 59) )
 										continue;*/
-										if (((ftype >22 && ftype < 25)|| (ftype > 25 && ftype < 51) || ftype > 59) )
-											continue;
+										/*if (((ftype >22 && ftype < 25)|| (ftype > 25 && ftype < 51) || ftype > 59) )
+											continue;*/
 									/*if (ftype >82 && ftype < 98 )
 										continue;*/
 									function * Func = Func_Type(ftype);													//Function initialisation
