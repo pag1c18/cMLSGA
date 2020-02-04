@@ -49,6 +49,7 @@ Modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (20
 #include "BCE.h"
 #include "MOEAD.h"
 #include "Support_Functions.h"
+#include "Pen_Const.h"
 #include <time.h>
 std::vector<std::vector<individual>> PC_pop;
 std::vector<individual> temp_pop;
@@ -111,6 +112,8 @@ std::vector<individual> BCE::BCE_Calc(collective & col, int iGen)
 		// population maintenance operation in the PC evolution
 		maintain_PCpop(PC_pop[ix], temp_pop, col.fit_index[0]);
 	}
+
+
 	//calculate time
 	elit_t += clock() - elite_t_temp;
 
@@ -157,16 +160,16 @@ void BCE::BCE_Time_Update(function &fcode)
 	{
 		//copy the temp parameters
 		int size = PC_pop[i_col].size();
-		std::vector<individual> temp_vect = PC_pop[i_col];
 
 		//Update the population
 		for (int i_ind = 0; i_ind < size; i_ind++)
 		{
-			temp_vect[i_ind].Fitness_Calc(fcode);
+			PC_pop[i_col][i_ind].Fitness_Calc(fcode);
 			nfes++;
-			temp_vect[i_ind].save();
+			PC_pop[i_col][i_ind].save();
 		}
-		PC_pop[i_col] = temp_vect;
+		if (PENALTY_BASED_CONSTRAINTS)
+			Pen_const::Fitness_Recalc(PC_pop[i_col],i_col,false);
 	}
 }
 void BCE::enter_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vector<short>& fit_indexes)
@@ -327,6 +330,9 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 			NPCp.population::Fitness_Calc(child[0]);
 			nfes++;
 
+			if (PENALTY_BASED_CONSTRAINTS)
+				Pen_const::Fitness_Recalc(child[0],NPCp.Index_Show()-1);
+
 			child[0].save();
 
 
@@ -416,6 +422,9 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 
 		NPCp.population::Fitness_Calc(child[0]);
 		nfes++;
+
+		if (PENALTY_BASED_CONSTRAINTS)
+			Pen_const::Fitness_Recalc(child[0], NPCp.Index_Show() - 1);
 
 		child[0].save();
 		

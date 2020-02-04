@@ -32,6 +32,7 @@ Translated to C++ and modified for the purposes of the MLSGA framework by Przemy
 #include "Random.h"
 #include "Support_Functions.h"
 #include <ctime>
+#include "Pen_Const.h"
 
 //NSGAII have to give output as a vector of individuals or population (vector of individuals should be easier)
 
@@ -96,6 +97,11 @@ void NSGAII::NSGAII_Calc(collective & col)
 	time_t mut_t_temp = clock();										//starting time of the mutation
 	//Mutate the offspring population and evaluate fitness
 	col.Mutation_NSGAII(off_pop);
+
+	//Penalise the fitness (according to cosntraints)
+	if (PENALTY_BASED_CONSTRAINTS)
+		Pen_const::Fitness_Recalc(off_pop,col.Index_Show()-1,true);
+		
 	//calculate the time of the mutation
 	mut_t += clock() - mut_t_temp;
 

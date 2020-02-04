@@ -8639,6 +8639,1323 @@ std::vector<double> IMB14::Cons_Calc(const std::vector<double> &code, const std:
 	return cons_val_temp;
 }
 
+/**********************DAS_CMOP_POF**************************/ // calculation function
+std::vector<std::vector<double>> DAS_CMOP_POF(std::string name, int indexr, int objs)
+{
+
+	//copy a parameters values
+	float eta, zeta, gamma;
+	eta = CMOP_eta;
+	zeta = CMOP_zeta;
+	gamma = CMOP_gamma;
+	int select_para = 0;
+	//select a POF file indicator
+	if (eta == 0.f)
+	{
+		if (zeta == 0.f)
+		{
+
+			if (gamma == 0.25f)
+			{
+				select_para = 3;
+			}
+			else if (gamma == 0.5f)
+			{
+				select_para = 7;
+			}
+			else if (gamma == 0.75f)
+			{
+				select_para = 11;
+			}
+			else
+				abort();
+		}
+
+		else if (zeta == 0.25f)
+		{
+			if (gamma == 0.f)
+				select_para = 2;
+			else
+				abort();
+		}
+		else if (zeta == 0.5f)
+		{
+			if (gamma == 0.f)
+				select_para = 6;
+			else
+				abort();
+		}
+		else if (zeta == 0.75f)
+		{
+			if (gamma == 0.f)
+				select_para = 10;
+			else
+				abort();
+		}
+		else if (zeta == 1.f)
+		{
+			if (gamma == 0.f)
+				select_para = 13;
+			else if (gamma == 0.5f)
+				select_para = 15;
+			else
+				abort();
+		}
+		else
+			abort();
+	}
+
+	else if (eta == 0.25f)
+	{
+		if (zeta == 0.f && gamma == 0.f)
+		{
+			select_para = 1;
+		}
+		else if (zeta == 0.25f && gamma == 0.25f)
+		{
+			select_para = 4;
+		}
+		else
+			abort();
+	}
+	else if (eta == 0.5f)
+	{
+		if (zeta == 0.f && gamma == 0.f)
+		{
+			select_para = 5;
+		}
+		else if (zeta == 0.5f && gamma == 0.5f)
+		{
+			select_para = 8;
+		}
+		else if (zeta == 1.f)
+		{
+			if (gamma == 0.f)
+				select_para = 14;
+			else if (gamma == 0.5f)
+				select_para == 16;
+			else
+				abort();
+		}
+		else
+			abort();
+	}
+	else if (eta == 0.75f)
+	{
+		if (zeta == 0.f && gamma == 0.f)
+		{
+			select_para = 9;
+		}
+		else if (zeta == 0.75f && gamma == 0.75f)
+		{
+			select_para = 12;
+		}
+		else
+			abort();
+	}
+	else
+		abort();
+
+	
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	std::ifstream PF_real_input;			//ifstream file of real PF
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(0., 1) + ".x1");
+
+	PF_real_input.open("Input/PF/" + name + "_" + std::to_string(select_para) + ".pf");
+
+	if (!PF_real_input.good())
+	{
+		std::cout << "ERROR#12: FUNCTION - PF_READ; FILE NOT OPEN";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+	std::vector<double> PF_real_val_temp;	//Vector for storing temp data
+											//Read values from file and save in vector and additional file
+	double temp_val;			//Currently readed number
+								//Read all values
+	while (PF_real_input >> temp_val)		//will read as long as there are any values remained
+	{
+		//push value to temporary vector
+		PF_real_val_temp.push_back(temp_val);
+		//Push value to file
+		PF_real << temp_val;
+		//Send values to output vector
+		if (PF_real_val_temp.size() == objs)			//if size of temprary vector is equal to nubmer of objectives
+		{
+			//push to output vector
+			PF_real_val.push_back(PF_real_val_temp);
+			//clear the temporary vector
+			PF_real_val_temp.clear();
+			//end line in output file
+			PF_real << std::endl;
+		}
+		else
+			//push space to the file
+			PF_real << " ";
+	}
+
+	//close the PF files
+	PF_real.close();
+	PF_real_input.close();
+	
+	return PF_real_val;
+}
+
+/**********************DAS_CMOP1**************************/
+
+std::vector<double> DAS_CMOP1::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = 0;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i-1]-sin(0.5*pi*code[0]),2);
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 - pow(code[0],2) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP1::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP1::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP1::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = 0;			//temp values for the fitness calculation
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - sin(0.5 * pi * code[0]), 2);
+	}
+	//calculate the second constraint
+	double c2 = (e-g_x)*(g_x-d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+
+/**********************DAS_CMOP2**************************/
+
+std::vector<double> DAS_CMOP2::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = 0;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i-1] - sin(0.5 * pi * code[0]), 2);
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 - sqrt(code[0]) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP2::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP2::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP2::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = 0;			//temp values for the fitness calculation
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - sin(0.5 * pi * code[0]), 2);
+	}
+	//calculate the second constraint
+	double c2 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************DAS_CMOP3**************************/
+
+std::vector<double> DAS_CMOP3::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = 0;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i-1] - sin(0.5 * pi * code[0]), 2);
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 -sqrt(code[0]) + 0.5*abs(sin(5*pi*code[0])) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP3::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP3::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP3::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = 0;			//temp values for the fitness calculation
+	for (int i = 1; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - sin(0.5 * pi * code[0]), 2);
+	}
+	//calculate the second constraint
+	double c2 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************DAS_CMOP4**************************/
+
+std::vector<double> DAS_CMOP4::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = Vars()-1;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x +=pow(code[i-1]-0.5,2)-cos(20*pi* (code[i - 1] - 0.5));
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 - pow(code[0], 2) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP4::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP4::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP4::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = Vars() - 1;			//temp values for the fitness calculation
+	
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the second constraint
+	double c2 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************DAS_CMOP5**************************/
+
+std::vector<double> DAS_CMOP5::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = Vars() - 1;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 - sqrt(code[0]) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP5::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP5::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP5::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = Vars() - 1;			//temp values for the fitness calculation
+
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the second constraint
+	double c2 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************DAS_CMOP6**************************/
+
+std::vector<double> DAS_CMOP6::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = Vars() - 1;			//temp values for the fitness calculation
+	double f1, f2;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+
+	f1 = code[0] + g_x;
+	f2 = 1 - sqrt(code[0]) + 0.5 * abs(sin(5 * pi * code[0])) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP6::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP6::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP6::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	int p_k[9] = { 0,1,0,1,2,0,1,2,3 };
+	float q_k[9] = { 1.5, 0.5, 2.5, 1.5, 0.5, 3.5, 2.5, 1.5, 0.5 };
+
+	short a = 20;
+	short d = 0.5;
+	float a_k2 = 0.3;
+	float b_k2 = 1.2;
+	float theta_k = -0.25 * pi;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate temp value
+	double g_x = Vars() - 1;			//temp values for the fitness calculation
+
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the second constraint
+	double c2 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c2);
+
+	//calculate and push k constraints
+	for (int k = 0; k < 9; k++)
+	{
+		double c_k = pow(((fit[0] - p_k[k]) * cos(theta_k) - (fit[1] - q_k[k]) * sin(theta_k)), 2) / a_k2;
+		c_k += pow(((fit[0] - p_k[k]) * sin(theta_k) - (fit[1] - q_k[k]) * cos(theta_k)), 2) / b_k2;
+		c_k -= r;
+
+		cons_val_temp.push_back(c_k);
+	}
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************DAS_CMOP7**************************/
+
+std::vector<double> DAS_CMOP7::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = Vars() - 2;			//temp values for the fitness calculation
+	double f1, f2, f3;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+
+	f1 = code[0]*code[1] + g_x;
+	f2 = code[1] * (1 - code[0]) + g_x;
+	f3 = 1 - code[1] + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+	fitness.push_back(f3);						//fitness 3
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP7::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP7::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP7::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+
+	short a = 20;
+	short d = 0.5;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate the second constraint
+	double c2 = cos(a * pi * code[1]) - b;
+	cons_val_temp.push_back(c2);
+
+
+	//calculate temp value
+	double g_x = Vars() - 2;			//temp values for the fitness calculation
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the third constraint
+	double c3 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c3);
+
+
+	//calculate and push k constraints
+	for (int k = 0; k < 3; k++)
+	{
+		double c_k = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			if (j == k)
+				continue;
+
+			c_k += pow(fit[j], 2) + pow(fit[k] - 1, 2) - r * r;
+		}
+
+		cons_val_temp.push_back(c_k);
+	}
+
+	//calculate the seventh constraint
+	double c7 = 0;
+	for (int j = 0; j < 3; j++)
+	{
+		c7 += pow(fit[j]-(1.f/sqrt(3.f)), 2) - r * r;
+	}
+
+	cons_val_temp.push_back(c7);
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************DAS_CMOP8**************************/
+
+std::vector<double> DAS_CMOP8::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = Vars() - 2;			//temp values for the fitness calculation
+	double f1, f2, f3;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+
+	f1 = cos(0.5 * pi * code[0]) * cos(0.5 * pi * code[1]) + g_x;
+	f2 = cos(0.5 * pi * code[0]) * sin(0.5 * pi * code[1]) + g_x;
+	f3 = sin(0.5 * pi * code[0]) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+	fitness.push_back(f3);						//fitness 3
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP8::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP8::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP8::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+
+	short a = 20;
+	short d = 0.5;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate the second constraint
+	double c2 = cos(a * pi * code[1]) - b;
+	cons_val_temp.push_back(c2);
+
+
+	//calculate temp value
+	double g_x = Vars() - 2;			//temp values for the fitness calculation
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the third constraint
+	double c3 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c3);
+
+
+	//calculate and push k constraints
+	for (int k = 0; k < 3; k++)
+	{
+		double c_k = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			if (j == k)
+				continue;
+
+			c_k += pow(fit[j], 2) + pow(fit[k] - 1, 2) - r * r;
+		}
+
+		cons_val_temp.push_back(c_k);
+	}
+
+	//calculate the seventh constraint
+	double c7 = 0;
+	for (int j = 0; j < 3; j++)
+	{
+		c7 += pow(fit[j] - (1.f / sqrt(3.f)), 2) - r * r;
+	}
+
+	cons_val_temp.push_back(c7);
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************DAS_CMOP9**************************/
+
+std::vector<double> DAS_CMOP9::Fitness_C(const std::vector<double>& code)
+{
+	double g_x = 0;			//temp values for the fitness calculation
+	double f1, f2, f3;
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate temp values
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i-1]-cos((0.25*i)/Vars()*pi*(code[0]+code[1])), 2);
+	}
+
+
+	f1 = cos(0.5 * pi * code[0]) * cos(0.5 * pi * code[1]) + g_x;
+	f2 = cos(0.5 * pi * code[0]) * sin(0.5 * pi * code[1]) + g_x;
+	f3 = sin(0.5 * pi * code[0]) + g_x;
+	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(f1);						//fitness 1
+	fitness.push_back(f2);						//fitness 2
+	fitness.push_back(f3);						//fitness 3
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void DAS_CMOP9::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+
+
+																		//set boundaries for the rest of variables
+	for (int i = 0; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> DAS_CMOP9::Plot_PF(int indexr, int size)
+{
+	std::vector<std::vector<double>> PF_real_val = DAS_CMOP_POF(this->Name_Show(), indexr, Objs());
+
+	return PF_real_val;
+}
+std::vector<double> DAS_CMOP9::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+
+	short a = 20;
+	short d = 0.5;
+
+	float b = 2 * CMOP_eta - 1;
+	float r = CMOP_gamma / 2;
+	float e = d - log(CMOP_zeta);
+
+	//calculate the first constraint
+	double c1 = sin(a * pi * code[0]) - b;
+	cons_val_temp.push_back(c1);
+
+
+	//calculate the second constraint
+	double c2 = cos(a * pi * code[1]) - b;
+	cons_val_temp.push_back(c2);
+
+
+	//calculate temp value
+	double g_x = Vars() - 2;			//temp values for the fitness calculation
+	for (int i = 3; i <= Vars(); i++)
+	{
+		g_x += pow(code[i - 1] - 0.5, 2) - cos(20 * pi * (code[i - 1] - 0.5));
+	}
+
+	//calculate the third constraint
+	double c3 = (e - g_x) * (g_x - d);
+	cons_val_temp.push_back(c3);
+
+
+	//calculate and push k constraints
+	for (int k = 0; k < 3; k++)
+	{
+		double c_k = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			if (j == k)
+				continue;
+
+			c_k += pow(fit[j], 2) + pow(fit[k] - 1, 2) - r * r;
+		}
+
+		cons_val_temp.push_back(c_k);
+	}
+
+	//calculate the seventh constraint
+	double c7 = 0;
+	for (int j = 0; j < 3; j++)
+	{
+		c7 += pow(fit[j] - (1.f / sqrt(3.f)), 2) - r * r;
+	}
+
+	cons_val_temp.push_back(c7);
+
+
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
 /********************************************
 DYNAMIC UNCONSTRAINED FUNCTIONS
 *********************************************/
@@ -9705,8 +11022,6 @@ std::vector<double> JY1::Fitness_C(const std::vector<double> & code, int tau, do
 	//Function parameters
 	double At = 0.05;				//Value of At parameter - dynamic dependant on time, adjust the curvature
 	double Wt = 6;					//Value of Wt parameter - dynamic dependant on time, control the number of mixed convex and concave segments
-	double Alphat = 1;				//Value of Alpha t parameter - dynamic dependant on time, control the overall shape of POF
-	double Betat = 1;				//Value of Beta t parameter - dynamic dependant on time, control the overall shape of POF
 	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
 
 	//Calculate temporary values
@@ -10564,7 +11879,11 @@ std::vector<double> JY7::Fitness_C(const std::vector<double> & code, int tau, do
 													//calculate
 	double fitness1_temp = (1 + Sum_g_xII)*pow(code[0] + At*sin(Wt*pi*code[0]),Alphat);			//fitness 1
 	double fitness2_temp = (1 + Sum_g_xII)*pow(1. - code[0] + At*sin(Wt*pi*code[0]),Betat);			//fitness 2
-																							//push
+	if (fitness1_temp != fitness1_temp)
+		fitness1_temp = (1 + Sum_g_xII);
+	if (fitness2_temp != fitness2_temp)
+		fitness2_temp = (1 + Sum_g_xII);
+	//push
 	fitness.push_back(fitness1_temp);				//fitness 1
 	fitness.push_back(fitness2_temp);			//fitness 2
 
@@ -10704,7 +12023,10 @@ std::vector<double> JY8::Fitness_C(const std::vector<double> & code, int tau, do
 													//calculate
 	double fitness1_temp = (1 + Sum_g_xII)*pow(code[0] + At*sin(Wt*pi*code[0]), Alphat);			//fitness 1
 	double fitness2_temp = (1 + Sum_g_xII)*pow(1. - code[0] + At*sin(Wt*pi*code[0]), Betat);			//fitness 2
-																							//push
+	if (fitness1_temp != fitness1_temp)
+		fitness1_temp = (1 + Sum_g_xII);
+	if (fitness2_temp != fitness2_temp)
+		fitness2_temp = (1 + Sum_g_xII);																						//push
 	fitness.push_back(fitness1_temp);				//fitness 1
 	fitness.push_back(fitness2_temp);			//fitness 2
 
@@ -10826,8 +12148,6 @@ std::vector<double> JY9::Fitness_C(const std::vector<double> & code, int tau, do
 	//Function parameters
 	double At = 0.05;				//Value of At parameter - dynamic dependant on time, adjust the curvature
 	double Wt = floor(6*pow(sin(0.5*pi*(t-1)),sigma));					//Value of Wt parameter - dynamic dependant on time, control the number of mixed convex and concave segments
-	double Alphat = 1;				//Value of Alpha t parameter - dynamic dependant on time, control the overall shape of POF
-	double Betat = 1;				//Value of Beta t parameter - dynamic dependant on time, control the overall shape of POF
 	double Gt = abs(sin(0.5*pi*t));		//Value of G(t) function - dynamic dependant on time
 
 									//Calculate temporary values
@@ -10986,7 +12306,10 @@ std::vector<double> JY10::Fitness_C(const std::vector<double> & code, int tau, d
 													//calculate
 	double fitness1_temp = (1 + Sum_g_xII)*pow(code[0] + At*sin(Wt*pi*code[0]), Alphat);			//fitness 1
 	double fitness2_temp = (1 + Sum_g_xII)*pow(1. - code[0] + At*sin(Wt*pi*code[0]), Betat);			//fitness 2
-																							//push
+	if (fitness1_temp != fitness1_temp)
+		fitness1_temp = (1 + Sum_g_xII);
+	if (fitness2_temp != fitness2_temp)
+		fitness2_temp = (1 + Sum_g_xII);																						//push
 	fitness.push_back(fitness1_temp);				//fitness 1
 	fitness.push_back(fitness2_temp);			//fitness 2
 
@@ -11703,9 +13026,947 @@ std::vector<std::vector<double>> FDA5::Plot_PF(int indexr, double t, int size)
 /********************************************
 DYNAMIC CONSTRAINED FUNCTIONS
 *********************************************/
-
 /**********************CDF1**************************/
-std::vector<double> CDF1::Fitness_C(const std::vector<double> & code, int tau, double t)
+std::vector<double> CDF1::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+									//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1]- pow(code[0], (0.5 * (2.0 + 3.0 * (i - 2) / (double)(Vars() - 2)) + abs(Gt)));
+		if (i % 2 == 1)
+		{
+			sizeJ1++;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			sizeJ2++;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;									//fitness vector - output
+
+																	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0]  + (2.0 / sizeJ1) * SumJ1);			//fitness 1
+	fitness.push_back(pow(1. - code[0],2) + (2.0 / sizeJ2) * SumJ2);	//fitness 2
+
+																	//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+
+}
+
+void CDF1::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -1;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF1::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+	for (double i = 0.; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+		double temp;				//PF value
+
+									//calculate the PF value
+		//if (i <= 0.5)
+			temp = pow(1. - i, 2);
+		/*else if (i <= 0.75)
+			temp = 0.5 * (1. - i);
+		else
+			temp = 0.25 * sqrt(1. - i);*/
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i  << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF1::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for the constrain check
+	double cons_value2;					//2nd Value for the constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+	double Gt = sin(0.5 * pi * t);
+
+
+	double temp, temp2;				//temporary values
+									//Calculate temporary values
+	temp = 0.5 * (1. - code[0]) - pow(1. - code[0], 2);
+	temp2 = 0.25 * sqrt(1. - code[0]) - 0.5 * (1. - code[0]);
+
+	//Calculate constrain values
+	cons_value = code[1] - pow(code[0], (0.5 * (2.0 + 3.0 * (2 - 2) / (double)(Vars() - 2)) + abs(Gt)) - sgn(temp) * sqrt(abs(temp)));
+	//cons_value = code[1] - 0.8 * code[0] * sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - sgn(temp) * sqrt(abs(temp)) - abs(Gt);
+	cons_value2 = code[3] - pow(code[0], (0.5 * (2.0 + 3.0 * (4 - 2) / (double)(Vars() - 2)) + abs(Gt)) - sgn(temp2) * sqrt(abs(temp2)));
+	//cons_value2 = code[3] - 0.8 * code[0] * sin(6. * pi * code[0] + (4. * pi / (double)Vars())) - sgn(temp2) * sqrt(abs(temp2)) - abs(Gt);
+
+	//push values to the vector
+	cons_val_temp.push_back(cons_value);
+	cons_val_temp.push_back(cons_value2);
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+
+	//return vector
+	return cons_val_temp;
+}
+/**********************CDF2**************************/
+std::vector<double> CDF2::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+												//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+		double h;
+
+		if (i == 2)
+		{
+			if (y  < (3. / 2. * (1. - (sqrt(2.) / 2.))))
+				h = abs(y);
+			else
+				h = 0.125 + pow(y - 1., 2);
+		}
+		else
+			h = pow(y - Gt, 2);
+
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += h;
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += h;
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + SumJ1);				//fitness 1
+	fitness.push_back(1.0 - code[0] + SumJ2);		//fitness 2
+
+													//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF2::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 25,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 25,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF2::Plot_PF(int indexr, double t, int size)
+{
+	short N = 2;
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+	//calculate the real PF points
+	for (double i = 0; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+		double temp;				//PF value
+
+									//calculate the PF value
+		if (i <= 0.5)
+			temp = 1. - i;
+		else if (i <= 0.75)
+			temp = -0.5 * i + (3. / 4.);
+		else
+			temp = 1. - i + 0.125;
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF2::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	double temp;							//Temporary value
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+										//Calculate temp
+	temp = code[1] - sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - 0.5 * code[0] + 0.25;
+
+	//Calculate constrain
+	cons_value = temp / (1. + pow(e, 4. * abs(temp)));
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************CDF3**************************/
+std::vector<double> CDF3::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	int N = 10;
+	float eps = 0.1f;
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - pow(code[0], (0.5 * (2.0 + 3.0 * (i - 2) / (double)(Vars() - 2)) +abs(Gt)));
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+	//calculate the fitness and push it to the fitness vector
+	double maxf = (0.5 / N +  eps) * abs(sin(2 * N * pi * code[0]));		//Max function
+	
+	double fitness1_temp = code[0] + (2.0 / sizeJ1) * SumJ1 + maxf;				//fitness 1
+	double fitness2_temp = 1.0 - code[0] + (2.0 / sizeJ2) * SumJ2 + maxf;		//fitness 2
+
+	fitness.push_back(fitness1_temp);				//fitness 1
+	fitness.push_back(fitness2_temp);			//fitness 2
+
+																										//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF3::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = -1;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 50,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 50,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF3::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	short N = 10;
+	float eps = 0.1f;
+
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+															//Push 1st point
+	std::vector<double> temp_vect;		//temporary vector of fitness
+
+	for (int i = 0; i <= 2*N; i++)
+	{
+
+
+		//calculate the PF value
+		double temp = i/(2.*N);
+		double temp2 = 1- temp;
+		/*if (temp <= 0.5)
+			temp2 = 1. - temp;
+		else if (temp <= 0.75)
+			temp2 = -0.5 * temp + (3. / 4.);
+		else
+			temp2 = 1. - temp + 0.125;*/
+						//PF value
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(temp);
+		temp_vect.push_back(temp2);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << temp << " ";
+			PF_real << temp2;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF3::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+										//Calculate constrain value
+	cons_value = code[1] - pow(code[0], (0.5 * (2.0 + 3.0 * (2 - 2) / (double)(Vars() - 2)) + abs(Gt)));
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************CDF4**************************/
+std::vector<double> CDF4::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+									//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - pow(code[0], (0.5 * (1.0 + 3.0 * (i - 2) / (double)(Vars() - 2))+abs(Gt)));
+		if (i % 2 == 1)
+		{
+			sizeJ1++;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			sizeJ2++;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;									//fitness vector - output
+
+																	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0]  + (2.0 / sizeJ1) * SumJ1);			//fitness 1
+	fitness.push_back(1. - pow(code[0],2) + (2.0 / sizeJ2) * SumJ2);	//fitness 2
+
+																		//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+
+}
+
+void CDF4::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF4::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	short N = 10;		//CEC 09
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+	/*
+	//calculate the real PF points
+	for (double i = 0; i <= 2 * N; i++)
+	{
+		//calculate the PF value
+		double temp = (double)i / (double)(2 * N) + abs(Gt);
+		double temp2 = (1. - ((double)i / (double)(2 * N)) + abs(Gt));				//PF value
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(temp);
+		temp_vect.push_back(temp2);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << temp << " ";
+			PF_real << temp2;
+			PF_real << std::endl;
+		}
+	}*/
+	//Calculate the rest of the points
+	for (double i = 0 ; i <= 1. ; i += 1. / (double)(size))
+	{
+		//calculate the PF valued
+		double temp = 1. - pow(i,2);		//PF value
+
+		double cons_value = i + temp - abs(sin((double)N * pi * (i - temp + 1.))) - 1.;
+
+		if (cons_value < cons_check_param)
+		{
+			//double i221 = 21;
+			//	std::cout << i << " " << cons_value << std::endl;
+			continue;
+
+		}
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+std::vector<double> CDF4::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	short N = 10;		// CEC '09
+	short a = 1;		// CEC '09
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+	//Calculate constrain
+	cons_value = fit[0] + fit[1] - (double)a * abs(sin((double)N * pi * (fit[0] - fit[1] + 1.))) - 1.;
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+
+}
+/**********************CDF5**************************/
+std::vector<double> CDF5::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y;
+		if (i % 2 == 1)
+			y = code[i - 1] - 0.8 * code[0] * cos(6. * pi * code[0] + ((double)i * pi / (double)Vars())) - Gt;
+		else
+			y = code[i - 1] - 0.8 * code[0] * sin(6. * pi * code[0] + ((double)i * pi / (double)Vars())) - Gt;
+		double h;
+
+		if (i == 2)
+		{
+			if (y < (3. / 2. * (1. - (sqrt(2.) / 2.))))
+				h = abs(y);
+			else
+				h = 0.125 + pow(y - 1., 2);
+		}
+		else
+			h = 2. * pow(y, 2) - cos(4. * pi * y) + 1.;
+
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += h;
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += h;
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + SumJ1 + abs(Gt));				//fitness 1
+	fitness.push_back(1.0 - code[0] + SumJ2 + abs(Gt));		//fitness 2
+
+													//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF5::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 35,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 35,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF5::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+	for (double i = 0; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+		double temp;				//PF value
+
+									//calculate the PF value
+		if (i <= 0.5)
+			temp = 1. - i;
+		else if (i <= 0.75)
+			temp = -0.5 * i + (3. / 4.);
+		else
+			temp = 1. - i + 0.125;
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i + abs(Gt));
+		temp_vect.push_back(temp + abs(Gt));
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i + abs(Gt) << " ";
+			PF_real << temp + abs(Gt);
+			PF_real << std::endl;
+		}
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF5::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+										//Calculate constrain value
+	cons_value = code[1] - 0.8 * code[0] * sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - 0.5 * code[0] + 0.25 - Gt;
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************CDF6**************************/
+std::vector<double> CDF6::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	double Gt = sin(0.5 * pi * t);
+
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y;
+
+		if (i % 2 == 1)
+		{
+			y = code[i - 1] - 0.8 * code[0] * cos(6. * pi * code[0] + ((double)i * pi / (double)Vars())) - abs(Gt);
+			sizeJ1 += 1;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			y = code[i - 1] - 0.8 * code[0] * sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+			if (i != 2 && i != 4)
+				y -= abs(Gt);
+			sizeJ2 += 1;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + SumJ1 +abs(Gt));						//fitness 1
+	fitness.push_back(pow(1.- code[0], 2) + SumJ2 + abs(Gt));		//fitness 2
+
+															//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF6::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 1.5,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF6::Plot_PF(int indexr, double t, int size)
+{
+
+	
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);
+
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+	for (double i = 0.; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+		double temp;				//PF value
+
+									//calculate the PF value
+		if (i <= 0.5)
+			temp = pow(1. - i, 2);
+		else if (i <= 0.75)
+			temp = 0.5 * (1. -i);
+		else
+			temp = 0.25 * sqrt(1. -i);
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i + abs(Gt));
+		temp_vect.push_back(temp + abs(Gt));
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i + abs(Gt) << " ";
+			PF_real << temp + abs(Gt);
+			PF_real << std::endl;
+		}
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF6::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for the constrain check
+	double cons_value2;					//2nd Value for the constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+
+	double temp, temp2;				//temporary values
+									//Calculate temporary values
+	temp = 0.5 * (1. - code[0]) - pow(1. - code[0], 2);
+	temp2 = 0.25 * sqrt(1. - code[0]) - 0.5 * (1. - code[0]);
+
+	//Calculate constrain values
+	cons_value = code[1] - 0.8 * code[0] * sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - sgn(temp) * sqrt(abs(temp));
+	cons_value2 = code[3] - 0.8 * code[0] * sin(6. * pi * code[0] + (4. * pi / (double)Vars())) - sgn(temp2) * sqrt(abs(temp2));
+
+	//push values to the vector
+	cons_val_temp.push_back(cons_value);
+	cons_val_temp.push_back(cons_value2);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+
+/**********************CDF7**************************/
+std::vector<double> CDF7::Fitness_C(const std::vector<double> & code, int tau, double t)
 {
 	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
 	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
@@ -11746,7 +14007,7 @@ std::vector<double> CDF1::Fitness_C(const std::vector<double> & code, int tau, d
 
 }
 
-void CDF1::Bound_Set()
+void CDF7::Bound_Set()
 {
 	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
 	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
@@ -11782,7 +14043,7 @@ void CDF1::Bound_Set()
 	function::Bound_Set(bound);
 	function::Max_Min_Fit_Set(max_min);
 }
-std::vector<std::vector<double>> CDF1::Plot_PF(int indexr, double t, int size)
+std::vector<std::vector<double>> CDF7::Plot_PF(int indexr, double t, int size)
 {
 	std::ofstream PF_real;					//ofstream file for the PF saving
 	short N = 10;		//CEC 09
@@ -11855,7 +14116,7 @@ std::vector<std::vector<double>> CDF1::Plot_PF(int indexr, double t, int size)
 
 	return PF_real_val;
 }
-std::vector<double> CDF1::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
+std::vector<double> CDF7::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
 {
 	double cons_value;					//Value for constrain check
 	short N = 10;		// CEC '09
@@ -11867,45 +14128,45 @@ std::vector<double> CDF1::Cons_Calc(const std::vector<double> &code, const std::
 
 	//push value to the vector
 	cons_val_temp.push_back(cons_value);
-
+	if (cons_val_temp.size() != Cons())
+		abort();
 	//return vector
 	return cons_val_temp;
 
 }
 
-/**********************CDF2**************************/
-std::vector<double> CDF2::Fitness_C(const std::vector<double> & code, int tau, double t)
+/**********************CDF8**************************/
+std::vector<double> CDF8::Fitness_C(const std::vector<double>& code, int tau, double t)
 {
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
 	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	double Gt = sin(0.5*pi*t);
 
-	//calculate temp values
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double Mt = 0.5 + abs(Gt);		//Value of M(t) function - dynamic dependant on time
+
+									//calculate temp values
 	for (int i = 2; i <= Vars(); i++)
 	{
-		double y;
-
+		double y = code[i - 1]  - pow(code[0], (0.5 * (2.0 + 3.0 * (i - 2) / (double)(Vars() - 2))));
 		if (i % 2 == 1)
 		{
-			y = code[i - 1] - 0.8*code[0] * cos(6.*pi*code[0] + ((double)i*pi / (double)Vars()));
-			sizeJ1 += 1;
-			SumJ1 += pow(y - abs(Gt), 2);
+			sizeJ1++;
+			SumJ1 += pow(y, 2);
 		}
 		else
 		{
-			y = code[i - 1] - 0.8*code[0] * sin(6.*pi*code[0] + ((double)i*pi / (double)Vars()));
-			sizeJ2 += 1;
-			SumJ2 += pow(y - abs(Gt), 2);
+			sizeJ2++;
+			SumJ2 += pow(y, 2);
 		}
 	}
 
-	std::vector<double> fitness;					//fitness vector - output
+	std::vector<double> fitness;									//fitness vector - output
 
-													//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + SumJ1 + abs(Gt));						//fitness 1
-	fitness.push_back(pow(1.0 - code[0], 2) + SumJ2 + abs(Gt));		//fitness 2
+																	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + (2.0 / sizeJ1) * SumJ1);			//fitness 1
+	fitness.push_back(1. - Mt * pow(code[0], Mt) + (2.0 / sizeJ2) * SumJ2);	//fitness 2
 
-															//check if the fitness has a proper size
+																		//check if the fitness has a proper size
 	if (fitness.size() != Objs())
 	{
 		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
@@ -11914,9 +14175,178 @@ std::vector<double> CDF2::Fitness_C(const std::vector<double> & code, int tau, d
 	}
 
 	return fitness;
+
 }
 
-void CDF2::Bound_Set()
+void CDF8::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -1;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF8::Plot_PF(int indexr, double t, int size)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double Mt = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
+	double Ht = Mt;					//Value of H(t) function - dynamic dependant on time
+	short N = 2;
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+
+	std::vector<double> temp_vect1;
+	temp_vect1.push_back(0.);
+	temp_vect1.push_back(1.);
+	//push the fitness vector to the PF vector
+	PF_real_val.push_back(temp_vect1);
+
+	//save the fitness values to the file
+	if (indexr >= 0)
+	{
+		PF_real << 0. << " ";
+		PF_real << 1.;
+		PF_real << std::endl;
+	}
+
+	//Calculate the rest of the points
+	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
+	{
+		//calculate the PF value
+		double temp = (1. - (Mt * pow(i, Ht)));		//PF value
+
+		if ((temp + pow(i, 0.5) - (double)1 * sin((double)N * pi * (pow(i, 0.5) - temp + 1.)) - 1.) < cons_check_param)
+			continue;
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+std::vector<double> CDF8::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	short N = 2;		// CEC '09
+	short a = 1;		// CEC '09
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double Mt = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
+	double Ht = Mt;					//Value of H(t) function - dynamic dependant on time
+
+										//Calculate constrain
+	cons_value = fit[1] + pow(fit[0], 0.5) - (double)a * sin((double)N * pi * (pow(fit[0], 0.5) - fit[1] + 1.)) - 1.;
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************CDF9**************************/
+std::vector<double> CDF9::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	double Gt = sin(0.5 * pi * t);
+	double Mt, Ht;
+	Mt = Ht = 0.5 + abs(Gt);
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y;
+
+		if (i % 2 == 1)
+		{
+			y = code[i - 1] - 0.8 * code[0] * cos(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+			sizeJ1 += 1;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			y = code[i - 1] - 0.8 * code[0] * sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+			sizeJ2 += 1;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + SumJ1 + abs(Gt));						//fitness 1
+	fitness.push_back(pow(1. - pow(Mt * code[0], Ht),2) + SumJ2 + abs(Gt));		//fitness 2
+
+															//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+	for (int i = 0; i < Objs(); i++)
+		if (fitness[i] != fitness[i])
+			abort();
+	return fitness;
+}
+
+void CDF9::Bound_Set()
 {
 	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
 	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
@@ -11952,11 +14382,15 @@ void CDF2::Bound_Set()
 	function::Bound_Set(bound);
 	function::Max_Min_Fit_Set(max_min);
 }
-std::vector<std::vector<double>> CDF2::Plot_PF(int indexr, double t, int size)
+std::vector<std::vector<double>> CDF9::Plot_PF(int indexr, double t, int size)
 {
+
+
 	std::ofstream PF_real;					//ofstream file for the PF saving
-	double Gt = sin(0.5*pi*t);
-											//check if the index is correct
+	double Gt = sin(0.5 * pi * t);
+	double Mt, Ht;
+	Mt = Ht = 0.5 + abs(Gt);
+	//check if the index is correct
 	if (indexr >= 0)
 		//open a new PF file
 		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
@@ -11969,12 +14403,14 @@ std::vector<std::vector<double>> CDF2::Plot_PF(int indexr, double t, int size)
 		double temp;				//PF value
 
 									//calculate the PF value
-		if (i <= 0.5 )
-			temp = pow(1. - i, 2);
-		else if (i <= 0.75 )
-			temp = 0.5*(1. - i);
+		if (1 - pow(Mt * i,Ht) < 0)
+			continue;
+		if (pow(Mt * i, Ht) <= 0.5)
+			temp = pow(1. - pow(Mt * i, Ht), 2);
+		else if (pow(Mt * i, Ht) <= 0.75)
+			temp = 0.5 * pow(1. - pow(Mt * i, Ht), 1);
 		else
-			temp = 0.25*sqrt(1. - i);
+			temp = 0.25 * pow(1. - pow(Mt * i, Ht), 0.5);
 		std::vector<double> temp_vect;			//temporary vector of fitness
 
 												//push values to the fitness vector
@@ -11998,925 +14434,58 @@ std::vector<std::vector<double>> CDF2::Plot_PF(int indexr, double t, int size)
 	return PF_real_val;
 }
 
-std::vector<double> CDF2::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
+std::vector<double> CDF9::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
 {
 	double cons_value;					//Value for the constrain check
 	double cons_value2;					//2nd Value for the constrain check
 	std::vector<double> cons_val_temp;	//Values of the constrains - output
-	double Gt = sin(0.5*pi*t);
-
+	double Gt = sin(0.5 * pi * t);
+	double Mt, Ht;
+	Mt = Ht = 0.5 + abs(Gt);
 
 	double temp, temp2;				//temporary values
 									//Calculate temporary values
-	temp = 0.5*(1. - code[0]) - pow(1. - code[0], 2);
-	temp2 = 0.25 * sqrt(1. - code[0]) - 0.5*(1. - code[0]);
+	temp = 0.5 * pow(1. - pow(Mt * code[0],Ht), 1) - pow(1. - pow(Mt * code[0], Ht),2);
+	temp2 = 0.25 * pow(1. - pow(Mt * code[0], Ht), 0.5) - 0.5 * pow(1. - pow(Mt * code[0], Ht), 1);
 
 	//Calculate constrain values
-	cons_value = code[1] - 0.8*code[0] * sin(6.*pi*code[0] + (2.*pi / (double)Vars())) - sgn(temp)*sqrt(abs(temp)) - abs(Gt);
-	cons_value2 = code[3] - 0.8*code[0] * sin(6.*pi*code[0] + (4.*pi / (double)Vars())) - sgn(temp2)*sqrt(abs(temp2)) - abs(Gt);
+	cons_value = code[1] - 0.8 * code[0] * sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - sgn(temp) * sqrt(abs(temp));
+	cons_value2 = code[3] - 0.8 * code[0] * sin(6. * pi * code[0] + (4. * pi / (double)Vars())) - sgn(temp2) * sqrt(abs(temp2));
 
 	//push values to the vector
 	cons_val_temp.push_back(cons_value);
 	cons_val_temp.push_back(cons_value2);
-
+	if (cons_val_temp.size() != Cons())
+		abort();
 	//return vector
 	return cons_val_temp;
 }
-
-/**********************CDF3**************************/
-std::vector<double> CDF3::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Mt = 0.5 + abs(Gt);		//Value of M(t) function - dynamic dependant on time
-	double Kt = ceil(Vars()*Gt);					//Value of K(t) function - dynamic dependant on time	
-
-													//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - sin((6. * pi * code[0]) + (((double)i + Kt) * pi) / (double)Vars());
-		if (i % 2 == 1)
-		{
-			sizeJ1++;
-			SumJ1 += pow(y, 2);
-		}
-		else
-		{
-			sizeJ2++;
-			SumJ2 += pow(y, 2);
-		}
-	}
-
-	std::vector<double> fitness;									//fitness vector - output
-
-																	//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + (2.0 / sizeJ1)*SumJ1);						//fitness 1
-	fitness.push_back(1. - (Mt*pow(code[0], Mt)) + (2.0 / sizeJ2)*SumJ2);	//fitness 2
-
-																			//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF3::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 1;
-		temp.lower = -1;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF3::Plot_PF(int indexr, double t, int size)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Mt = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
-	double Ht = Mt;					//Value of H(t) function - dynamic dependant on time
-	short N = 2;
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-
-	std::vector<double> temp_vect1;	
-	temp_vect1.push_back(0.);
-	temp_vect1.push_back(1.);
-	//push the fitness vector to the PF vector
-	PF_real_val.push_back(temp_vect1);
-
-	//save the fitness values to the file
-	if (indexr >= 0)
-	{
-		PF_real << 0. << " ";
-		PF_real << 1.;
-		PF_real << std::endl;
-	}
-
-	//Calculate the rest of the points
-	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
-	{
-		//calculate the PF value
-		double temp = (1. - (Mt*pow(i, Ht)));		//PF value
-
-		if (((temp + sqrt(i)) - sin((double)N*pi*(sqrt(i) - temp + 1.)) - 1.) < cons_check_param)
-			continue;
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-
-	/*double i1min, i1max, i2min, i2max;
-
-	i1min = pow((2. / (2. * N)), 1 / Ht);
-	i1max = pow((3. / (2. * N)), 1 / Ht);
-	i2min = pow((3. / (2. * N)), 1 / Ht);
-	i2max = pow((4. / (2. * N)), 1 / Ht);
-
-	//calculate the step of the i value for the loop
-	double i_step = ((i1max - i1min) + (i2max - i2min)) / ((double)size - 2.0);
-
-	//Calculate the rest of the points
-	for (double i = i1min; i <= i1max; i += i_step)
-	{
-		//calculate the PF value
-		double temp = (1. - (Mt*pow(i, Ht)));		//PF value
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-	for (double i = i2min; i <= i2max; i += i_step)
-	{
-		//calculate the PF value
-		double temp = (1. - (Mt*pow(i, Ht)));		//PF value
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}*/
-
-
-	//close the PF file
-	PF_real.close();
-
-
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF3::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double cons_value;					//Value for constrain check
-	double temp;							//Temporary value
-	short N = 2;		// CEC '09
-	short a = 1;		// CEC '09
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-
-
-										//Calculate t
-	temp = fit[1] + sqrt(fit[0]) - (double)a*sin((double)N*pi*(sqrt(fit[0]) - fit[1] + 1.)) - 1.;
-	
-	//temp = fit[1] + Mt*pow(fit[0],Ht) - (double)a*sin((double)N*pi*(Mt*pow(fit[0], Ht) - fit[1] + 1.)) - 1.;
-
-	//Calculate constrain
-	cons_value = temp / (1. + exp(4.*abs(temp)));
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-/**********************CDF4**************************/
-std::vector<double> CDF4::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Mt = 0.5 + abs(Gt);		//Value of M(t) function - dynamic dependant on time
-
-									//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - Gt - pow(code[0], (0.5*(2.0 + 3.0*(i - 2) / (double)(Vars() - 2)) + Gt));
-		if (i % 2 == 1)
-		{
-			sizeJ1++;
-			SumJ1 += pow(y, 2);
-		}
-		else
-		{
-			sizeJ2++;
-			SumJ2 += pow(y, 2);
-		}
-	}
-
-	std::vector<double> fitness;									//fitness vector - output
-
-																	//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + (2.0 / sizeJ1)*SumJ1);			//fitness 1
-	fitness.push_back(1. - Mt*pow(code[0], Mt) + (2.0 / sizeJ2)*SumJ2);	//fitness 2
-
-																		//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-
-}
-
-void CDF4::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 2;
-		temp.lower = -1;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF4::Plot_PF(int indexr, double t, int size)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Mt = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
-	double Ht = Mt;					//Value of H(t) function - dynamic dependant on time
-	short N = 2;
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-
-	std::vector<double> temp_vect1;
-	temp_vect1.push_back(0.);
-	temp_vect1.push_back(1.);
-	//push the fitness vector to the PF vector
-	PF_real_val.push_back(temp_vect1);
-
-	//save the fitness values to the file
-	if (indexr >= 0)
-	{
-		PF_real << 0. << " ";
-		PF_real << 1.;
-		PF_real << std::endl;
-	}
-	
-	//Calculate the rest of the points
-	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
-	{
-		//calculate the PF value
-		double temp = (1. - (Mt*pow(i, Ht)));		//PF value
-		
-		if ((temp + pow(i, 0.5) - (double)1 * sin((double)N*pi*(pow(i, 0.5) - temp + 1.)) - 1.) < cons_check_param)
-			continue;
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-	//close the PF file
-	PF_real.close();
-
-
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-std::vector<double> CDF4::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double cons_value;					//Value for constrain check
-	short N = 2;		// CEC '09
-	short a = 1;		// CEC '09
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Mt = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
-	double Ht = Mt;					//Value of H(t) function - dynamic dependant on time
-
-										//Calculate constrain
-	cons_value = fit[1] + pow(fit[0], 0.5) - (double)a*sin((double)N*pi*(pow(fit[0], 0.5) - fit[1] + 1.)) - 1.;
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-
-/**********************CDF5**************************/
-std::vector<double> CDF5::Fitness_C(const std::vector<double> & code, int tau, double t)
+/**********************CDF10**************************/
+std::vector<double> CDF10::Fitness_C(const std::vector<double>& code, int tau, double t)
 {
 	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
 	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double  Ht;
+	Ht = 0.5 + abs(Gt);
+	
 	//calculate temp values
 	for (int i = 2; i <= Vars(); i++)
 	{
 		double y;
 		if (i % 2 == 1)
-			y = code[i - 1] - 0.8*code[0] * cos(6.*pi*code[0] + ((double)i*pi / (double)Vars()))- Gt;
+			y = code[i - 1] -  cos(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
 		else
-			y = code[i - 1] - 0.8*code[0] * sin(6.*pi*code[0] + ((double)i*pi / (double)Vars())) - Gt;
+			y = code[i - 1] - sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
 		double h;
 
-		if (i == 2)
+		if (i == 2 || i == 4)
 		{
-			if (y < (3. / 2.*(1. - (sqrt(2.) / 2.))))
-				h = abs(y);
-			else
-				h = 0.125 + pow(y - 1., 2);
+			
+			h =pow(y, 2);
 		}
 		else
-			h = 2. * pow(y, 2) - cos(4.*pi*y) + 1.;
-
-		if (i % 2 == 1)
-		{
-			sizeJ1 += 1;
-			SumJ1 += h;
-		}
-		else
-		{
-			sizeJ2 += 1;
-			SumJ2 += h;
-		}
-	}
-
-	std::vector<double> fitness;					//fitness vector - output
-
-													//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + SumJ1 + abs(Gt));				//fitness 1
-	fitness.push_back(1.0 - code[0] + SumJ2 + abs(Gt));		//fitness 2
-
-													//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF5::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 2;
-		temp.lower = -2;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 35,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 35,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF5::Plot_PF(int indexr, double t, int size)
-{
-	std::ofstream PF_real;					//ofstream file for the PF saving
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-															//calculate the real PF points
-	for (double i = 0; i <= 1.; i += 1.0 / (double)(size - 1))
-	{
-		double temp;				//PF value
-
-									//calculate the PF value
-		if (i <= 0.5 )
-			temp = 1. - i;
-		else if (i <= 0.75)
-			temp = -0.5*i + (3. / 4.);
-		else
-			temp = 1. - i + 0.125;
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i + abs(Gt));
-		temp_vect.push_back(temp + abs(Gt));
-
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i + abs(Gt) << " ";
-			PF_real << temp + abs(Gt);
-			PF_real << std::endl;
-		}
-	}
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF5::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double cons_value;					//Value for constrain check
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-
-										//Calculate constrain value
-	cons_value = code[1] - 0.8*code[0] * sin(6.*pi*code[0] + (2.*pi / (double)Vars())) - 0.5*code[0] + 0.25 - Gt;
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-/**********************CDF6**************************/
-std::vector<double> CDF6::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double Gt1 = sin(0.5*pi*t_vector[0]);		//Value of G(t1) function - dynamic dependant on time
-	double Gt2 = sin(0.5*pi*t_vector[1]);		//Value of G(t2) function - dynamic dependant on time
-	double Gt3 = sin(0.5*pi*t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
-	double Gt4 = sin(0.5*pi*t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
-	double Gt5 = sin(0.5*pi*t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
-	double Kt1 = ceil(Vars()*Gt1);				//Value of K(t1) function - dynamic dependant on time
-	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
-	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
-
-	double sizeJ1, sizeJ2, SumJ1, SumJ2, MultipJ1, MultipJ2;			//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	MultipJ1 = MultipJ2 = 1;
-	//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - sin(6 * pi*code[0] + ((double)i + Kt1)*pi / Vars()) - Gt2;
-		if (i % 2 == 1)
-		{
-			sizeJ1 += 1;
-			SumJ1 += pow(y, 2);
-			//MultipJ1 *= cos((20. * y*pi) / sqrt(i));
-		}
-		else
-		{
-			sizeJ2 += 1;
-			SumJ2 += pow(y, 2);
-			//MultipJ2 *= cos((20. * y*pi) / sqrt(i));
-		}
-	}
-
-	/*for (int i = 2; i <= Vars(); i++)
-	{
-	double y = code[i - 1] - sin(6 * pi*code[0] + ((double)i + Kt1)*pi / Vars()) - Gt2;
-	if (i % 2 == 1)
-	{
-	sizeJ1 += 1;
-	SumJ1 += pow(y, 2);
-	}
-	else
-	{
-	sizeJ2 += 1;
-	SumJ2 += pow(y, 2);
-	}
-	}*/
-
-	std::vector<double> fitness;					//fitness vector - output
-
-	double fitness1_temp = code[0] + abs(Gt3) + (2.0 / sizeJ1)*(SumJ1);			//fitness 1
-	double fitness2_temp = 1 - Ht4*pow(code[0], Ht5) + abs(Gt3) + (2.0 / sizeJ2)*(SumJ2);		//fitness 2
-	fitness.push_back(fitness1_temp);				//fitness 1
-	fitness.push_back(fitness2_temp);			//fitness 2
-
-												//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF6::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 2;
-		temp.lower = -2;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF6::Plot_PF(int indexr, double t, int size)
-{
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-	double Gt2 = sin(0.5*pi*t_vector[1]);		//Value of G(t2) function - dynamic dependant on time
-	double Gt3 = sin(0.5*pi*t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
-	double Gt4 = sin(0.5*pi*t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
-	double Gt5 = sin(0.5*pi*t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
-	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
-	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
-
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-															//calculate the real PF points
-
-															//calculate the real PF points
-	for (double i = 0.; i <= 1.; i += 1.0 / (double)(size - 1))
-	{
-
-		//calculate the PF value
-		double temp = 1. - Ht4*pow(i, Ht5) + abs(Gt3);		//PF value
-															//temp = 1. - Ht4*pow(i - abs(Gt3), Ht5) + abs(Gt3);
-
-		if ((temp + Ht4*pow(i + abs(Gt3), Ht5) - sin(2.*pi*(Ht4*pow(i + abs(Gt3), Ht5) - temp + 1.)) - 1.) < cons_check_param)
-			continue;
-
-		std::vector<double> temp_vect;			//temporary vector of fitness
-												//push values to the fitness vector
-		temp_vect.push_back(i + abs(Gt3));
-		temp_vect.push_back(temp);
-
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i + abs(Gt3) << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF6::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double time)
-{
-	double cons_value;					//Value for constrain check
-	double t;							//Temporary value
-	short N = 2;
-
-	double Gt3 = sin(0.5*pi*t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
-	double Gt4 = sin(0.5*pi*t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
-	double Gt5 = sin(0.5*pi*t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
-	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
-	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
-
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-										//Calculate t
-	cons_value = fit[1] + Ht4*pow(fit[0], Ht5) - sin((double)N*pi*(Ht4*pow(fit[0], Ht5) - fit[1] + 1.)) - 1.;
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-/**********************CDF7**************************/
-std::vector<double> CDF7::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Ht = 0.5 + abs(Gt);					//Value of H(t) function - dynamic dependant on time
-	//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y;
-		if (i % 2 == 1)
-		{
-			y = code[i - 1] - sin((6. * pi * code[0]) + ((double)i * pi) / (double)Vars());
-			sizeJ1++;
-			SumJ1 += pow(y, 2);
-		}
-		else
-		{
-			y = code[i - 1] - cos((6. * pi * code[0]) + ((double)i * pi) / (double)Vars());
-			sizeJ2++;
-			SumJ2 += pow(y, 2);
-		}
-	}
-
-	std::vector<double> fitness;									//fitness vector - output
-
-																	//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + (2.0 / sizeJ1)*SumJ1);				//fitness 1
-	fitness.push_back(1. - pow(code[0],Ht) + (2.0 / sizeJ2)*SumJ2);	//fitness 2
-
-																	//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF7::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 1;
-		temp.lower = -1;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{6,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF7::Plot_PF(int indexr, double t, int size)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Ht = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
-	short N = 2;
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-	//Calculate the rest of the points
-	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
-	{
-		//calculate the PF value
-		double temp = (1. - (pow(i, Ht)));		//PF value
-		
-		double temp_const = (temp + sqrt(i) - sin((double)N*pi*(sqrt(i) - temp + 1.)) - 1.);
-		double cons_value = temp_const / (1. + exp(4.*abs(temp_const)));
-		
-		if (cons_value < cons_check_param)
-			continue;
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-	//close the PF file
-	PF_real.close();
-
-
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF7::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double cons_value;					//Value for constrain check
-	double temp;							//Temporary value
-	short N = 2;		// CEC '09
-	short a = 1;		// CEC '09
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-										//Calculate t
-	temp = fit[1] + sqrt(fit[0]) - (double)a*sin((double)N*pi*(sqrt(fit[0]) - fit[1] + 1.)) - 1.;
-
-	//Calculate constrain
-	cons_value = temp / (1. + exp(4.*abs(temp)));
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-/**********************CDF8**************************/
-std::vector<double> CDF8::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-												//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - sin(6.*pi*code[0] + ((double)i*pi / (double)Vars())) - Gt;
-		double h;
-
-		if (i == 2)
-		{
-			if (y < (3. / 2.*(1. - (sqrt(2.) / 2.))))
-				h = abs(y);
-			else
-				h = 0.125 + pow(y - 1., 2);
-		}
-		else
-			h = pow(y, 2);
+			h = 2. * pow(y, 2) - cos(4. * pi * y) + 1.;
 
 		if (i % 2 == 1)
 		{
@@ -12934,307 +14503,9 @@ std::vector<double> CDF8::Fitness_C(const std::vector<double> & code, int tau, d
 
 													//calculate the fitness and push it to the fitness vector
 	fitness.push_back(code[0] + SumJ1);				//fitness 1
-	fitness.push_back(1.0 - code[0] + SumJ2);		//fitness 2
+	fitness.push_back(pow(1.0 - code[0],Ht) + SumJ2);		//fitness 2
 
 													//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF8::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 2;
-		temp.lower = -2;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 25,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 25,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF8::Plot_PF(int indexr, double t, int size)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double Ht = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
-	short N = 2;
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-	//calculate the real PF points
-	for (double i = 0; i <= 1.; i += 1.0 / (double)(size - 1))
-	{
-		double temp;				//PF value
-
-									//calculate the PF value
-		if (i <= 0.5)
-			temp = 1. - i;
-		else if (i <= 0.75)
-			temp = -0.5*i + (3. / 4.);
-		else
-			temp = 1. - i + 0.125;
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF8::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double cons_value;					//Value for constrain check
-	double temp;							//Temporary value
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-										//Calculate temp
-	temp = code[1] - sin(6.*pi*code[0] + (2.*pi / (double)Vars())) - 0.5*code[0] + 0.25 - Gt;
-
-	//Calculate constrain
-	cons_value = temp / (1. + pow(e, 4.*abs(temp)));
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-
-/**********************CDF9**************************/
-std::vector<double> CDF9::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-
-	//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - pow(code[0], (0.5*(1. + (3.*(i - 2) / (double)(Vars() - 2)))));
-		if (i % 2 == 1)
-		{
-			sizeJ1++;
-			SumJ1 += pow(y, 2);
-		}
-		else
-		{
-			sizeJ2++;
-			SumJ2 += pow(y, 2);
-		}
-	}
-
-	std::vector<double> fitness;									//fitness vector - output
-
-																	//calculate the fitness and push it to the fitness vector
-	fitness.push_back(code[0] + (2.0 / sizeJ1)*SumJ1);				//fitness 1
-	fitness.push_back(1. - code[0] + (2.0 / sizeJ2)*SumJ2);	//fitness 2
-
-															//check if the fitness has a proper size
-	if (fitness.size() != Objs())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	return fitness;
-}
-
-void CDF9::Bound_Set()
-{
-	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
-	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
-
-																		//set the boundaries for the first variable - if different than others
-	STRUCTURES::boundaries first{ 1,0 };
-	bound.push_back(first);
-
-	//set boundaries for the rest of variables
-	for (int i = 1; i < Vars(); i++)
-	{
-		STRUCTURES::boundaries temp;
-		temp.upper = 1;
-		temp.lower = 0;
-		bound.push_back(temp);
-	}
-
-	//check if the amount of boudaries is correct
-	if (bound.size() != Vars())
-	{
-		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
-		system("pause");
-		abort();
-	}
-
-	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
-	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
-	max_min.push_back(t2);
-
-	//assign boundary vectors to class vectors
-	function::Bound_Set(bound);
-	function::Max_Min_Fit_Set(max_min);
-}
-std::vector<std::vector<double>> CDF9::Plot_PF(int indexr, double t, int size)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	short N = 10;
-	std::ofstream PF_real;					//ofstream file for the PF saving
-
-											//check if the index is correct
-	if (indexr >= 0)
-		//open a new PF file
-		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
-
-	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
-
-
-	//Calculate the rest of the points
-	for (double i = 0; i <= 1.; i += 1. / (double)(size))
-	{
-		//calculate the PF value
-		double temp = 1. - i;		//PF value
-
-		double cons_value = i + temp - abs(sin((double)N*pi*(i - temp + 1.))) - 1. + abs(Gt);
-
-		if (cons_value < cons_check_param)
-		{
-			//double i221 = 21;
-		//	std::cout << i << " " << cons_value << std::endl;
-			continue;
-			
-		}
-		std::vector<double> temp_vect;			//temporary vector of fitness
-
-												//push values to the fitness vector
-		temp_vect.push_back(i);
-		temp_vect.push_back(temp);
-		//push the fitness vector to the PF vector
-		PF_real_val.push_back(temp_vect);
-
-		//save the fitness values to the file
-		if (indexr >= 0)
-		{
-			PF_real << i << " ";
-			PF_real << temp;
-			PF_real << std::endl;
-		}
-	}
-
-	//close the PF file
-	PF_real.close();
-
-
-	//close the PF file
-	PF_real.close();
-
-	return PF_real_val;
-}
-
-std::vector<double> CDF9::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
-{
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
-	double cons_value;					//Value for constrain check
-	short N = 10;		// CEC '09
-	short a = 1;		// CEC '09
-	std::vector<double> cons_val_temp;	//Values of the constrains - output
-
-										//Calculate constrain
-	cons_value = fit[0] + fit[1] - abs(sin((double)N*pi*(fit[0] - fit[1] + 1.))) - 1. + abs(Gt);
-
-	//push value to the vector
-	cons_val_temp.push_back(cons_value);
-
-	//return vector
-	return cons_val_temp;
-}
-
-/**********************CDF10**************************/
-std::vector<double> CDF10::Fitness_C(const std::vector<double> & code, int tau, double t)
-{
-	double sizeJ1, sizeJ2, SumJ1, SumJ2, MultipJ1, MultipJ2;			//temp values for the fitness calculation
-	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
-	MultipJ1 = MultipJ2 = 1;
-	//calculate temp values
-	for (int i = 2; i <= Vars(); i++)
-	{
-		double y = code[i - 1] - sin(6.*pi*code[0] + ((double)i*pi / (double)Vars()));
-
-		if (i % 2 == 1)
-		{
-			sizeJ1 += 1;
-			SumJ1 += pow(y, 2);
-			//MultipJ1 *= cos((20. * y*pi) / sqrt(i));
-		}
-		else
-		{
-			sizeJ2 += 1;
-			SumJ2 += pow(y, 2);
-			//MultipJ2 *= cos((20. * y*pi) / sqrt(i));
-		}
-	}
-
-	std::vector<double> fitness;					//fitness vector - output
-
-													//calculate the fitness and push it to the fitness vector
-	//fitness.push_back(code[0] + (2.0 / sizeJ1)*(4.0 * SumJ1 - 2.0 * MultipJ1 + 2.));				//fitness 1
-//	fitness.push_back(1.0 - pow(code[0], 2) + (2.0 / sizeJ2)*(4.0 * SumJ2 - 2.0 * MultipJ2 + 2.));		//fitness 2
-	fitness.push_back(code[0] + (2.0 / sizeJ1)*(SumJ1));				//fitness 1
-	fitness.push_back(1.0 - pow(code[0], 2) + (2.0 / sizeJ2)*(SumJ2));		//fitness 2
-																										//check if the fitness has a proper size
 	if (fitness.size() != Objs())
 	{
 		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
@@ -13272,9 +14543,9 @@ void CDF10::Bound_Set()
 	}
 
 	//set boundaries for the fitness
-	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	STRUCTURES::boundaries t1{ 35,0 };									// t1 - max and min boundary for f1
 	max_min.push_back(t1);
-	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	STRUCTURES::boundaries t2{ 35,0 };									// t2 - max and min boundary for f2
 	max_min.push_back(t2);
 
 	//assign boundary vectors to class vectors
@@ -13283,7 +14554,335 @@ void CDF10::Bound_Set()
 }
 std::vector<std::vector<double>> CDF10::Plot_PF(int indexr, double t, int size)
 {
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double  Ht;
+	Ht = 0.5 + abs(Gt);
+	
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+	for (double i = 0.; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+		double temp;				//PF value
+
+									//calculate the PF value
+		
+		if (i <= 0.5)
+			temp = pow(1. -  i, Ht);
+		else if (i <0.75)
+			temp = pow(1. - i, Ht)-pow(1.-i,2)+0.5*(1.-i);
+		else
+			temp = pow(1. -  i, Ht) - pow(1. - i, 2) + 0.25 * sqrt(1. - i);
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i  << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF10::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for the constrain check
+	double cons_value2;					//2nd Value for the constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+
+
+	double temp, temp2;				//temporary values
+									//Calculate temporary values
+	temp = 0.5 * (1 - code[0]) - pow(1 - code[0], 2);
+	temp2 = 0.25 * sqrt(1 - code[0]) - 0.5 * (1 - code[0]);
+
+	//Calculate constrain values
+	cons_value = code[1] - sin(6. * pi * code[0] + (2. * pi / (double)Vars())) - sgn(temp) * sqrt(abs(temp));
+	cons_value2 = code[3] - sin(6. * pi * code[0] + (4. * pi / (double)Vars())) - sgn(temp2) * sqrt(abs(temp2));
+
+	//push values to the vector
+	cons_val_temp.push_back(cons_value);
+	cons_val_temp.push_back(cons_value2);
+
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************CDF11**************************/
+std::vector<double> CDF11::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	int N = 10;
+	float eps = 0.1f;
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y;
+		if (i % 2 == 1)
+			y = code[i - 1] - 0.8 * code[0] * cos(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+		else
+			y = code[i - 1] - 0.8 * code[0] * sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+		double h;
+
+		if (i == 2)
+		{
+			if (y < (3. / 2. * (1. - (sqrt(2.) / 2.))))
+				h = abs(y);
+			else
+				h = 0.125 + pow(y - 1., 2);
+		}
+		else
+			h = pow(y, 2) - cos(4. * pi * y) + 1.;
+
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += h;
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += h;
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+	//calculate the fitness and push it to the fitness vector
+	double maxf = (0.5 / N + eps) * abs(sin((2 * N * code[0] + Gt) * pi));		//Max function
+	
+	double fitness1_temp = code[0] + SumJ1  + maxf;				//fitness 1
+	double fitness2_temp = 1.0 - code[0] + SumJ2  + maxf;		//fitness 2
+
+	fitness.push_back(fitness1_temp);				//fitness 1
+	fitness.push_back(fitness2_temp);			//fitness 2
+
+																										//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF11::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = -1;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 50,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 50,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF11::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	short N = 10;
+	float eps = 0.1f;
+
+	//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+															//Push 1st point
+	std::vector<double> temp_vect;		//temporary vector of fitness
+
+	for (int i = 0.; i <= 2*N + 1; i ++)
+	{
+
+		//calculate the PF value
+		double temp = (i- Gt)/(2.*N);
+		double temp2;
+		if (temp < 0)
+			continue;
+		else if (temp <= 0.5)
+			temp2 = 1. - temp;
+		else if (temp <= 0.75)
+			temp2 = -0.5 * temp + (3. / 4.);
+		else if (temp <= 1)
+			temp2 = 1. - temp + 0.125;
+		else
+			continue;
+		//PF value
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(temp );
+		temp_vect.push_back(temp2);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << temp << " ";
+			PF_real << temp2 ;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF11::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double cons_value;					//Value for constrain check
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+
+										//Calculate constrain value
+	cons_value = code[1] - 0.8 * code[0] * sin(6. * pi * code[0] + (2. * pi / (double)Vars()))-0.5*code[0] + 0.25;
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************CDF12**************************/
+std::vector<double> CDF12::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double Ht = 0.5 + abs(Gt);					//Value of H(t) function - dynamic dependant on time
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y;
+		if (i % 2 == 1)
+		{
+			y = code[i - 1] - sin((6. * pi * code[0]) + ((double)i * pi) / (double)Vars());
+			sizeJ1++;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			y = code[i - 1] - cos((6. * pi * code[0]) + ((double)i * pi) / (double)Vars());
+			sizeJ2++;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;									//fitness vector - output
+
+																	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + (2.0 / sizeJ1) * SumJ1);				//fitness 1
+	fitness.push_back(1. - pow(code[0], Ht) + (2.0 / sizeJ2) * SumJ2);	//fitness 2
+
+																	//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF12::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = -1;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF12::Plot_PF(int indexr, double t, int size)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
 	double Ht = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
 	short N = 2;
 	std::ofstream PF_real;					//ofstream file for the PF saving
@@ -13295,14 +14894,14 @@ std::vector<std::vector<double>> CDF10::Plot_PF(int indexr, double t, int size)
 
 	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
 
-
-															//Calculate the rest of the points
+	//Calculate the rest of the points
 	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
 	{
 		//calculate the PF value
-		double temp = 1. - pow(i,2);		//PF value
+		double temp = (1. - (pow(i, Ht)));		//PF value
 
-		double cons_value = pow(i, 2) + temp - sin((double)N*pi*(pow(i, 2) - temp + 1. + Gt)) - 1. ;
+		double temp_const = (temp + sqrt(i) - sin((double)N * pi * (sqrt(i) - temp + 1.)) - 1.);
+		double cons_value = temp_const / (1. + exp(4. * abs(temp_const)));
 
 		if (cons_value < cons_check_param)
 			continue;
@@ -13333,23 +14932,507 @@ std::vector<std::vector<double>> CDF10::Plot_PF(int indexr, double t, int size)
 	return PF_real_val;
 }
 
-std::vector<double> CDF10::Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t)
+std::vector<double> CDF12::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
 {
-	double Gt = sin(0.5*pi*t);		//Value of G(t) function - dynamic dependant on time
+	double cons_value;					//Value for constrain check
+	double temp;							//Temporary value
+	short N = 2;		// CEC '09
+	short a = 1;		// CEC '09
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+										//Calculate t
+	temp = fit[1] + sqrt(fit[0]) - (double)a * sin((double)N * pi * (sqrt(fit[0]) - fit[1] + 1.)) - 1.;
+
+	//Calculate constrain
+	cons_value = temp / (1. + exp(4. * abs(temp)));
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+/**********************CDF13**************************/
+std::vector<double> CDF13::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double Gt1 = sin(0.5 * pi * t_vector[0]);		//Value of G(t1) function - dynamic dependant on time
+	double Gt2 = sin(0.5 * pi * t_vector[1]);		//Value of G(t2) function - dynamic dependant on time
+	double Gt3 = sin(0.5 * pi * t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
+	double Gt4 = sin(0.5 * pi * t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
+	double Gt5 = sin(0.5 * pi * t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
+	double Kt1 = ceil(Vars() * Gt1);				//Value of K(t1) function - dynamic dependant on time
+	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
+	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
+
+	double sizeJ1, sizeJ2, SumJ1, SumJ2, MultipJ1, MultipJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	MultipJ1 = MultipJ2 = 1;
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - sin(6 * pi * code[0] + ((double)i + Kt1) * pi / Vars()) - Gt2;
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += pow(y, 2);
+			//MultipJ1 *= cos((20. * y*pi) / sqrt(i));
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += pow(y, 2);
+			//MultipJ2 *= cos((20. * y*pi) / sqrt(i));
+		}
+	}
+
+	/*for (int i = 2; i <= Vars(); i++)
+	{
+	double y = code[i - 1] - sin(6 * pi*code[0] + ((double)i + Kt1)*pi / Vars()) - Gt2;
+	if (i % 2 == 1)
+	{
+	sizeJ1 += 1;
+	SumJ1 += pow(y, 2);
+	}
+	else
+	{
+	sizeJ2 += 1;
+	SumJ2 += pow(y, 2);
+	}
+	}*/
+
+	std::vector<double> fitness;					//fitness vector - output
+
+	double fitness1_temp = code[0] + abs(Gt3) + (2.0 / sizeJ1) * (SumJ1);			//fitness 1
+	double fitness2_temp = 1 - Ht4 * pow(code[0], Ht5) + abs(Gt3) + (2.0 / sizeJ2) * (SumJ2);		//fitness 2
+	fitness.push_back(fitness1_temp);				//fitness 1
+	fitness.push_back(fitness2_temp);			//fitness 2
+
+												//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF13::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 10,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 10,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF13::Plot_PF(int indexr, double t, int size)
+{
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+	double Gt2 = sin(0.5 * pi * t_vector[1]);		//Value of G(t2) function - dynamic dependant on time
+	double Gt3 = sin(0.5 * pi * t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
+	double Gt4 = sin(0.5 * pi * t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
+	double Gt5 = sin(0.5 * pi * t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
+	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
+	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
+
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+															//calculate the real PF points
+
+															//calculate the real PF points
+	for (double i = 0.; i <= 1.; i += 1.0 / (double)(size - 1))
+	{
+
+		//calculate the PF value
+		double temp = 1. - Ht4 * pow(i, Ht5) + abs(Gt3);		//PF value
+															//temp = 1. - Ht4*pow(i - abs(Gt3), Ht5) + abs(Gt3);
+
+		if ((temp + Ht4 * pow(i + abs(Gt3), Ht5) - sin(2. * pi * (Ht4 * pow(i + abs(Gt3), Ht5) - temp + 1.)) - 1.) < cons_check_param)
+			continue;
+
+		std::vector<double> temp_vect;			//temporary vector of fitness
+												//push values to the fitness vector
+		temp_vect.push_back(i + abs(Gt3));
+		temp_vect.push_back(temp);
+
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i + abs(Gt3) << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF13::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double time)
+{
+	double cons_value;					//Value for constrain check
+	double t;							//Temporary value
+	short N = 2;
+
+	double Gt3 = sin(0.5 * pi * t_vector[2]);		//Value of G(t3) function - dynamic dependant on time
+	double Gt4 = sin(0.5 * pi * t_vector[3]);		//Value of G(t4) function - dynamic dependant on time
+	double Gt5 = sin(0.5 * pi * t_vector[4]);		//Value of G(t5) function - dynamic dependant on time
+	double Ht4 = 0.5 + abs(Gt4);				//Value of H(t4) function - dynamic dependant on time
+	double Ht5 = 0.5 + abs(Gt5);				//Value of H(t5) function - dynamic dependant on time
+
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+										//Calculate t
+	cons_value = fit[1] + Ht4 * pow(fit[0], Ht5) - sin((double)N * pi * (Ht4 * pow(fit[0], Ht5) - fit[1] + 1.)) - 1.;
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************CDF14**************************/
+std::vector<double> CDF14::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2;						//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - pow(code[0], (0.5 * (1. + (3. * (i - 2) / (double)(Vars() - 2)))));
+		if (i % 2 == 1)
+		{
+			sizeJ1++;
+			SumJ1 += pow(y, 2);
+		}
+		else
+		{
+			sizeJ2++;
+			SumJ2 += pow(y, 2);
+		}
+	}
+
+	std::vector<double> fitness;									//fitness vector - output
+
+																	//calculate the fitness and push it to the fitness vector
+	fitness.push_back(code[0] + (2.0 / sizeJ1) * SumJ1);				//fitness 1
+	fitness.push_back(1. - code[0] + (2.0 / sizeJ2) * SumJ2);	//fitness 2
+
+															//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF14::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 1;
+		temp.lower = 0;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 6,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 6,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF14::Plot_PF(int indexr, double t, int size)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	short N = 10;
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+
+	//Calculate the rest of the points
+	for (double i = 0; i <= 1.; i += 1. / (double)(size))
+	{
+		//calculate the PF value
+		double temp = 1. - i;		//PF value
+
+		double cons_value = i + temp - abs(sin((double)N * pi * (i - temp + 1.))) - 1. + abs(Gt);
+
+		if (cons_value < cons_check_param)
+		{
+			//double i221 = 21;
+		//	std::cout << i << " " << cons_value << std::endl;
+			continue;
+
+		}
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF14::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double cons_value;					//Value for constrain check
+	short N = 10;		// CEC '09
+	short a = 1;		// CEC '09
+	std::vector<double> cons_val_temp;	//Values of the constrains - output
+
+										//Calculate constrain
+	cons_value = fit[0] + fit[1] - abs(sin((double)N * pi * (fit[0] - fit[1] + 1.))) - 1. + abs(Gt);
+
+	//push value to the vector
+	cons_val_temp.push_back(cons_value);
+	if (cons_val_temp.size() != Cons())
+		abort();
+	//return vector
+	return cons_val_temp;
+}
+
+/**********************CDF15**************************/
+std::vector<double> CDF15::Fitness_C(const std::vector<double>& code, int tau, double t)
+{
+	double sizeJ1, sizeJ2, SumJ1, SumJ2, MultipJ1, MultipJ2;			//temp values for the fitness calculation
+	sizeJ1 = sizeJ2 = SumJ1 = SumJ2 = 0;
+	MultipJ1 = MultipJ2 = 1;
+	//calculate temp values
+	for (int i = 2; i <= Vars(); i++)
+	{
+		double y = code[i - 1] - sin(6. * pi * code[0] + ((double)i * pi / (double)Vars()));
+
+		if (i % 2 == 1)
+		{
+			sizeJ1 += 1;
+			SumJ1 += pow(y, 2);
+			//MultipJ1 *= cos((20. * y*pi) / sqrt(i));
+		}
+		else
+		{
+			sizeJ2 += 1;
+			SumJ2 += pow(y, 2);
+			//MultipJ2 *= cos((20. * y*pi) / sqrt(i));
+		}
+	}
+
+	std::vector<double> fitness;					//fitness vector - output
+
+													//calculate the fitness and push it to the fitness vector
+	//fitness.push_back(code[0] + (2.0 / sizeJ1)*(4.0 * SumJ1 - 2.0 * MultipJ1 + 2.));				//fitness 1
+//	fitness.push_back(1.0 - pow(code[0], 2) + (2.0 / sizeJ2)*(4.0 * SumJ2 - 2.0 * MultipJ2 + 2.));		//fitness 2
+	fitness.push_back(code[0] + (2.0 / sizeJ1) * (SumJ1));				//fitness 1
+	fitness.push_back(1.0 - pow(code[0], 2) + (2.0 / sizeJ2) * (SumJ2));		//fitness 2
+																										//check if the fitness has a proper size
+	if (fitness.size() != Objs())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE";				//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	return fitness;
+}
+
+void CDF15::Bound_Set()
+{
+	std::vector<STRUCTURES::boundaries> bound;							//vector of boundaries structure for the variables
+	std::vector<STRUCTURES::boundaries> max_min;						//vector of boundaries structure for the fitness - only for the plotting purposes
+
+																		//set the boundaries for the first variable - if different than others
+	STRUCTURES::boundaries first{ 1,0 };
+	bound.push_back(first);
+
+	//set boundaries for the rest of variables
+	for (int i = 1; i < Vars(); i++)
+	{
+		STRUCTURES::boundaries temp;
+		temp.upper = 2;
+		temp.lower = -2;
+		bound.push_back(temp);
+	}
+
+	//check if the amount of boudaries is correct
+	if (bound.size() != Vars())
+	{
+		std::cout << "ERROR#12: FUNCTION - VECTOR SIZE; SET BOUND";		//ERROR#12: FUNCTION - VECTOR SIZE
+		system("pause");
+		abort();
+	}
+
+	//set boundaries for the fitness
+	STRUCTURES::boundaries t1{ 40,0 };									// t1 - max and min boundary for f1
+	max_min.push_back(t1);
+	STRUCTURES::boundaries t2{ 40,0 };									// t2 - max and min boundary for f2
+	max_min.push_back(t2);
+
+	//assign boundary vectors to class vectors
+	function::Bound_Set(bound);
+	function::Max_Min_Fit_Set(max_min);
+}
+std::vector<std::vector<double>> CDF15::Plot_PF(int indexr, double t, int size)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
+	double Ht = 0.5 + abs(Gt);					//Value of M(t) function - dynamic dependant on time
+	short N = 2;
+	std::ofstream PF_real;					//ofstream file for the PF saving
+
+											//check if the index is correct
+	if (indexr >= 0)
+		//open a new PF file
+		PF_real.open("Temp/" + real_PF_out + "_" + std::to_string(indexr) + "_" + String_Prec(t, 1) + ".x1");
+
+	std::vector<std::vector<double>> PF_real_val;			//Vector for PF data storage - output
+
+
+															//Calculate the rest of the points
+	for (double i = 0; i <= 1.; i += 1. / (double)(size - 1))
+	{
+		//calculate the PF value
+		double temp = 1. - pow(i, 2);		//PF value
+
+		double cons_value = pow(i, 2) + temp - sin((double)N * pi * (pow(i, 2) - temp + 1. + Gt)) - 1.;
+
+		if (cons_value < cons_check_param)
+			continue;
+		std::vector<double> temp_vect;			//temporary vector of fitness
+
+												//push values to the fitness vector
+		temp_vect.push_back(i);
+		temp_vect.push_back(temp);
+		//push the fitness vector to the PF vector
+		PF_real_val.push_back(temp_vect);
+
+		//save the fitness values to the file
+		if (indexr >= 0)
+		{
+			PF_real << i << " ";
+			PF_real << temp;
+			PF_real << std::endl;
+		}
+	}
+
+	//close the PF file
+	PF_real.close();
+
+
+	//close the PF file
+	PF_real.close();
+
+	return PF_real_val;
+}
+
+std::vector<double> CDF15::Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t)
+{
+	double Gt = sin(0.5 * pi * t);		//Value of G(t) function - dynamic dependant on time
 	double cons_value;					//Value for constrain check
 	short N = 2;		// CEC '09
 	short a = 1;		// CEC '09
 	std::vector<double> cons_val_temp;	//Values of the constrains - output
 
 										//Calculate constrain
-	cons_value = fit[1] + pow(fit[0], 2) - (double)a*sin((double)N*pi*(pow(fit[0], 2) - fit[1] + 1. + Gt)) - 1.;
+	cons_value = fit[1] + pow(fit[0], 2) - (double)a * sin((double)N * pi * (pow(fit[0], 2) - fit[1] + 1. + Gt)) - 1.;
 
 	//push value to the vector
 	cons_val_temp.push_back(cons_value);
-
+	if (cons_val_temp.size() != Cons())
+		abort();
 	//return vector
 	return cons_val_temp;
 }
+
 
 
 

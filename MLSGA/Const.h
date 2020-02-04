@@ -44,12 +44,13 @@ const double long e = 2.71828182845904523536028747135266249775724709369995l;
 50-59 CF 1-10
 60-61 DTLZ 8-9
 62-65 IMB 11-14
+66-74 DAS-CMOP 1-9
 *Dynamic Unconstrained*
-66-73 UDF 1-9
-74-83 JY 1-10
-84-88 FDA 1-5
+75-82 UDF 1-9
+83-92 JY 1-10
+93-97 FDA 1-5
 *Dynamic Constrained*
-89-98 CDF1-10
+98-112 CDF1-15
 
 
 *Not Implemented*
@@ -61,16 +62,16 @@ FDA4
 FDA5
 */
 /*MLSGA setting*/
-const std::vector<std::vector<std::string>> GA_mode{ {"HEIA"}, {"MOEADMSF"}, {"BCE"} ,{"MTS"},  {"UNSGAIII"} };// {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}
+const std::vector<std::vector<std::string>> GA_mode{ {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADMSF"}, {"MOEADPSF"}, {"BCE"}, {"IBEA"},{"MTS"}, {"HEIA"}, {"MOEADM2M"} }; // {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADMSF"}, {"MOEADPSF"}, {"BCE"}, {"IBEA"},{"MTS"}, {"HEIA"}, {"MOEADM2M"}
 const bool MLSGA_Hybrid = true;									//defines if the hybid algorithm is used or the original one
 const bool MLSGA_norm_obj = false;		//Default false			//Define if the objectives for fitness evaluations should be normalised (for MSF and PSF, but true makes PSF inoperative)
-const unsigned short MLSGA_n_col_b = 3;	//Default 8				//Numbers of collectives - begin ***with a choice of 4, 6, 8 (is overriden to 1 if MLSGA_Hybrid == false)
-const unsigned short MLSGA_n_col_e = 12;	//Default 8			//Numbers of collectives - end - step is always 2 (is overriden to 1 if MLSGA_Hybrid == false)
+const unsigned short MLSGA_n_col_b = 8;	//Default 8				//Numbers of collectives - begin ***with a choice of 4, 6, 8 (is overriden to 1 if MLSGA_Hybrid == false)
+const unsigned short MLSGA_n_col_e = 8;	//Default 8			//Numbers of collectives - end - step is always 2 (is overriden to 1 if MLSGA_Hybrid == false)
 const unsigned short MLSGA_n_col_elim = 1;	//Default 1			//Number of collectives elimiated ***with a choice of 1, 2  (is overriden to 0 if MLSGA_Hybrid == false)
 const unsigned short MLSGA_col_elim_limit = 10; //Default 10	//Define how many genrations have to pass before col elimination occurs - if 1 elimiantion will occur every generation - MTS have override that it change to 1 - line 494 in MLSGA.cpp
 const float MLSGA_elite_size = 0.1f; //Default 0.1				//How many individuals become elite <0.0-1.0>
-const unsigned short MLSGA_n_MLS_b = 7; //Default 7				//Index of the first MLS type used
-const unsigned short MLSGA_n_MLS_e = 7; //Default 7				//Index of the last MLS type used
+const unsigned short MLSGA_n_MLS_b = 1; //Default 7				//Index of the first MLS type used
+const unsigned short MLSGA_n_MLS_e = 3; //Default 7				//Index of the last MLS type used
 
 
 /*Parameter setting*/
@@ -78,38 +79,38 @@ const int Pop_size_b = 1000;	//Default 1000	-300			//Population size - beginning
 const int Pop_size_e = 1000;	//Default 1000					//Population size - end
 const int Pop_size_step = 200;	//Default 200					//Step for population size change
 const unsigned short n_func_b = 1;								//Index of the first function used
-const unsigned short n_func_e = 65; 							//Index of the last function used
+const unsigned short n_func_e = 112; 							//Index of the last function used
 const unsigned short n_func_obj = 3;							//Number of objectives for the scalable problems - DTLZ, WFG
-const std::vector<std::string> func_skip{ "Three_obj", "Many_obj" };	//Decides if specific functions will be skipped "Two_obj", "Three_obj", "Many_obj" - DTLZ, WFG
+const std::vector<std::string> func_skip{ "Three_obj","Many_obj" };	//Decides if specific functions will be skipped "Two_obj", "Three_obj", "Many_obj" - DTLZ, WFG
 const float mut_prob_min = 0.08f; //Default 0.08				//Minimal mutation probability - for real coded it is the absolute value, for binary it is divided by number of variables
 const float mut_prob_max = 0.08f; //Default 0.08				//Maximal mutation probability
 const float mut_prob_step = 0.02f; //Default 0.1				//Mutation probability step
-const float cross_prob_min = 1.f;	//Default 0.70				//Minimal crossover probability
-const float cross_prob_max = 1.f; //Default 0.70				//Maximal crossover probability
+const float cross_prob_min = 1;	//Default 1						//Minimal crossover probability
+const float cross_prob_max = 1; //Default 1						//Maximal crossover probability
 const float cross_prob_step = 0.10f; //Default 0.10				//Crossover probability step
 
 
 /*Termination conditions - only one is used depending on T_con*/
-const unsigned short n_runs = 10; //Default 30					//Number of runs
+const unsigned short n_runs = 30; //Default 30					//Number of runs
 const std::string T_con{ "nfes" };								//Which termination condition is used: "nfes" - iterations number (int max_iterations line 80); "ngen" - number of generations (int max_generations line 81); "ntime" - calculaion time in seconds (int max_time line 82)
 const int max_iterations = 300000;	//Default 300000			//max iterations
 const int max_generations = 300;	//Default 300				//max genenertaions
 const int max_time = 120;	//Default 300						//max genenertaions
 
 /*Performance evaluation*/
-const std::vector<std::string> perf_eval_type{"IGD", "HV"};	//Which performance evaluation methods are used "IGD" - inverted generational distance, "HV" - hypervolume
+const std::vector<std::string> perf_eval_type{ "IGD", "HV" };	//Which performance evaluation methods are used "IGD" - inverted generational distance, "HV" - hypervolume
 
 /*Additional benchmarking parameters*/
-const unsigned short n_mut = 1; //Default 1						//Number of mutation types
-const unsigned short n_cross = 1; //Default 1					//Number of crossover types
-const unsigned short n_select = 1; //Default 1					//Number of selection types
+const unsigned short mut_ix = 1; //Default 1						//Index of the mutation: 1 - polynomial mutation
+const unsigned short cross_ix = 1; //Default 1					//Index of the crossover: 1 - SBX, 2 - CMRDX
+const unsigned short select_ix = 1; //Default 1					//Index of the selection (applies only to "normal" MSLGA): 1 - Roulette wheel
 
 
 
 /*Dynamic functions parameter*/
-const int n_steps_dyn = 5;	//Default 5							//Number of distinct steps; represents the severity of change
-const int T_dyn = 5;	//Default 5								//Window where the dynamic problem remains cosntant
-const std::vector<std::string> Reinit_Mode{"None" };				//list of reinitialisation modes that have to be used "None", "BR", "CER", "VP"
+const int n_steps_dyn = 10;	//Default 5							//Number of distinct steps; represents the severity of change
+const int T_dyn = 10;	//Default 5								//Window where the dynamic problem remains cosntant
+const std::vector<std::string> Reinit_Mode{ "VP" };				//list of reinitialisation modes that have to be used "None", "BR", "CER", "VP"
 const int gen_memory_size = 2;	//Default 2						//How many generations are saved and used for reinitialisation
 const int JY_const_window = 0;	//Default 0						//Window where JY functions remain constatant
 
@@ -195,4 +196,10 @@ const unsigned short frame_w = 1280;  //Default 1280			//Frame width for video o
 const unsigned short FPS = 10;	//Default 10					//Frame per second
 const unsigned short frame_img_multi = 1;	//Default 1			//How many times one frame is added - increase if want to make video longer and find a suitable frame
 const unsigned short frame_skip = 1;		//Default 1			//How many frames are skipepd - for PAES and MOEAD
+
+/*Parameters for DAS-CMOP*/
+const float CMOP_eta = 0.5f;
+const float CMOP_zeta = 0.f;
+const float CMOP_gamma = 0.f;
+
 #endif // !CONST_H

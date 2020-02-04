@@ -42,7 +42,6 @@ private:
 	std::string name_func;									//Name of  function
 	int num_vars;											//Number of variables in function
 	short num_objs;											//Number of objectives in function
-	short index;											//Function intex
 	short num_cons;											//Number of constaines
 	std::vector<STRUCTURES::boundaries> bound;				// Boundaries for variables
 	std::vector<STRUCTURES::boundaries> max_min_fit;		// Boundaries for max and min fitness
@@ -77,9 +76,9 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	function(const char * fname, int varsn, short objsn, short ix, short consn) 
+	function(const char * fname, int varsn, short objsn, short consn) 
 	{
-		name_func = fname; num_vars = varsn; num_objs = objsn; index = ix; num_cons = consn;
+		name_func = fname; num_vars = varsn; num_objs = objsn; num_cons = consn;
 	};
 	~function() {};
 
@@ -133,9 +132,7 @@ public:
 			return max_min_fit[i].upper;
 	}
 	/**Returning boundaries for the fitness as a vector of structures**/
-	std::vector<STRUCTURES::boundaries> Max_Min_Fit() { return max_min_fit; };				
-	/**Retrurning the index of the current fucntion**/
-	int Index() const { return index; } ;													
+	std::vector<STRUCTURES::boundaries> Max_Min_Fit() { return max_min_fit; };													
 	/**Returning the number of variables for the current function**/
 	int Vars() const { return num_vars; };												
 	/**Returning the number of objectives for the current function**/
@@ -190,7 +187,7 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	dynamic_function(const char * fname, int varsn, short objsn, short ix, short consn) : function(fname, varsn, objsn, ix, consn)
+	dynamic_function(const char * fname, int varsn, short objsn, short consn) : function(fname, varsn, objsn, consn)
 	{
 		time_dep = true;
 	};
@@ -220,8 +217,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT1(const char * fname = "ZDT1", int varsn = 30, short objsn = 2, short ix = 1, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT1(const char * fname = "ZDT1", int varsn = 30, short objsn = 2, short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -255,8 +252,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT2(const char * fname = "ZDT2", int varsn = 30, short objsn = 2, short ix = 2, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT2(const char * fname = "ZDT2", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -290,8 +287,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT3(const char * fname = "ZDT3", int varsn = 30, short objsn = 2, short ix = 3, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT3(const char * fname = "ZDT3", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -325,8 +322,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT4(const char * fname = "ZDT4", int varsn = 10, short objsn = 2, short ix = 4, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT4(const char * fname = "ZDT4", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -360,8 +357,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT5(const char * fname = "ZDT5", int varsn = 11, short objsn = 2, short ix = 5, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT5(const char * fname = "ZDT5", int varsn = 11, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -395,8 +392,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	ZDT6(const char * fname = "ZDT6", int varsn = 10, short objsn = 2, short ix = 6, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	ZDT6(const char * fname = "ZDT6", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -432,8 +429,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ1(const char * fname = "DTLZ1", int varsn = n_func_obj + 4, short objsn = n_func_obj, short ix = 7, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ1(const char * fname = "DTLZ1", int varsn = n_func_obj + 4, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -467,8 +464,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ2(const char * fname = "DTLZ2", int varsn = n_func_obj + 9, short objsn = n_func_obj, short ix = 8, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ2(const char * fname = "DTLZ2", int varsn = n_func_obj + 9, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -501,8 +498,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ3(const char * fname = "DTLZ3", int varsn = n_func_obj + 9, short objsn = n_func_obj, short ix = 9, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ3(const char * fname = "DTLZ3", int varsn = n_func_obj + 9, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -535,8 +532,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ4(const char * fname = "DTLZ4", int varsn = n_func_obj + 9, short objsn = n_func_obj, short ix = 10, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ4(const char * fname = "DTLZ4", int varsn = n_func_obj + 9, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -569,8 +566,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ5(const char * fname = "DTLZ5", int varsn = n_func_obj + 9, short objsn = n_func_obj, short ix = 11, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ5(const char * fname = "DTLZ5", int varsn = n_func_obj + 9, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -603,8 +600,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ6(const char * fname = "DTLZ6", int varsn = n_func_obj + 9, short objsn = n_func_obj, short ix = 12, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ6(const char * fname = "DTLZ6", int varsn = n_func_obj + 9, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -637,8 +634,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ7(const char * fname = "DTLZ7", int varsn = n_func_obj + 19, short objsn = n_func_obj, short ix = 13, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	DTLZ7(const char * fname = "DTLZ7", int varsn = n_func_obj + 19, short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -672,8 +669,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP1(const char * fname = "MOP1", int varsn = 10, short objsn = 2, short ix = 14, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP1(const char * fname = "MOP1", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -707,8 +704,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP2(const char * fname = "MOP2", int varsn = 10, short objsn = 2, short ix = 15, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP2(const char * fname = "MOP2", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -742,8 +739,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP3(const char * fname = "MOP3", int varsn = 10, short objsn = 2, short ix = 16, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP3(const char * fname = "MOP3", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -777,8 +774,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP4(const char * fname = "MOP4", int varsn = 10, short objsn = 2, short ix = 17, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP4(const char * fname = "MOP4", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -812,8 +809,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP5(const char * fname = "MOP5", int varsn = 10, short objsn = 2, short ix = 18, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP5(const char * fname = "MOP5", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -847,8 +844,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP6(const char * fname = "MOP6", int varsn = 10, short objsn = 3, short ix = 19, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP6(const char * fname = "MOP6", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -882,8 +879,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	MOP7(const char * fname = "MOP7", int varsn = 10, short objsn = 3, short ix = 20, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	MOP7(const char * fname = "MOP7", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -916,8 +913,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF1(const char * fname = "UF1", int varsn = 30, short objsn = 2, short ix = 21, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn) {
+	UF1(const char * fname = "UF1", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UF1() {};
@@ -949,8 +946,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF2(const char * fname = "UF2", int varsn = 30, short objsn = 2, short ix = 22, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF2(const char * fname = "UF2", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -984,8 +981,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF3(const char * fname = "UF3", int varsn = 30, short objsn = 2, short ix = 23, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF3(const char * fname = "UF3", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1019,8 +1016,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF4(const char * fname = "UF4", int varsn = 30, short objsn = 2, short ix = 24, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF4(const char * fname = "UF4", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1054,8 +1051,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF5(const char * fname = "UF5", int varsn = 30, short objsn = 2, short ix = 25, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF5(const char * fname = "UF5", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1089,8 +1086,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF6(const char * fname = "UF6", int varsn = 30, short objsn = 2, short ix = 26, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF6(const char * fname = "UF6", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1124,8 +1121,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF7(const char * fname = "UF7", int varsn = 30, short objsn = 2, short ix = 27, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF7(const char * fname = "UF7", int varsn = 30, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1159,8 +1156,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF8(const char * fname = "UF8", int varsn = 30, short objsn = 3, short ix = 28, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF8(const char * fname = "UF8", int varsn = 30, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1194,8 +1191,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF9(const char * fname = "UF9", int varsn = 30, short objsn = 3, short ix = 29, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF9(const char * fname = "UF9", int varsn = 30, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1229,8 +1226,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UF10(const char * fname = "UF10", int varsn = 30, short objsn = 3, short ix = 30, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	UF10(const char * fname = "UF10", int varsn = 30, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1264,8 +1261,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG1(const char * fname = "WFG1", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 31, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG1(const char * fname = "WFG1", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1299,8 +1296,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG2(const char * fname = "WFG2", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 32, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG2(const char * fname = "WFG2", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1334,8 +1331,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG3(const char * fname = "WFG3", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 33, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG3(const char * fname = "WFG3", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1368,8 +1365,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG4(const char * fname = "WFG4", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 34, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG4(const char * fname = "WFG4", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1402,8 +1399,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG5(const char * fname = "WFG5", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 35, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG5(const char * fname = "WFG5", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1436,8 +1433,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG6(const char * fname = "WFG6", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 36, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG6(const char * fname = "WFG6", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1470,8 +1467,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG7(const char * fname = "WFG7", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 37, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG7(const char * fname = "WFG7", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1504,8 +1501,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG8(const char * fname = "WFG8", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 38, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG8(const char * fname = "WFG8", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1538,8 +1535,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	WFG9(const char * fname = "WFG9", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj, short ix = 39, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	WFG9(const char * fname = "WFG9", int varsn = (2 * (n_func_obj - 1) + 20), short objsn = n_func_obj,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1572,8 +1569,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB1(const char * fname = "IMB1", int varsn = 10, short objsn = 2, short ix = 40, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB1(const char * fname = "IMB1", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1607,8 +1604,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB2(const char * fname = "IMB2", int varsn = 10, short objsn = 2, short ix = 41, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB2(const char * fname = "IMB2", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1641,8 +1638,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB3(const char * fname = "IMB3", int varsn = 10, short objsn = 2, short ix = 42, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB3(const char * fname = "IMB3", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1675,8 +1672,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB4(const char * fname = "IMB4", int varsn = 10, short objsn = 3, short ix = 43, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB4(const char * fname = "IMB4", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1709,8 +1706,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB5(const char * fname = "IMB5", int varsn = 10, short objsn = 3, short ix = 44, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB5(const char * fname = "IMB5", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1743,8 +1740,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB6(const char * fname = "IMB6", int varsn = 10, short objsn = 3, short ix = 45, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB6(const char * fname = "IMB6", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1777,8 +1774,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB7(const char * fname = "IMB7", int varsn = 10, short objsn = 2, short ix = 46, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB7(const char * fname = "IMB7", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1811,8 +1808,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB8(const char * fname = "IMB8", int varsn = 10, short objsn = 2, short ix = 47, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB8(const char * fname = "IMB8", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1845,8 +1842,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB9(const char * fname = "IMB9", int varsn = 10, short objsn = 2, short ix = 48, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB9(const char * fname = "IMB9", int varsn = 10, short objsn = 2,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1879,8 +1876,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB10(const char * fname = "IMB10", int varsn = 10, short objsn = 3, short ix = 49, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn)
+	IMB10(const char * fname = "IMB10", int varsn = 10, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn)
 	{
 		Bound_Set();
 	};
@@ -1920,8 +1917,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF1(const char * fname = "CF1", int varsn = 10, short objsn = 2, short ix = 50, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF1(const char * fname = "CF1", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF1() {};
@@ -1960,8 +1957,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF2(const char * fname = "CF2", int varsn = 10, short objsn = 2, short ix = 51, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF2(const char * fname = "CF2", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF2() {};
@@ -2000,8 +1997,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF3(const char * fname = "CF3", int varsn = 10, short objsn = 2, short ix = 52, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF3(const char * fname = "CF3", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF3() {};
@@ -2040,8 +2037,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF4(const char * fname = "CF4", int varsn = 10, short objsn = 2, short ix = 53, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF4(const char * fname = "CF4", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF4() {};
@@ -2080,8 +2077,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF5(const char * fname = "CF5", int varsn = 10, short objsn = 2, short ix = 54, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF5(const char * fname = "CF5", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF5() {};
@@ -2120,8 +2117,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF6(const char * fname = "CF6", int varsn = 10, short objsn = 2, short ix = 55, short consn = 2)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF6(const char * fname = "CF6", int varsn = 10, short objsn = 2,  short consn = 2)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF6() {};
@@ -2160,8 +2157,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF7(const char * fname = "CF7", int varsn = 10, short objsn = 2, short ix = 56, short consn = 2)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF7(const char * fname = "CF7", int varsn = 10, short objsn = 2,  short consn = 2)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF7() {};
@@ -2201,8 +2198,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF8(const char * fname = "CF8", int varsn = 10, short objsn = 3, short ix = 57, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF8(const char * fname = "CF8", int varsn = 10, short objsn = 3,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF8() {};
@@ -2242,8 +2239,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF9(const char * fname = "CF9", int varsn = 10, short objsn = 3, short ix = 58, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF9(const char * fname = "CF9", int varsn = 10, short objsn = 3,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF9() {};
@@ -2283,8 +2280,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CF10(const char * fname = "CF10", int varsn = 10, short objsn = 3, short ix = 59, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	CF10(const char * fname = "CF10", int varsn = 10, short objsn = 3,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CF10() {};
@@ -2324,8 +2321,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ8(const char * fname = "DTLZ8", int varsn = n_func_obj*10, short objsn = n_func_obj, short ix = 60, short consn = n_func_obj)
-		: function(fname, varsn, objsn, ix, consn) {
+	DTLZ8(const char * fname = "DTLZ8", int varsn = n_func_obj*10, short objsn = n_func_obj,  short consn = n_func_obj)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~DTLZ8() {};
@@ -2365,8 +2362,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	DTLZ9(const char * fname = "DTLZ9", int varsn = n_func_obj * 10, short objsn = n_func_obj, short ix = 61, short consn = n_func_obj - 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	DTLZ9(const char * fname = "DTLZ9", int varsn = n_func_obj * 10, short objsn = n_func_obj,  short consn = n_func_obj - 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~DTLZ9() {};
@@ -2406,8 +2403,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB11(const char * fname = "IMB11", int varsn = 10, short objsn = 2, short ix = 62, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	IMB11(const char * fname = "IMB11", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~IMB11() {};
@@ -2447,8 +2444,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB12(const char * fname = "IMB12", int varsn = 10, short objsn = 2, short ix = 63, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	IMB12(const char * fname = "IMB12", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~IMB12() {};
@@ -2488,8 +2485,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB13(const char * fname = "IMB13", int varsn = 10, short objsn = 2, short ix = 64, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	IMB13(const char * fname = "IMB13", int varsn = 10, short objsn = 2,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~IMB13() {};
@@ -2529,8 +2526,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	IMB14(const char * fname = "IMB14", int varsn = 10, short objsn = 3, short ix = 65, short consn = 1)
-		: function(fname, varsn, objsn, ix, consn) {
+	IMB14(const char * fname = "IMB14", int varsn = 10, short objsn = 3,  short consn = 1)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~IMB14() {};
@@ -2553,13 +2550,377 @@ public:
 	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
 };
 
+//****************************************
+//				Function #66
+//					DAS_CMOP1
+//****************************************
+class DAS_CMOP1 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP1(const char* fname = "DAS_CMOP1", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP1() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #67
+//					DAS_CMOP2
+//****************************************
+class DAS_CMOP2 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP2(const char* fname = "DAS_CMOP2", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP2() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #68
+//					DAS_CMOP3
+//****************************************
+class DAS_CMOP3 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP3(const char* fname = "DAS_CMOP3", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP3() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #69
+//					DAS_CMOP4
+//****************************************
+class DAS_CMOP4 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP4(const char* fname = "DAS_CMOP4", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP4() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #70
+//					DAS_CMOP5
+//****************************************
+class DAS_CMOP5 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP5(const char* fname = "DAS_CMOP5", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP5() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #71
+//					DAS_CMOP6
+//****************************************
+class DAS_CMOP6 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP6(const char* fname = "DAS_CMOP6", int varsn = 30, short objsn = 2,  short consn = 11)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP6() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #72
+//					DAS_CMOP7
+//****************************************
+class DAS_CMOP7 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP7(const char* fname = "DAS_CMOP7", int varsn = 30, short objsn = 3,  short consn = 7)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP7() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+//****************************************
+//				Function #73
+//					DAS_CMOP8
+//****************************************
+class DAS_CMOP8 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP8(const char* fname = "DAS_CMOP8", int varsn = 30, short objsn = 3,  short consn = 7)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP8() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+//****************************************
+//				Function #74
+//					DAS_CMOP9
+//****************************************
+class DAS_CMOP9 : public function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	DAS_CMOP9(const char* fname = "DAS_CMOP9", int varsn = 30, short objsn = 3,  short consn = 7)
+		: function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~DAS_CMOP9() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+
 
 /********************************************
 		DYNAMIC UNCONSTRAINED FUNCTIONS
 *********************************************/
 
 //****************************************
-//				Function #66
+//				Function #75
 //					UDF1
 //****************************************
 class UDF1 : public dynamic_function
@@ -2575,8 +2936,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF1(const char * fname = "UDF1", int varsn = 10, short objsn = 2, short ix = 66, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF1(const char * fname = "UDF1", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF1() {};
@@ -2593,7 +2954,7 @@ public:
 };
 
 //****************************************
-//				Function #67
+//				Function #76
 //					UDF2
 //****************************************
 class UDF2 : public dynamic_function
@@ -2609,8 +2970,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF2(const char * fname = "UDF2", int varsn = 10, short objsn = 2, short ix = 67, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF2(const char * fname = "UDF2", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF2() {};
@@ -2627,7 +2988,7 @@ public:
 };
 
 //****************************************
-//				Function #68
+//				Function #77
 //					UDF3
 //****************************************
 class UDF3 : public dynamic_function
@@ -2643,8 +3004,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF3(const char * fname = "UDF3", int varsn = 10, short objsn = 2, short ix = 68, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF3(const char * fname = "UDF3", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF3() {};
@@ -2661,7 +3022,7 @@ public:
 };
 
 //****************************************
-//				Function #69
+//				Function #78
 //					UDF4
 //****************************************
 class UDF4 : public dynamic_function
@@ -2677,8 +3038,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF4(const char * fname = "UDF4", int varsn = 10, short objsn = 2, short ix = 69, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF4(const char * fname = "UDF4", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF4() {};
@@ -2694,7 +3055,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #70
+//				Function #79
 //					UDF5
 //****************************************
 class UDF5 : public dynamic_function
@@ -2710,8 +3071,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF5(const char * fname = "UDF5", int varsn = 10, short objsn = 2, short ix = 70, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF5(const char * fname = "UDF5", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF5() {};
@@ -2727,7 +3088,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #71
+//				Function #80
 //					UDF6
 //****************************************
 class UDF6 : public dynamic_function
@@ -2743,8 +3104,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF6(const char * fname = "UDF6", int varsn = 10, short objsn = 2, short ix = 71, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF6(const char * fname = "UDF6", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~UDF6() {};
@@ -2760,7 +3121,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #72
+//				Function #81
 //					UDF8
 //****************************************
 class UDF8 : public dynamic_function
@@ -2776,8 +3137,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF8(const char * fname = "UDF8", int varsn = 10, short objsn = 2, short ix = 72, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF8(const char * fname = "UDF8", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 		T_Vector_Create(5);
 	};
@@ -2794,7 +3155,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #73
+//				Function #82
 //					UDF9
 //****************************************
 class UDF9 : public dynamic_function
@@ -2810,8 +3171,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	UDF9(const char * fname = "UDF9", int varsn = 10, short objsn = 2, short ix = 73, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	UDF9(const char * fname = "UDF9", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 		T_Vector_Create(5);
 	};
@@ -2828,7 +3189,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #74
+//				Function #83
 //					JY1
 //****************************************
 class JY1 : public dynamic_function
@@ -2844,8 +3205,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY1(const char * fname = "JY1", int varsn = 10, short objsn = 2, short ix = 74, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY1(const char * fname = "JY1", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY1() {};
@@ -2861,7 +3222,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #75
+//				Function #84
 //					JY2
 //****************************************
 class JY2 : public dynamic_function
@@ -2877,8 +3238,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY2(const char * fname = "JY2", int varsn = 10, short objsn = 2, short ix = 75, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY2(const char * fname = "JY2", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY2() {};
@@ -2894,7 +3255,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #76
+//				Function #85
 //					JY3
 //****************************************
 class JY3 : public dynamic_function
@@ -2910,8 +3271,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY3(const char * fname = "JY3", int varsn = 10, short objsn = 2, short ix = 76, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY3(const char * fname = "JY3", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY3() {};
@@ -2927,7 +3288,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #77
+//				Function #86
 //					JY4
 //****************************************
 class JY4 : public dynamic_function
@@ -2943,8 +3304,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY4(const char * fname = "JY4", int varsn = 10, short objsn = 2, short ix = 77, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY4(const char * fname = "JY4", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY4() {};
@@ -2960,7 +3321,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #78
+//				Function #87
 //					JY5
 //****************************************
 class JY5 : public dynamic_function
@@ -2976,8 +3337,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY5(const char * fname = "JY5", int varsn = 10, short objsn = 2, short ix = 78, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY5(const char * fname = "JY5", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY5() {};
@@ -2993,7 +3354,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #79
+//				Function #88
 //					JY6
 //****************************************
 class JY6 : public dynamic_function
@@ -3009,8 +3370,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY6(const char * fname = "JY6", int varsn = 10, short objsn = 2, short ix = 79, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY6(const char * fname = "JY6", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY6() {};
@@ -3026,7 +3387,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #80
+//				Function #89
 //					JY7
 //****************************************
 class JY7 : public dynamic_function
@@ -3042,8 +3403,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY7(const char * fname = "JY7", int varsn = 10, short objsn = 2, short ix = 80, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY7(const char * fname = "JY7", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY7() {};
@@ -3059,7 +3420,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #81
+//				Function #90
 //					JY8
 //****************************************
 class JY8 : public dynamic_function
@@ -3075,8 +3436,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY8(const char * fname = "JY8", int varsn = 10, short objsn = 2, short ix = 81, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY8(const char * fname = "JY8", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY8() {};
@@ -3092,7 +3453,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #82
+//				Function #90
 //					JY9
 //****************************************
 class JY9 : public dynamic_function
@@ -3108,8 +3469,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY9(const char * fname = "JY9", int varsn = 10, short objsn = 2, short ix = 82, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY9(const char * fname = "JY9", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY9() {};
@@ -3125,7 +3486,7 @@ public:
 	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
 };
 //****************************************
-//				Function #83
+//				Function #92
 //					JY10
 //****************************************
 class JY10 : public dynamic_function
@@ -3141,8 +3502,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	JY10(const char * fname = "JY10", int varsn = 10, short objsn = 2, short ix = 83, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	JY10(const char * fname = "JY10", int varsn = 10, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~JY10() {};
@@ -3159,7 +3520,7 @@ public:
 };
 
 //****************************************
-//				Function #84
+//				Function #93
 //					FDA1
 //****************************************
 class FDA1 : public dynamic_function
@@ -3175,8 +3536,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	FDA1(const char * fname = "FDA1", int varsn = 20, short objsn = 2, short ix = 84, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	FDA1(const char * fname = "FDA1", int varsn = 20, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~FDA1() {};
@@ -3193,7 +3554,7 @@ public:
 };
 
 //****************************************
-//				Function #85
+//				Function #94
 //					FDA2
 //****************************************
 class FDA2 : public dynamic_function
@@ -3209,8 +3570,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	FDA2(const char * fname = "FDA2", int varsn = 31, short objsn = 2, short ix = 85, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	FDA2(const char * fname = "FDA2", int varsn = 31, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~FDA2() {};
@@ -3227,7 +3588,7 @@ public:
 };
 
 //****************************************
-//				Function #86
+//				Function #95
 //					FDA3
 //****************************************
 class FDA3 : public dynamic_function
@@ -3243,8 +3604,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	FDA3(const char * fname = "FDA3", int varsn = 30, short objsn = 2, short ix = 86, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	FDA3(const char * fname = "FDA3", int varsn = 30, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~FDA3() {};
@@ -3261,7 +3622,7 @@ public:
 };
 
 //****************************************
-//				Function #87
+//				Function #96
 //					FDA4
 //****************************************
 class FDA4 : public dynamic_function
@@ -3277,8 +3638,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	FDA4(const char * fname = "FDA4", int varsn = 11, short objsn = 2, short ix = 87, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	FDA4(const char * fname = "FDA4", int varsn = 11, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~FDA4() {};
@@ -3295,7 +3656,7 @@ public:
 };
 
 //****************************************
-//				Function #88
+//				Function #97
 //					FDA5
 //****************************************
 class FDA5 : public dynamic_function
@@ -3311,8 +3672,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	FDA5(const char * fname = "FDA5", int varsn = 11, short objsn = 2, short ix = 88, short consn = 0)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	FDA5(const char * fname = "FDA5", int varsn = 11, short objsn = 2,  short consn = 0)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~FDA5() {};
@@ -3331,9 +3692,8 @@ public:
 /********************************************
 		DYNAMIC CONSTRAINED FUNCTIONS
 *********************************************/
-
 //****************************************
-//				Function #89
+//				Function #98
 //					CDF1
 //****************************************
 class CDF1 : public dynamic_function
@@ -3349,8 +3709,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF1(const char * fname = "CDF1", int varsn = 10, short objsn = 2, short ix = 89, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF1(const char* fname = "CDF1", int varsn = 10, short objsn = 2,  short consn = 2)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF1() {};
@@ -3363,17 +3723,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
+	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
-
 //****************************************
-//				Function #90
+//				Function #99
 //					CDF2
 //****************************************
 class CDF2 : public dynamic_function
@@ -3389,8 +3749,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF2(const char * fname = "CDF2", int varsn = 10, short objsn = 2, short ix = 90, short consn = 2)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF2(const char* fname = "CDF2", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF2() {};
@@ -3403,18 +3763,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
-
 //****************************************
-//				Function #91
+//				Function #100
 //					CDF3
 //****************************************
 class CDF3 : public dynamic_function
@@ -3430,8 +3789,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF3(const char * fname = "CDF3", int varsn = 10, short objsn = 2, short ix = 91, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF3(const char* fname = "CDF3", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF3() {};
@@ -3444,18 +3803,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
-
 //****************************************
-//				Function #92
+//				Function #101
 //					CDF4
 //****************************************
 class CDF4 : public dynamic_function
@@ -3471,8 +3829,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF4(const char * fname = "CDF4", int varsn = 10, short objsn = 2, short ix = 92, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF4(const char* fname = "CDF4", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF4() {};
@@ -3485,17 +3843,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
 //****************************************
-//				Function #93
+//				Function #102
 //					CDF5
 //****************************************
 class CDF5 : public dynamic_function
@@ -3511,8 +3869,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF5(const char * fname = "CDF5", int varsn = 10, short objsn = 2, short ix = 93, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF5(const char* fname = "CDF5", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF5() {};
@@ -3525,17 +3883,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
 //****************************************
-//				Function #94
+//				Function #103
 //					CDF6
 //****************************************
 class CDF6 : public dynamic_function
@@ -3551,10 +3909,9 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF6(const char * fname = "CDF6", int varsn = 10, short objsn = 2, short ix = 94, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF6(const char* fname = "CDF6", int varsn = 10, short objsn = 2,  short consn = 2)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
-		T_Vector_Create(5);
 	};
 	~CDF6() {};
 	/*
@@ -3566,17 +3923,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
 //****************************************
-//				Function #95
+//				Function #104
 //					CDF7
 //****************************************
 class CDF7 : public dynamic_function
@@ -3592,8 +3949,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF7(const char * fname = "CDF7", int varsn = 10, short objsn = 2, short ix = 95, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF7(const char * fname = "CDF7", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF7() {};
@@ -3611,12 +3968,12 @@ public:
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
-	@param t -  current time
 	*/
 	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
 };
+
 //****************************************
-//				Function #96
+//				Function #105
 //					CDF8
 //****************************************
 class CDF8 : public dynamic_function
@@ -3632,8 +3989,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF8(const char * fname = "CDF8", int varsn = 10, short objsn = 2, short ix = 96, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF8(const char* fname = "CDF8", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF8() {};
@@ -3646,18 +4003,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
-
 //****************************************
-//				Function #97
+//				Function #106
 //					CDF9
 //****************************************
 class CDF9 : public dynamic_function
@@ -3673,8 +4029,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF9(const char * fname = "CDF9", int varsn = 10, short objsn = 2, short ix = 97, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF9(const char* fname = "CDF9", int varsn = 10, short objsn = 2,  short consn = 2)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF9() {};
@@ -3687,17 +4043,17 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
 //****************************************
-//				Function #98
+//				Function #107
 //					CDF10
 //****************************************
 class CDF10 : public dynamic_function
@@ -3713,8 +4069,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	CDF10(const char * fname = "CDF10", int varsn = 10, short objsn = 2, short ix = 98, short consn = 1)
-		: dynamic_function(fname, varsn, objsn, ix, consn) {
+	CDF10(const char* fname = "CDF10", int varsn = 10, short objsn = 2,  short consn = 2)
+		: dynamic_function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~CDF10() {};
@@ -3727,15 +4083,221 @@ public:
 	*Fitness calculation for the given code*
 	@param code vector with the code
 	*/
-	std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t);
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
 	/*
 	*Constrain check - for contrained problems: returns true if constrains are violated*
 	@param code - vector with the code
 	@param fitness - vector with the fitness values
 	@param t -  current time
 	*/
-	std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0);
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
 };
+//****************************************
+//				Function #108
+//					CDF11
+//****************************************
+class CDF11 : public dynamic_function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	CDF11(const char* fname = "CDF11", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~CDF11() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+//****************************************
+//				Function #109
+//					CDF12
+//****************************************
+class CDF12 : public dynamic_function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	CDF12(const char* fname = "CDF12", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~CDF12() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #110
+//					CDF13
+//****************************************
+class CDF13 : public dynamic_function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	CDF13(const char* fname = "CDF13", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
+		Bound_Set();
+		T_Vector_Create(5);
+	};
+	~CDF13() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+
+//****************************************
+//				Function #111
+//					CDF14
+//****************************************
+class CDF14 : public dynamic_function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	CDF14(const char* fname = "CDF14", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~CDF14() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+//****************************************
+//				Function #112
+//					CDF15
+//****************************************
+class CDF15 : public dynamic_function
+{
+protected:
+	/**Set boundaries for variables**/
+	void Bound_Set();
+public:
+	/*
+	*Default normal constructor*
+	@param fname function name
+	@param varsn number of variables
+	@param objsn number of objectives
+	@param ix index of the function
+	*/
+	CDF15(const char* fname = "CDF15", int varsn = 10, short objsn = 2,  short consn = 1)
+		: dynamic_function(fname, varsn, objsn, consn) {
+		Bound_Set();
+	};
+	~CDF15() {};
+	/*
+	*Plotting Pareto Front and saving to vector*
+	@param indexr index of the current run
+	*/
+	std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size);
+	/*
+	*Fitness calculation for the given code*
+	@param code vector with the code
+	*/
+	std::vector<double> Fitness_C(const std::vector<double>& code, int tau, double t);
+	/*
+	*Constrain check - for contrained problems: returns true if constrains are violated*
+	@param code - vector with the code
+	@param fitness - vector with the fitness values
+	@param t -  current time
+	*/
+	std::vector<double> Cons_Calc(const std::vector<double>& code, const std::vector<double>& fit, double t = 0.0);
+};
+
+
 
 //****************************************
 //				Function #201
@@ -3754,8 +4316,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	GEN(const char * fname = "GEN", int varsn = 3678, short objsn = 3, short ix = 201, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn) {
+	GEN(const char * fname = "GEN", int varsn = 3678, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~GEN() {};
@@ -3788,8 +4350,8 @@ public:
 	@param objsn number of objectives
 	@param ix index of the function
 	*/
-	GEN_pat(const char * fname = "GEN_pat", int varsn = 3678, short objsn = 3, short ix = 202, short consn = 0)
-		: function(fname, varsn, objsn, ix, consn) {
+	GEN_pat(const char * fname = "GEN_pat", int varsn = 3678, short objsn = 3,  short consn = 0)
+		: function(fname, varsn, objsn, consn) {
 		Bound_Set();
 	};
 	~GEN_pat() {};

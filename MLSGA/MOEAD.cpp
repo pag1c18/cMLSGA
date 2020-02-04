@@ -57,6 +57,7 @@ Modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (20
 #include "Sobol.h"
 #include "Support_Functions.h"
 #include <ctime>
+#include "Pen_Const.h"
 
 int nfes;						//number of function evaluations
 int nobj;						//number of objectives
@@ -136,7 +137,7 @@ void MOEAD::MOEAD_Init(short n_obj, population & pop)
 
 	//Calculate fitness of the population
 	pop.Fitness_Calc();
-
+	
 	int psize = pop.Size_Show();
 	nfes += psize;
 
@@ -226,6 +227,9 @@ void MOEAD::Population_Init(short n_obj, collective & col)
 	//Get the size of the collective
 	int csize = col.Size_Show();
 
+	//Penalise the fitness (according to cosntraints)
+	if (PENALTY_BASED_CONSTRAINTS)
+		Pen_const::Fitness_Recalc(col,true);
 	if (MODE != "MOEADM2M")
 	{
 		//Get namda for collective when calculated by collective
@@ -444,7 +448,14 @@ void MOEAD::Evolve(collective & col, int iGen)
 		individual child = col.Indiv_Show(0);
 
 		// produce a child solution
-		if (MOEAD_evol_operation_type == 1)
+		if (MOEAD_OVERRIDE)
+		{
+			short index = 0;
+			if (Random() < 0.5)
+				index = 1;
+			child = col.CCode_Show()[0].Crossover(std::vector<individual>{  col.Indiv_Show(c_sub), col.Indiv_Show(plist[0]) }, col.GAPara_Show()[0], col.FCode_Show()[0])[index];
+		}
+		else if (MOEAD_evol_operation_type == 1)
 			child = Diff_Evo_XoverB(col.Indiv_Show(c_sub), col.Indiv_Show(plist[0]), col.Indiv_Show(plist[1]), rate2, col.FCode_Show()[0], col.CCode_Show()[0], col.GAPara_Show()[0]);
 		else if (MOEAD_evol_operation_type == 2)
 			child = LL_Crossover(col.Indiv_Show(plist[0]), col.Indiv_Show(plist[1]), iGen, col.FCode_Show()[0]);
@@ -469,6 +480,9 @@ void MOEAD::Evolve(collective & col, int iGen)
 		// evaluate the child solution
 		col.population::Fitness_Calc(child);
 		//child.save();
+		//Penalise the fitness (according to cosntraints)
+		if (PENALTY_BASED_CONSTRAINTS)
+			Pen_const::Fitness_Recalc(child, col.Index_Show()-1);
 
 		if (MODE == "MOEADMSF" || MODE == "MOEADPSF")
 			Problem_Update_Global(child, col, c_sub, type, iGen);
@@ -707,12 +721,18 @@ void MOEAD::Problem_Update(individual &indiv, collective & col, int &id, int &ty
 			indiv.table = temp_col[k].table;
 			indiv.saved_fitness = temp_col[k].saved_fitness;
 			temp_col[k] = indiv;
+
+			if (PENALTY_BASED_CONSTRAINTS)
+				if (col.Indiv_Show(k).Cons_Viol_Show() != indiv.Cons_Viol_Show())
+					Pen_const::R_f_update(indiv.Cons_Viol_Show(),col.Index_Show()-1);
+
 			col.Indiv_Set(k) = indiv;
 			if (save_temp == 0 && (MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M"))
 			{
 				PF_storage2.push_back(indiv);
 				save_temp++;
 			}
+			
 			time++;
 		}
 		// the maximal number of solutions updated is not allowed to exceed 'limit'
@@ -767,6 +787,9 @@ void MOEAD::Problem_Update_Global(individual &indiv, collective & col, int &id, 
 			indiv.table = temp_col[idx[j]].table;
 			indiv.saved_fitness = temp_col[idx[j]].saved_fitness;
 			temp_col[idx[j]] = indiv;
+			if (PENALTY_BASED_CONSTRAINTS)
+				if (col.Indiv_Show(idx[j]).Cons_Viol_Show() != indiv.Cons_Viol_Show())
+					Pen_const::R_f_update(indiv.Cons_Viol_Show(), col.Index_Show()-1);
 			col.Indiv_Set(idx[j]) = indiv;
 			if (save_temp == 0 && (MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M"))
 			{

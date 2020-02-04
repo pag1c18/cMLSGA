@@ -954,10 +954,10 @@ void pareto_front::Pareto_Search(const population & pop)
 
 
 	for (int i = 0; i < this->size; i++)
-		Fitness_PF.push_back(indiv[i].Fitness_Show());
+		Fitness_PF.push_back(indiv[i].Fitness_Show(true));
 
 	for (int i = 0; i < temp_indi_size; i++)
-		Fitness_temp.push_back(temp_indi[i].Fitness_Show());
+		Fitness_temp.push_back(temp_indi[i].Fitness_Show(true));
 
 	//Remove dominated solutions
 	for (int j = 0; j < temp_indi_size; j++)
@@ -1066,7 +1066,7 @@ int pareto_front::Pareto_Search(individual & ind)
 
 	//save the begin time
 	time_t temp31 = clock();
-	int n_obj = ind.Fitness_Show().size();	//number of objectives
+	int n_obj = ind.Fitness_Show(true).size();	//number of objectives
 
 	individual temp_ind = ind;
 
@@ -1075,7 +1075,7 @@ int pareto_front::Pareto_Search(individual & ind)
 		temp_ind.Norm_Remove();
 
 	//copy the values
-	std::vector<double> ind_fit = temp_ind.Fitness_Show();
+	std::vector<double> ind_fit = temp_ind.Fitness_Show(true);
 	std::vector<double> ind_cons = temp_ind.Cons_Show();
 	for (int i = 0; i < indiv.size(); i++)
 	{
@@ -1085,7 +1085,7 @@ int pareto_front::Pareto_Search(individual & ind)
 		short m_j = 0;			//temporary value for checking if j variable dominates
 
 		//copy the fitness
-		std::vector<double> PF_ind_fit = indiv[i].Fitness_Show();
+		std::vector<double> PF_ind_fit = indiv[i].Fitness_Show(true);
 
 
 		//copy the constraints
@@ -1140,7 +1140,7 @@ void pareto_front::Pareto_Refine(int size)
 		return;
 	time_t PF_t_temp = clock();
 	
-	short n_obj = indiv[0].Fitness_Show().size();
+	short n_obj = indiv[0].Fitness_Show(true).size();
 	//check number of objectives
 	if (n_obj == 2)
 	{
@@ -1156,9 +1156,9 @@ void pareto_front::Pareto_Refine(int size)
 			{
 
 				//copy the individual fitness
-				std::vector<double> ind_fit = indiv[i].Fitness_Show();
-				std::vector<double> ind_fit_prev = indiv[i - 1].Fitness_Show();
-				std::vector<double> ind_fit_next = indiv[i + 1].Fitness_Show();
+				std::vector<double> ind_fit = indiv[i].Fitness_Show(true);
+				std::vector<double> ind_fit_prev = indiv[i - 1].Fitness_Show(true);
+				std::vector<double> ind_fit_next = indiv[i + 1].Fitness_Show(true);
 
 
 				//calculate the distance of the point to it's neighbour points

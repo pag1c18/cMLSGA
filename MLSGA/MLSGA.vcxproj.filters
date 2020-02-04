@@ -204,6 +204,9 @@
     <ClInclude Include="UNSGAIII.h">
       <Filter>Header Files\Augments</Filter>
     </ClInclude>
+    <ClInclude Include="Pen_Const.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imported\Chartsheet.cpp">
@@ -313,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="UNSGAIII.cpp">
       <Filter>Source Files\Augments</Filter>
+    </ClCompile>
+    <ClCompile Include="Pen_Const.cpp">
+      <Filter>Source Files\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

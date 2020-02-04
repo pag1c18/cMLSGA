@@ -105,7 +105,7 @@ int Dominance_Check(individual &ind1, individual &ind2, std::vector<short> &fit_
 	int nobj = ind1.Fitness_Show().size();	//number of objectives
 
 	int cons_size = ind1.Cons_Show().size();		//nubmer of constrains
-	if (cons_size > 0)
+	if (cons_size > 0 && !PENALTY_BASED_CONSTRAINTS)
 	{
 		double constr_val_ind1 = 0., constr_val_ind2 = 0.;	//temporary values of constrains valus sum
 		for (int i = 0; i < cons_size; i++)
@@ -227,7 +227,7 @@ int Dominance_Check2(individual &ind1, individual &ind2, int ix, std::vector<sho
 	flag1 = flag2 = 0;
 
 	int cons_size = ind1.Cons_Show().size();		//nubmer of constrains
-	if (cons_size > 0)
+	if (cons_size > 0 && !PENALTY_BASED_CONSTRAINTS)
 	{
 		double constr_val_ind1 = 0., constr_val_ind2 = 0.;	//temporary values of constrains valus sum
 		for (int i = 0; i < cons_size; i++)

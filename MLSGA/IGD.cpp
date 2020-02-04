@@ -59,7 +59,7 @@ double IGD_calc(pareto_front & PF, std::vector<std::vector<double>> & real_PF)
 			{
 				temp += pow(real_PF[i][n] - Pareto[j].Fitness_Show(n), 2);
 			}*/
-			temp_min_di = Distance(Pareto[j].Fitness_Show(), real_PF[i]);
+			temp_min_di = Distance(Pareto[j].Fitness_Show(true), real_PF[i]);
 			//chack if it is the min one
 			if (j == 0)
 				di_min_GA.push_back(temp_min_di);

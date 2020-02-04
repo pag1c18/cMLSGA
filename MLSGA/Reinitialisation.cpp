@@ -28,6 +28,7 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "HEIA.h"
 #include <ctime>
 #include "Support_Functions.h"
+#include "Pen_Const.h"
 
 extern short n_col;
 extern time_t SVM_t;										//Time of SVM
@@ -38,7 +39,14 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 
 	if (ONE_OBJ_OVERRIDE != true)
 		//calculate new fitness of the old PF
+	{
 		PF.Fitness_Calc();
+		std::vector<individual> temp_ind = PF.Indiv_Show();
+		PF.Erase();
+
+		for (int i = 0; i < temp_ind.size(); i++)
+			PF.Pareto_Search(temp_ind[i]);
+	}
 
 	//Reinitialize according to mode chosen
 	if (re_mode == "None")
@@ -56,6 +64,9 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 			}
 			//recalculate the fitness of the individuals in the collective
 			col[iCol].population::Fitness_Calc();
+
+			if (PENALTY_BASED_CONSTRAINTS)
+				Pen_const::Fitness_Recalc(col[iCol],true);
 
 			//recalculate the fitness of the collective
 			col[iCol].Fitness_Calc();
@@ -84,6 +95,50 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 	}
 	else if (re_mode == "Random")
 	{
+		
+		if (mode == "MTS" && col.size() == 1)
+		{
+			PF.Erase();
+
+			//Get the index of the current collective
+			short col_index = col[0].Index_Show() - 1;
+			short temp_size = col[0].Size_Show();
+			nfes++;
+				
+			MTS::MTS_Init(col[0], PF, 1);
+
+			MTS::MTS_Init_Col(col[0]);
+			nfes--;
+
+
+			if (VIDEO == true && FITNESS_ALL == true)
+			{
+				extern std::ofstream* graph_v;					//extern file outputs - MLSGA.cpp
+																//Set the pointer to the current video data file
+				graph_v = &graph_v_vector[col_index];
+			}
+
+			//recalculate the fitness of the collective
+			col[0].Fitness_Calc();
+
+			//Check new PF
+			//Check if multi objective optimisation
+			if (ONE_OBJ_OVERRIDE != true)
+			{
+				//Search for pareto front
+				PF.Pareto_Search(col[0]);		//PF search
+			}
+
+			//For MLSGA create new elite
+
+
+			col[0].save();
+
+
+			nfes += col[0].Size_Show();
+
+		}
+		else
 		abort();
 		/***** GA Initialisation *****/
 		/*int psize = col[0].GAPara_Show()[0].Pop_Size();
@@ -281,7 +336,7 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 			abort();
 				*/
 	}
-	else
+	else if (re_mode == "VP" || re_mode == "CER" || re_mode == "BR")
 	{
 		//Copy the amount of variables and obj
 		int var_size = col[0].FCode_Show()[0].Vars();		//amount of variables
@@ -473,6 +528,9 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 			//recalculate the fitness of the individuals in the collective
 			col[iCol].population::Fitness_Calc();
 
+			if (PENALTY_BASED_CONSTRAINTS)
+				Pen_const::Fitness_Recalc(col[iCol],true);
+
 			//recalculate the fitness of the collective
 			col[iCol].Fitness_Calc();
 
@@ -508,6 +566,8 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 		col_memory[0] = col;
 
 	}
+	else
+		abort();
 
 
 }

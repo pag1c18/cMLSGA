@@ -44,27 +44,27 @@ extern int pop_size;
 extern std::vector<float> TGM_vect;												//current grandmaternal effect
 
 
-function * Func_Type(short ix)
+function* Func_Type(short ix)
 {
 	//1-6 ZDT 1-6
 	if (ix == 1)
 	{
-		ZDT1 * zdt1 = new ZDT1;
+		ZDT1* zdt1 = new ZDT1;
 		return zdt1;
 	}
 	else if (ix == 2)
 	{
-		ZDT2 * zdt2 = new ZDT2;
+		ZDT2* zdt2 = new ZDT2;
 		return zdt2;
 	}
 	else if (ix == 3)
 	{
-		ZDT3 * zdt3 = new ZDT3;
+		ZDT3* zdt3 = new ZDT3;
 		return zdt3;
 	}
 	else if (ix == 4)
 	{
-		ZDT4 * zdt4 = new ZDT4;
+		ZDT4* zdt4 = new ZDT4;
 		return zdt4;
 	}
 	else if (ix == 5)
@@ -76,500 +76,571 @@ function * Func_Type(short ix)
 	}
 	else if (ix == 6)
 	{
-		ZDT6 * zdt6 = new ZDT6;
+		ZDT6* zdt6 = new ZDT6;
 		return zdt6;
 	}
 	//7-13 DTLZ 1-7
 	else if (ix == 7)
 	{
-		DTLZ1 *dtlz1 = new DTLZ1;
+		DTLZ1* dtlz1 = new DTLZ1;
 		return dtlz1;
 	}
 	else if (ix == 8)
 	{
-		DTLZ2 *dtlz2 = new DTLZ2;
+		DTLZ2* dtlz2 = new DTLZ2;
 		return dtlz2;
 	}
 	else if (ix == 9)
 	{
-		DTLZ3 *dtlz3 = new DTLZ3;
+		DTLZ3* dtlz3 = new DTLZ3;
 		return dtlz3;
 	}
 	else if (ix == 10)
 	{
-		DTLZ4 *dtlz4 = new DTLZ4;
+		DTLZ4* dtlz4 = new DTLZ4;
 		return dtlz4;
 	}
 	else if (ix == 11)
 	{
-		DTLZ5 *dtlz5 = new DTLZ5;
+		DTLZ5* dtlz5 = new DTLZ5;
 		return dtlz5;
 	}
 	else if (ix == 12)
 	{
-		DTLZ6 *dtlz6 = new DTLZ6;
+		DTLZ6* dtlz6 = new DTLZ6;
 		return dtlz6;
 	}
 	else if (ix == 13)
 	{
-		DTLZ7 *dtlz7 = new DTLZ7;
+		DTLZ7* dtlz7 = new DTLZ7;
 		return dtlz7;
 	}
 	//14-20 MOP 1-7
 	else if (ix == 14)
 	{
-		MOP1 *mop1 = new MOP1;
+		MOP1* mop1 = new MOP1;
 		return mop1;
 	}
 	else if (ix == 15)
 	{
-		MOP2 *mop2 = new MOP2;
+		MOP2* mop2 = new MOP2;
 		return mop2;
 	}
 	else if (ix == 16)
 	{
-		MOP3 *mop3 = new MOP3;
+		MOP3* mop3 = new MOP3;
 		return mop3;
 	}
 	else if (ix == 17)
 	{
-		MOP4 *mop4 = new MOP4;
+		MOP4* mop4 = new MOP4;
 		return mop4;
 	}
 	else if (ix == 18)
 	{
-		MOP5 *mop5 = new MOP5;
+		MOP5* mop5 = new MOP5;
 		return mop5;
 	}
 	else if (ix == 19)
 	{
-		MOP6 *mop6 = new MOP6;
+		MOP6* mop6 = new MOP6;
 		return mop6;
 	}
 	else if (ix == 20)
 	{
-		MOP7 *mop7 = new MOP7;
+		MOP7* mop7 = new MOP7;
 		return mop7;
 	}
 	//21-30 UF1-10
 	else if (ix == 21)
 	{
-		UF1 *U1 = new UF1;
+		UF1* U1 = new UF1;
 		return U1;
 	}
 	else if (ix == 22)
 	{
-		UF2 *U2 = new UF2;
+		UF2* U2 = new UF2;
 		return U2;
 	}
 	else if (ix == 23)
 	{
-		UF3 *U3 = new UF3;
+		UF3* U3 = new UF3;
 		return U3;
 	}
 	else if (ix == 24)
 	{
-		UF4 *U4 = new UF4;
+		UF4* U4 = new UF4;
 		return U4;
 	}
 	else if (ix == 25)
 	{
-		UF5 *U5 = new UF5;
+		UF5* U5 = new UF5;
 		return U5;
 	}
 	else if (ix == 26)
 	{
-		UF6 *U6 = new UF6;
+		UF6* U6 = new UF6;
 		return U6;
 	}
 	else if (ix == 27)
 	{
-		UF7 *U7 = new UF7;
+		UF7* U7 = new UF7;
 		return U7;
 	}
 	else if (ix == 28)
 	{
-		UF8 *U8 = new UF8;
+		UF8* U8 = new UF8;
 		return U8;
 	}
 	else if (ix == 29)
 	{
-		UF9 *U9 = new UF9;
+		UF9* U9 = new UF9;
 		return U9;
 	}
 	else if (ix == 30)
 	{
-		UF10 *U10 = new UF10;
+		UF10* U10 = new UF10;
 		return U10;
 	}
 	//31-39 WFG 1-9
 	else if (ix == 31)
 	{
-		WFG1 *wfg1 = new WFG1;
+		WFG1* wfg1 = new WFG1;
 		return wfg1;
 
 	}
 	else if (ix == 32)
 	{
-		WFG2 *wfg2 = new WFG2;
+		WFG2* wfg2 = new WFG2;
 		return wfg2;
 	}
 	else if (ix == 33)
 	{
-		WFG3 *wfg3 = new WFG3;
+		WFG3* wfg3 = new WFG3;
 		return wfg3;
 	}
 	else if (ix == 34)
 	{
-		WFG4 *wfg4 = new WFG4;
+		WFG4* wfg4 = new WFG4;
 		return wfg4;
 	}
 	else if (ix == 35)
 	{
-		WFG5 *wfg5 = new WFG5;
+		WFG5* wfg5 = new WFG5;
 		return wfg5;
 	}
 	else if (ix == 36)
 	{
-		WFG6 *wfg6 = new WFG6;
+		WFG6* wfg6 = new WFG6;
 		return wfg6;
 	}
 	else if (ix == 37)
 	{
-		WFG7 *wfg7 = new WFG7;
+		WFG7* wfg7 = new WFG7;
 		return wfg7;
 	}
 	else if (ix == 38)
 	{
-		WFG8 *wfg8 = new WFG8;
+		WFG8* wfg8 = new WFG8;
 		return wfg8;
 	}
 	else if (ix == 39)
 	{
-		WFG9 *wfg9 = new WFG9;
+		WFG9* wfg9 = new WFG9;
 		return wfg9;
 	}
 	//40-49 IMB 1-10
 	else if (ix == 40)
 	{
-		IMB1 *imb1 = new IMB1;
+		IMB1* imb1 = new IMB1;
 		return imb1;
 	}
 	else if (ix == 41)
 	{
-		IMB2 *imb2 = new IMB2;
+		IMB2* imb2 = new IMB2;
 		return imb2;
 	}
 	else if (ix == 42)
 	{
-		IMB3 *imb3 = new IMB3;
+		IMB3* imb3 = new IMB3;
 		return imb3;
 	}
 	else if (ix == 43)
 	{
-		IMB4 *imb4 = new IMB4;
+		IMB4* imb4 = new IMB4;
 		return imb4;
 	}
 	else if (ix == 44)
 	{
-		IMB5 *imb5 = new IMB5;
+		IMB5* imb5 = new IMB5;
 		return imb5;
 	}
 	else if (ix == 45)
 	{
-		IMB6 *imb6 = new IMB6;
+		IMB6* imb6 = new IMB6;
 		return imb6;
 	}
 	else if (ix == 46)
 	{
-		IMB7 *imb7 = new IMB7;
+		IMB7* imb7 = new IMB7;
 		return imb7;
 	}
 	else if (ix == 47)
 	{
-		IMB8 *imb8 = new IMB8;
+		IMB8* imb8 = new IMB8;
 		return imb8;
 	}
 	else if (ix == 48)
 	{
-		IMB9 *imb9 = new IMB9;
+		IMB9* imb9 = new IMB9;
 		return imb9;
 	}
 	else if (ix == 49)
 	{
-		IMB10 *imb10 = new IMB10;
+		IMB10* imb10 = new IMB10;
 		return imb10;
 	}
 	//50-59 CF 1-10
 	else if (ix == 50)
 	{
-		CF1 *cf1 = new CF1;
+		CF1* cf1 = new CF1;
 		return cf1;
 	}
 	else if (ix == 51)
 	{
-		CF2 *cf2 = new CF2;
+		CF2* cf2 = new CF2;
 		return cf2;
 	}
 	else if (ix == 52)
 	{
-		CF3 *cf3 = new CF3;
+		CF3* cf3 = new CF3;
 		return cf3;
 	}
 	else if (ix == 53)
 	{
-		CF4 *cf4 = new CF4;
+		CF4* cf4 = new CF4;
 		return cf4;
 	}
 	else if (ix == 54)
 	{
-		CF5 *cf5 = new CF5;
+		CF5* cf5 = new CF5;
 		return cf5;
 	}
 	else if (ix == 55)
 	{
-		CF6 *cf6 = new CF6;
+		CF6* cf6 = new CF6;
 		return cf6;
 	}
 	else if (ix == 56)
 	{
-		CF7 *cf7 = new CF7;
+		CF7* cf7 = new CF7;
 		return cf7;
 	}
 	else if (ix == 57)
 	{
-		CF8 *cf8 = new CF8;
+		CF8* cf8 = new CF8;
 		return cf8;
 	}
 	else if (ix == 58)
 	{
-		CF9 *cf9 = new CF9;
+		CF9* cf9 = new CF9;
 		return cf9;
 	}
 	else if (ix == 59)
 	{
-		CF10 *cf10 = new CF10;
+		CF10* cf10 = new CF10;
 		return cf10;
 	}
 	//60-61 DTLZ 8-9
 	else if (ix == 60)
 	{
-		DTLZ8 *dtlz8 = new DTLZ8;
+		DTLZ8* dtlz8 = new DTLZ8;
 		return dtlz8;
 	}
 	else if (ix == 61)
 	{
-		DTLZ9 *dtlz9 = new DTLZ9;
+		DTLZ9* dtlz9 = new DTLZ9;
 		return dtlz9;
 	}
 	//62-65 IMB 11-14
 	else if (ix == 62)
 	{
-		IMB11 *imb11 = new IMB11;
+		IMB11* imb11 = new IMB11;
 		return imb11;
 	}
 	else if (ix == 63)
 	{
-		IMB12 *imb12 = new IMB12;
+		IMB12* imb12 = new IMB12;
 		return imb12;
 	}
 	else if (ix == 64)
 	{
-		IMB13 *imb13 = new IMB13;
+		IMB13* imb13 = new IMB13;
 		return imb13;
 	}
 	else if (ix == 65)
 	{
-		IMB14 *imb14 = new IMB14;
+		IMB14* imb14 = new IMB14;
 		return imb14;
 	}
-	//66-73 UDF 1-9
+	//DAS_CMOP1-9 66-74
 	else if (ix == 66)
 	{
-		UDF1 *UD1 = new UDF1;
-		return UD1;
+		DAS_CMOP1* dcmop1 = new DAS_CMOP1;
+		return dcmop1;
 	}
 	else if (ix == 67)
 	{
-		UDF2 *UD2 = new UDF2;
-		return UD2;
+		DAS_CMOP2* dcmop2 = new DAS_CMOP2;
+		return dcmop2;
 	}
 	else if (ix == 68)
 	{
-		UDF3 *UD3 = new UDF3;
-		return UD3;
+		DAS_CMOP3* dcmop3 = new DAS_CMOP3;
+		return dcmop3;
 	}
 	else if (ix == 69)
 	{
-		UDF4 *UD4 = new UDF4;
-		return UD4;
+		DAS_CMOP4* dcmop4 = new DAS_CMOP4;
+		return dcmop4;
 	}
 	else if (ix == 70)
 	{
-		UDF5 *UD5 = new UDF5;
-		return UD5;
+		DAS_CMOP5* dcmop5 = new DAS_CMOP5;
+		return dcmop5;
 	}
 	else if (ix == 71)
 	{
-		UDF6 *UD6 = new UDF6;
-		return UD6;
+		DAS_CMOP6* dcmop6 = new DAS_CMOP6;
+		return dcmop6;
 	}
 	else if (ix == 72)
 	{
-		UDF8 *UD8 = new UDF8;
-		return UD8;
+		DAS_CMOP7* dcmop7 = new DAS_CMOP7;
+		return dcmop7;
 	}
 	else if (ix == 73)
 	{
-		UDF9 *UD9 = new UDF9;
-		return UD9;
+		DAS_CMOP8* dcmop8 = new DAS_CMOP8;
+		return dcmop8;
 	}
-	//74-83 JY 1-10
 	else if (ix == 74)
 	{
-		JY1 *J1 = new JY1;
-		return J1;
+		DAS_CMOP9* dcmop9 = new DAS_CMOP9;
+		return dcmop9;
 	}
+	//75-82 UDF 1-9
 	else if (ix == 75)
 	{
-		JY2 *J2 = new JY2;
-		return J2;
+		UDF1* UD1 = new UDF1;
+		return UD1;
 	}
 	else if (ix == 76)
 	{
-		JY3 *J3 = new JY3;
-		return J3;
+		UDF2* UD2 = new UDF2;
+		return UD2;
 	}
 	else if (ix == 77)
+	{
+		UDF3* UD3 = new UDF3;
+		return UD3;
+	}
+	else if (ix == 78)
+	{
+		UDF4* UD4 = new UDF4;
+		return UD4;
+	}
+	else if (ix == 79)
+	{
+		UDF5* UD5 = new UDF5;
+		return UD5;
+	}
+	else if (ix == 80)
+	{
+		UDF6* UD6 = new UDF6;
+		return UD6;
+	}
+	else if (ix == 81)
+	{
+		UDF8* UD8 = new UDF8;
+		return UD8;
+	}
+	else if (ix == 82)
+	{
+		UDF9* UD9 = new UDF9;
+		return UD9;
+	}
+	//83-92 JY 1-10
+	else if (ix == 83)
+	{
+		JY1* J1 = new JY1;
+		return J1;
+	}
+	else if (ix == 84)
+	{
+		JY2* J2 = new JY2;
+		return J2;
+	}
+	else if (ix == 85)
+	{
+		JY3* J3 = new JY3;
+		return J3;
+	}
+	else if (ix == 86)
 	{
 		//not implemented
 		//JY4 *J4 = new JY4;
 		//return J4;
 		return NULL;
 	}
-	else if (ix == 78)
+	else if (ix == 87)
 	{
-		JY5 *J5 = new JY5;
+		JY5* J5 = new JY5;
 		return J5;
 	}
-	else if (ix == 79)
+	else if (ix == 88)
 	{
-		JY6 *J6 = new JY6;
+		JY6* J6 = new JY6;
 		return J6;
 	}
-	else if (ix == 80)
+	else if (ix == 89)
 	{
-		JY7 *J7 = new JY7;
+		JY7* J7 = new JY7;
 		return J7;
 	}
-	else if (ix == 81)
+	else if (ix == 90)
 	{
-		JY8 *J8 = new JY8;
+		JY8* J8 = new JY8;
 		return J8;
 	}
-	else if (ix == 82)
+	else if (ix == 91)
 	{
 		//not implemented
 		//JY9 *J9 = new JY9;
 		//return J9;
 		return NULL;
 	}
-	else if (ix == 83)
+	else if (ix == 92)
 	{
 		//not implemented
 		//JY10 *J10 = new JY10;
 		//return J10;
 		return NULL;
 	}
-	//84-88 FDA 1-5
-	else if (ix == 84)
+	//93-97 FDA 1-5
+	else if (ix == 93)
 	{
-		FDA1 *F1 = new FDA1;
+		FDA1* F1 = new FDA1;
 		return F1;
 	}
-	else if (ix == 85)
+	else if (ix == 94)
 	{
-		FDA2 *F2 = new FDA2;
+		FDA2* F2 = new FDA2;
 		return F2;
 	}
-	else if (ix == 86)
+	else if (ix == 95)
 	{
-		FDA3 *F3 = new FDA3;
+		FDA3* F3 = new FDA3;
 		return F3;
 	}
-	else if (ix == 87)
+	else if (ix == 96)
 	{
 		//not implemented
 		//FDA4 *F4 = new FDA4;
 		//return F4;
 		return NULL;
 	}
-	else if (ix == 88)
+	else if (ix == 97)
 	{
 		//not implemented
 		//FDA5 *F5 = new FDA5;
 		//return F5;
 		return NULL;
 	}
-	//89-98 CDF1-10
-	else if (ix == 89)
-	{
-		CDF1 *CD1 = new CDF1;
-		return CD1;
-	}
-	else if (ix == 90)
-	{
-		CDF2 *CD2 = new CDF2;
-		return CD2;
-	}
-	else if (ix == 91)
-	{
-		CDF3 *CD3 = new CDF3;
-		return CD3;
-	}
-	else if (ix == 92)
-	{
-		CDF4 *CD4 = new CDF4;
-		return CD4;
-	}
-	else if (ix == 93)
-	{
-		CDF5 *CD5 = new CDF5;
-		return CD5;
-	}
-	else if (ix == 94)
-	{
-		CDF6 *CD6 = new CDF6;
-		return CD6;
-	}
-	else if (ix == 95)
-	{
-		CDF7 *CD7 = new CDF7;
-		return CD7;
-	}
-	else if (ix == 96)
-	{
-		CDF8 *CD8 = new CDF8;
-		return CD8;
-	}
-	else if (ix == 97)
-	{
-		CDF9 *CD9 = new CDF9;
-		return CD9;
-	}
+	//98-112 CDF1-15
 	else if (ix == 98)
 	{
-		CDF10 *CD10 = new CDF10;
+		CDF1* CD1 = new CDF1;
+		return CD1;
+	}
+	else if (ix == 99)
+	{
+		CDF2* CD2 = new CDF2;
+		return CD2;
+	}
+	else if (ix == 100)
+	{
+		CDF3* CD3 = new CDF3;
+		return CD3;
+	}
+	else if (ix == 101)
+	{
+		CDF4* CD4 = new CDF4;
+		return CD4;
+	}
+	else if (ix == 102)
+	{
+		CDF5* CD5 = new CDF5;
+		return CD5;
+	}
+	else if (ix == 103)
+	{
+		CDF6* CD6 = new CDF6;
+		return CD6;
+	}
+	else if (ix == 104)
+	{
+		CDF7* CD7 = new CDF7;
+		return CD7;
+	}
+	else if (ix == 105)
+	{
+		CDF8* CD8 = new CDF8;
+		return CD8;
+	}
+	else if (ix == 106)
+	{
+		CDF9* CD9 = new CDF9;
+		return CD9;
+	}
+	else if (ix == 107)
+	{
+		CDF10* CD10 = new CDF10;
 		return CD10;
+	}
+	else if (ix == 108)
+	{
+		CDF11* CD11 = new CDF11;
+		return CD11;
+	}
+	else if (ix == 109)
+	{
+		CDF12* CD12 = new CDF12;
+		return CD12;
+	}
+	else if (ix == 110)
+	{
+		CDF13* CD13 = new CDF13;
+		return CD13;
+	}
+	else if (ix == 111)
+	{
+		CDF14* CD14 = new CDF14;
+		return CD14;
+	}
+	else if (ix == 112)
+	{
+		CDF15* CD15 = new CDF15;
+		return CD15;
 	}
 	else if (ix == 201)
 	{
-		GEN *gen = new GEN;
+		GEN* gen = new GEN;
 		return gen;
 	}
 	else if (ix == 202)
 	{
-		GEN_pat *gen2 = new GEN_pat;
+		GEN_pat* gen2 = new GEN_pat;
 		return gen2;
 	}
 	else
@@ -733,23 +804,22 @@ crossover<individual> * Cross_Type(short ix, std::string MODE)
 {
 	if (ENCODING == "Real")
 	{
-		if (ix == 1)
+		if (MODE == "Normal" || MODE == "UNSGAIII" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M" || MODE == "PAES" || MODE == "DMOEADD" || MODE == "BCE" || MODE == "HEIA" || MODE == "IBEA")
 		{
-			if (MODE == "Normal")
+			if (ix == 1)
 			{
-				crossover_1<individual> *C1 = new crossover_1<individual>;
+				auto* C1 = new crossover_1_SBX<individual>;
 				return C1;
 			}
-
-			else if (MODE == "UNSGAIII" || MODE == "MOEAD" || MODE == "MOEADMSF" || MODE == "MOEADPSF" || MODE == "MOEADM2M" || MODE == "PAES" || MODE == "DMOEADD" || MODE == "BCE" || MODE == "HEIA" || MODE == "IBEA")
+			else if (ix == 2)
 			{
-				crossover_1b<individual> *C1 = new crossover_1b<individual>;
+				auto* C1 = new crossover_2_CMRDX<individual>;
 				return C1;
 			}
-			else if (MODE == "MTS")
+			else if (ix == 3)
 			{
-				crossover<individual> *MTS_C = new crossover<individual>(0, "MTS");
-				return MTS_C;
+				auto* C1 = new crossover_3_DE<individual>;
+				return C1;
 			}
 			else
 			{
@@ -761,32 +831,38 @@ crossover<individual> * Cross_Type(short ix, std::string MODE)
 				abort();
 			}
 		}
+		else if (MODE == "MTS")
+		{
+			auto* MTS_C = new crossover<individual>(0, "MTS");
+			return MTS_C;
+		}
 		else
 		{
 			std::cout << "*****************************\n"
-				<< "Crossover #" << ix << " not initialised\n"
+				<< "Crossover for MODE " << MODE << " not initialised\n"
 				<< "Program will terminate"
 				<< "\n*****************************\n";
 			system("pause");
 			abort();
 		}
+
 	}
 	else if (ENCODING == "Binary" || ENCODING == "Gray")
 	{
 		if (MODE == "MTS")
 		{
-			crossover<individual> *MTS_C = new crossover<individual>(0, "MTS");
+			auto* MTS_C = new crossover<individual>(0, "MTS");
 			return MTS_C;
 		}
 		else if (ix == 1)
 		{
-			crossover_B1<individual> *C1 = new crossover_B1<individual>;
+			auto* C1 = new crossover_B1_Uni<individual>;
 			return C1;
 
 		}
 		else if (ix == 2)
 		{
-			crossover_B2<individual> *C2 = new crossover_B2<individual>;
+			auto* C2 = new crossover_B2_MP<individual>;
 			return C2;
 
 		}
@@ -1836,6 +1912,35 @@ void Error_Check()
 		system("pause");
 	}
 
+	if (PENALTY_BASED_CONSTRAINTS)
+	{
+		if (!MLSGA_norm_obj)
+		{
+			std::cout << "***************Warning*******************\n"
+				<< "Penalty based constraints can only be used with normalisation of objectives! Check const.h"
+				<< "\n**********************************\n";
+			system("pause");
+			abort();
+		}
+		for (int i = 0; i < GA_mode.size(); i++)
+		{
+			for (int iCoevol = 0; iCoevol < GA_mode[i].size(); iCoevol++)
+			{
+				std::string MODE = GA_mode[i][iCoevol];
+				if (MODE != "MTS" && MODE != "BCE" && MODE != "HEIA" && MODE != "MOEAD" && MODE != "UNSGAIII")
+				{
+					std::cout << "***************Warning*******************\n"
+						<< "Penalty based constraints is available only for MTS, BCE, HEIA, MOEAD and UNSGAIII modules! Check const.h"
+						<< "\n**********************************\n";
+					system("pause");
+					abort();
+				}
+			}
+		}
+	}
+		
+
+
 	for (int i = 0; i < GA_mode.size(); i++)
 	{
 		if (GA_mode[i].size() > MLSGA_n_col_b || (GA_mode[i].size() > 1 && MLSGA_Hybrid != true))
@@ -2020,14 +2125,7 @@ void Error_Check()
 					system("pause");
 					abort();
 				}
-				if (n_cross != 1)
-				{
-					std::cout << "**********************************\n"
-						<< "Wrong number of crossover types. Cannot be greater than 1. MOEAD have internal crossover. Check Const.h\nProgram will terminate"
-						<< "\n**********************************\n";
-					system("pause");
-					abort();
-				}
+				
 				if ((pop_size != 300 && pop_size != 400 && pop_size != 500 && pop_size != 600 && pop_size != 800 && pop_size != 1000) && MOEAD_weight_generator == "File")
 				{
 					std::cout << "**********************************\n"
@@ -2183,21 +2281,17 @@ void Error_Check()
 		function * f_temp = Func_Type(i);
 		delete f_temp;
 	}
-	for (int i = 1; i <= n_mut; i++)
-		Mut_Type(i, "Normal");
+	Mut_Type(mut_ix, "Normal");
 	for (int i = 0; i < GA_mode.size(); i++)
 	{
 		for (int iCoevol = 0; iCoevol < GA_mode[i].size(); iCoevol++)
 		{
 			std::string MODE = GA_mode[i][iCoevol];
-			for (int iC = 1; iC <= n_cross; iC++)
-				Cross_Type(iC, MODE);
+			Cross_Type(cross_ix, MODE);
 		}
-	}
-	for (int i = 1; i <= n_select; i++)
-	{		
-		Select_Type(i);
-	}
+	}	
+	Select_Type(select_ix);
+	
 
 	//Check mutation rates
 	if (mut_prob_max < mut_prob_min || mut_prob_min < 0 || (mut_prob_max > 1 && ENCODING == "Real"))
@@ -2246,7 +2340,6 @@ void Error_Check()
 			<< "Too small population set. Check Const.h\nProgram will terminate"
 			<< "\n**********************************\n";
 		system("pause");
-		abort();
 	}
 	if (SOBOL == true)
 	{
@@ -2293,7 +2386,7 @@ int Show_Iter()
 		n_MLS_b = MLSGA_n_MLS_b;
 		n_MLS_e = MLSGA_n_MLS_e;
 	}
-	long long index_r_max = n_runs * GA_mode.size() * Reinit_Mode.size() * n_select * n_cross * n_mut * (n_func_e - n_func_b + 1)*(n_MLS_e - n_MLS_b + 1)* ((n_col_e - n_col_b) / 2 + 1) * n_pop_dyn*n_c_prob * n_m_prob  *n_TGM_mat * n_TGM_gmat;	//Number of iterations - MAX
+	long long index_r_max = n_runs * GA_mode.size() * Reinit_Mode.size() * (n_func_e - n_func_b + 1)*(n_MLS_e - n_MLS_b + 1)* ((n_col_e - n_col_b) / 2 + 1) * n_pop_dyn*n_c_prob * n_m_prob  *n_TGM_mat * n_TGM_gmat;	//Number of iterations - MAX
 	
 	//show number of runs
 	std::cout << "\nApprox. #" << index_r_max << " iterations;\n";

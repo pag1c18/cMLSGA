@@ -110,6 +110,12 @@ public:
 	@param ix index of the objective
 	*/
 	double Fitness_Show(int ix) const { if (MLSGA_norm_obj == false) return fitness[ix]; else return fitness_norm[ix];};
+
+	/**Returning non normalised fitness - for PF calculation**/
+	std::vector<double> Fitness_Show(bool t) const { if (t) return fitness; else { abort();  return fitness_norm; } };
+
+	/*Set new fitness - for penalty function*/
+	void Fitness_Set(std::vector<double>& obj) { if (MLSGA_norm_obj == false) this->fitness = obj; else this->fitness_norm = obj; }
 	/**Returning code (genotype)**/
 	std::vector<bool> Code_Bin_Show()const { return code_bin; };
 	/**Returning code (genotype)**/

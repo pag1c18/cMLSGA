@@ -35,18 +35,20 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #define PERF_VAL_GEN false						//If IGD or HV value should be calculated every generation and stored to file
 #define AUTO_FOLDER_COMMENT true				//If the name of folder should be created automatically and containt the run parameters
 #define ENCODING "Real"							//Encoding type "Binary", "Gray", "Real"
+#define PENALTY_BASED_CONSTRAINTS false			//If the penalty functions have to calculated instead of constrained ranking
 
 #define PF_REFINE true							//If PF is refining at the end to the desired size (it will be refined anyway, if PF is too big - see const.h)
 #define DEBUG false								//For debugging purposes
 #define FITNESS_ALL	true						//save all fitness to the excel and show if not save only PF
-#define SKIP_GRAPHS	false						//skip making graphs for runs with index > 5; for very long dynamic runs to save memory
+#define SKIP_GRAPHS	true						//skip making graphs for runs with index > 5; for very long dynamic runs to save memory
 #define EXCEL_EXCEPTION true					//do not save fitness to excel - useful for very long runs
 #define ONE_OBJ_OVERRIDE false					//Calculating as a single objective (every objective have the same weight)										
-#define CONTOUR_PLOT false						//Contour plot generation (FITNESS_ALL have to be defined!!)
+#define CONTOUR_PLOT true						//Contour plot generation (FITNESS_ALL have to be defined!!)
 #define REAL_RANDOM false						//if true random will be real random, if false random will be pseudo-random
 #define GENERATION_GRAPHS_DATA false			//if graphs after 50,100 and 250 generations are wanted
 #define FILE_INPUT false						//if values are read from file
 #define SOBOL false								//if values are generated from sobol
+#define MOEAD_OVERRIDE false					//if MOEAD should use crossover.cpp instead of standard DE crossover
 //#define MOEAD_SOBOL false						//if namda in MOEAD are calculated from sobol
 //#define MOEAD_SEPARATE_WEIGHTS false			//define if each col will have different weight vectors
 #define GROUPING "Random"

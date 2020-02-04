@@ -47,6 +47,7 @@ Originally published: L.-Y. Tseng and C. Chen, “Multiple Trajectory Search for M
 #include "Random.h"
 #include <ctime>
 #include "Support_Functions.h"
+#include "Pen_Const.h"
 
 
 
@@ -89,7 +90,7 @@ namespace MTS
 	@param ind - individual for which calculatio nwill be made
 	@param save - if results should be saved
 	*/
-	int Object(individual & ind, bool save);
+	int Object(individual & ind, short ix, bool save);
 	/*
 	*Fix the value according to boundaries*
 	*/
@@ -126,7 +127,7 @@ void MTS::MTS_Init(population & pop, pareto_front & PF, short ncol)
 	std::vector<std::vector<unsigned int>> factor;
 	int psize = pop.Size_Show();
 	//loop for MTS initialisation - do not make any change actually
-	if (true)
+	/*if (true)
 	{
 		factor = Factor_Create(psize, var_n, psize);
 		for (int i = 0; i < psize; i++)
@@ -136,20 +137,28 @@ void MTS::MTS_Init(population & pop, pareto_front & PF, short ncol)
 				pop.Indiv_Set(i).Code_Set(j) = bound[j].lower + double(factor[i][j])*(bound[j].upper - bound[j].lower) / double(psize);
 			}
 		}
-	}
+	}*/
 	//Set initial values
+
+
+	
+
 	for (int i = 0; i < psize; i++)
 	{
 		//set lcount[i] = 0; zero_count(); - each individual should have one value
 		pop.Indiv_Set(i).utility = 0;
 		pop.Indiv_Set(i).table = std::vector<int>{ 1 };
 		//calculate the fitness of the individuals
-		Object(pop.Indiv_Set(i), false);
+		Object(pop.Indiv_Set(i), 0,false);
 	}
 }
 
 void MTS::MTS_Init_Col(collective & col)
 {
+	if (PENALTY_BASED_CONSTRAINTS)
+	{
+		Pen_const::Fitness_Recalc(col,true);
+	}
 	//push the size of the foreground of given collective
 	foreground_size[col.Index_Show()-1] = floor(col.Size_Show()*MTS_foreground_multp);
 	if (foreground_size[foreground_size.size() - 1] < 1)
@@ -174,7 +183,7 @@ void MTS::MTS_Calc(collective & col)
 	//or - check which one is better
 	//ChooseSolution(col);
 
-	int ix = col.Index_Show();	//index of the collective
+	int ix = col.Index_Show() - 1;	//index of the collective
 
 	time_t mut_t_temp = clock();										//starting time of the mutation
 
@@ -313,25 +322,30 @@ void MTS::ChooseSolution(collective & col)
 	}
 }
 
-int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
+int MTS::LocalSearch1(individual& ind, int ix, std::vector<short>& fit_indexes)
 {
 	if (Termination_Check(dynamic_on))
 		return 0;
+
+	bool ind_constr_temp;
+	if (PENALTY_BASED_CONSTRAINTS)
+		ind_constr_temp = ind.Cons_Viol_Show();
+
 	double of;
 	bool AllMin;
 	int l = 0;	//output
 	int n_var = ind.Code_Show().size();			//amount of variables
 	std::vector<double> s; // = ( LOWER_BOUND - UPPER_BOUND ) * 0.5;
 	std::vector<double> s1; // = s * 0.5;
-	std::vector<int> S(n_var,0);
+	std::vector<int> S(n_var, 0);
 	for (int i = 0; i < n_var; i++)
 	{
 		s.push_back((bound[i].lower - bound[i].upper) * 0.5);
 		s1.push_back(s[i] * 0.5);
 	}
-	
 
-	if (!improve[ix-1][0])
+
+	if (!improve[ix][0])
 	{
 		AllMin = false;
 		for (int i = 0; i < n_var; i++)
@@ -357,7 +371,7 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 		}
 	}
 
-	improve[ix - 1][0] = false;
+	improve[ix][0] = false;
 
 	individual BES = individual(ind);
 
@@ -374,13 +388,13 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 		}
 		int i = S[_i];
 		ind.Code_Set(i) += s[i];
-		if (Object(ind, true))
+		if (Object(ind, ix, true))
 			l += MTS_MPL1;
 		if (Better1(ind, BES, fit_indexes))
 		{
 			BES = ind;
 			l += MTS_MPL2;
-			improve[ix - 1][0] = true;
+			improve[ix][0] = true;
 		}
 		else
 		{
@@ -394,22 +408,22 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 			}
 			if (!Better1(BES, ind, fit_indexes))
 			{
-				if (Random_I(0,49) == 0)
+				if (Random_I(0, 49) == 0)
 				{
 					BES = ind;
 					continue;
 				}
 			}
-			
+
 			ind = BES;
 			ind.Code_Set(i) -= s1[i];
-			if (Object(ind, true))
+			if (Object(ind, ix, true))
 				l += MTS_MPL1;
 			if (Better1(ind, BES, fit_indexes))
 			{
 				BES = ind;
 				l += MTS_MPL2;
-				improve[ix - 1][0] = true;
+				improve[ix][0] = true;
 			}
 			else
 			{
@@ -417,6 +431,14 @@ int MTS::LocalSearch1(individual & ind, int ix, std::vector<short> &fit_indexes)
 			}
 		}
 	}
+
+
+	if (PENALTY_BASED_CONSTRAINTS)
+	{
+		if (ind.Cons_Viol_Show() != ind_constr_temp)
+			Pen_const::R_f_update(!ind_constr_temp, ix);
+	}
+
 	return l;
 }
 
@@ -429,6 +451,12 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 	int n_var = ind.Code_Show().size();			//amount of variables
 	std::vector<double> s; // = ( LOWER_BOUND - UPPER_BOUND ) * 0.5;
 	std::vector<double> s1; // = s * 0.5;
+
+	bool ind_constr_temp;
+	if (PENALTY_BASED_CONSTRAINTS)
+		ind_constr_temp = ind.Cons_Viol_Show();
+
+
 	for (int i = 0; i < n_var; i++)
 	{
 		s.push_back((bound[i].lower - bound[i].upper) * 0.5);
@@ -436,7 +464,7 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 	}
 	
 
-	if (!improve[ix - 1][1])
+	if (!improve[ix][1])
 	{
 		//ÁY¤p·j´M½d³ò
 		AllMin = false;
@@ -465,7 +493,7 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 
 	bool * ch = new bool[n_var];
 	double * D = new double[n_var];
-	improve[ix - 1][1] = false;
+	improve[ix][1] = false;
 
 	individual BES = individual(ind);
 
@@ -498,14 +526,14 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 			else
 				BES.Code_Set(j) = ind.Code_Show(j);
 		}
-		if (Object(BES, true))
+		if (Object(BES, ix, true))
 			l += MTS_MPL1;
 
 		if (Better1(BES, ind, fit_indexes))
 		{
 			ind = BES;
 			l += MTS_MPL2;
-			improve[ix - 1][1] = true;
+			improve[ix][1] = true;
 		}
 		else; // ( _x[n_var] > x[n_var] )
 		{
@@ -532,18 +560,23 @@ int MTS::LocalSearch2(individual & ind, int ix, std::vector<short> &fit_indexes)
 				else
 					BES.Code_Set(j) = ind.Code_Show(j);
 			}
-			if (Object(BES, true))
+			if (Object(BES, ix, true))
 				l += MTS_MPL1;
 			if (Better1(BES, ind, fit_indexes))
 			{
 				ind = BES;
 				l += MTS_MPL2;
-				improve[ix - 1][1] = true;
+				improve[ix][1] = true;
 			}
 		}
 	}
 	delete ch;
 	delete D;
+	if (PENALTY_BASED_CONSTRAINTS)
+	{
+		if (ind.Cons_Viol_Show() != ind_constr_temp)
+			Pen_const::R_f_update(!ind_constr_temp, ix);
+	}
 	return l;
 
 }
@@ -561,6 +594,11 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 	int grade = 0;
 
 
+	bool ind_constr_temp;
+	if (PENALTY_BASED_CONSTRAINTS)
+		ind_constr_temp = ind.Cons_Viol_Show();
+
+
 	for (int i = 0; i < n_var; i++)
 	{
 		U.push_back(bound[i].upper);
@@ -575,6 +613,11 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 		{
 			if (Termination_Check(dynamic_on))
 			{
+				if (PENALTY_BASED_CONSTRAINTS)
+				{
+					if (ind.Cons_Viol_Show() != ind_constr_temp)
+						Pen_const::R_f_update(!ind_constr_temp, ix);
+				}
 				return 0;
 			}
 		}
@@ -586,6 +629,11 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 			{
 				if (Termination_Check(dynamic_on))
 				{
+					if (PENALTY_BASED_CONSTRAINTS)
+					{
+						if (ind.Cons_Viol_Show() != ind_constr_temp)
+							Pen_const::R_f_update(!ind_constr_temp, ix);
+					}
 					return 0;
 				}
 			}
@@ -601,7 +649,7 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 			for (ind.Code_Set(i) = M1; ind.Code_Show(i) < U[i]; ind.Code_Set(i) += dis[i])
 			{
 				
-				if (Object(ind, true))
+				if (Object(ind,ix, true))
 				{
 					grade += MTS_MPL1;
 				}
@@ -616,6 +664,11 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 				{
 					if (Termination_Check(dynamic_on))
 					{
+						if (PENALTY_BASED_CONSTRAINTS)
+						{
+							if (ind.Cons_Viol_Show() != ind_constr_temp)
+								Pen_const::R_f_update(!ind_constr_temp, ix);
+						}
 						return 0;
 					}
 				}
@@ -646,11 +699,16 @@ int MTS::LocalSearch3(individual & ind, int ix, std::vector<short> &fit_indexes)
 				CT_SEARCH = false;
 		}
 	}
+	if (PENALTY_BASED_CONSTRAINTS)
+	{
+		if (ind.Cons_Viol_Show() != ind_constr_temp)
+			Pen_const::R_f_update(!ind_constr_temp, ix);
+	}
 	return 0;
 }
 
 
-int MTS::Object(individual & ind, bool save)
+int MTS::Object(individual& ind, short ix, bool save)
 {
 	//Fix_Range(ind.Code_Set());
 	if (nfes != 0)
@@ -672,10 +730,21 @@ int MTS::Object(individual & ind, bool save)
 			abort();
 	}
 
+
+
 	ind.Fitness_Calc(fcode[0]);
 	nfes++;
+
+
+
 	if (save)
+	{
+		if (PENALTY_BASED_CONSTRAINTS)
+
+			Pen_const::Fitness_Recalc(ind, ix);
 		ind.save();
+	}
+
 
 	isupdate = UpdateSolution(ind);
 
