@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,15 +14,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
+
+*    SELECTION header.
+* Storage of different selection types and basic selection class template.
+*/
 
 
 #pragma once
-//****************************************
-//				SELECTION header
-//	Storage of different selection types
-//			and basic selection class
-//****************************************
 
 #ifndef SELECTION_H
 #define SELECTION_H
@@ -31,66 +30,68 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "Define.h"
 #include "Const.h"
 
-//extern short MLSt;			//MLSt type currently used
+/**
+* Templace for selection class.
+*/
 
 template <typename tname>
 class selection
 {
 private:
-	short scode;					//Code of the selection type
-	std::string name;				//Name of the selection type
+	short scode;					///<Code of the selection type. For indexing purposes.
+	std::string name;				///<Name of the selection type. For results output.
 public:
-	/*
-	*Default normal constructor*
+	/**
+	*Default normal constructor
 	@param sc - code of the selection type
 	@param na - name of the selection type
 	*/
 	selection(short sc, std::string na) { scode = sc; name = na; };
-	/**Default constructor, throw ERROR - selection class cannot be empty**/
+	/**Default constructor. Throwing ERROR - selection class cannot be empty**/
 	selection() { std::cout << "ERROR#09: SELECTION - CREATION"; system("pause"); abort(); } //Default constuctor - selection type cannot be empty
 	~selection() {};
 
-	/**Returning name of the current selection type**/
+	/**Return the name of the current selection type as a string**/
 	std::string Name_Show() { return name; };	//
 	
-	/*
-	*Selection of the individuals and returning the vector*
-	@param indiv - vector of individuals for the selection
-	@param psize - size of the selected population
-	@param ncons - number of constrains
-	@param cix - index of crossover
+	/**
+	*Template of the selection procedure and returning the vector of individuals. For template class is throwing error.
+	@param indiv_pop - vector of individuals for the selection
+	@param psize - size of the selected population. Defines size of the output vector
+	@param ncons - number of constrains included in optimised problem
+	@param fit_indexes - indexes of objectives which will be considered in selection process
 	*/
 	virtual std::vector<tname> Select(std::vector<tname> const indiv_pop, int psize, short ncons, std::vector<short> & fit_indexes) const { std::cout << "Error"; std::vector<tname> a; return a; }; 
-	//virtual std::vector<tname> Select2(std::vector<tname> const indiv_pop, int psize, short ncons, short cix) const { std::cout << "Error"; std::vector<tname> a; return a; };
 };
 
-//****************************************
-//			   SELECTION #1
-//			  Roulette wheel
-//For separate collective and individual fitness	
-//****************************************
+/**
+	SELECTION #1 -  Roulette wheel.
+Standard roulette wheel selection, but for separate collective and individual fitness	.
+*/
 template <typename tname>
 class roulette_wheel : public selection<tname>		//Roulette Wheel for 1st objective
 {
 public:
-	/**Default constructor**/
+	/**Default constructor. Simply calles the selection class constructor.*/
 	roulette_wheel() : selection(1, "Roulette_wheel_MLS7") {};
 	~roulette_wheel() {};
-	/*
-	*Selection of the individuals and returning the vector*
-	@param indiv - vector of individuals for the selection
-	@param psize - size of the selected population
-	@param ncons - number of constrains
+	/**
+	*Selection procedure that returns the vector of individuals
+	@param indiv_pop - vector of individuals for the selection
+	@param psize - size of the selected population. Defines size of the output vector
+	@param ncons - number of constrains included in optimised problem
+	@param fit_indexes - indexes of objectives which will be considered in selection process
 	*/
 	std::vector<tname> Select(std::vector<tname> const indiv_pop, int psize, short ncons, std::vector<short> & fit_indexes) const;
-	//std::vector<tname>  Select2(std::vector<tname> const indiv_pop, int psize, short ncons, short cix) const;
 };
 
-/*
-*Selection of the individuals and returning the vector*
-@param indiv vector of individuals for the selection
-@param psize size of the selected population
-*/
+/**
+	*Template of the selection procedure and returning the vector of individuals
+	@param indiv_pop - vector of individuals for the selection
+	@param psize - size of the selected population. Defines size of the output vector
+	@param ncons - number of constrains included in optimised problem
+	@param fit_indexes - indexes of objectives which will be considered in selection process
+	*/
 template <typename tname>
 std::vector<tname>  roulette_wheel<tname>::Select(std::vector<tname> const indiv_pop, int psize, short ncons, std::vector<short> & fit_indexes) const
 {

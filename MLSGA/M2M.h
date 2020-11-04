@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,7 +14,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 		
+
+M2M header
+		Functions specific to M2M algorithm
+
+
+*/
 
 #pragma once
 #ifndef M2M_H
@@ -22,20 +28,37 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "Const.h"
 #include "Define.h"
 #include "Class.h"
-
+/**Functions specific to M2M algorithm*/
 namespace M2M
 {
-	/*
-	Calculate individuals using MOEAD algorithm
+	/**
+	Evolve the individuals using MOEAD/M2M algorithm
 	@param Col - address of a given collective
 	@param iGen - current generation index
 	*/
 	std::vector<individual> M2M_Calc(collective & col, int iGen);
-
+	/**
+	Initialise the algorithm specific parameters, for a whole population.
+	@param n_obj - current number of objectives
+	@param pop - current (overall) population
+	*/
 	void M2M_Init(short n_obj, population & pop);
 
+	/**
+	Initialise the algorithm specific parameters, for a single collective.
+	@param n_obj - current number of objectives
+	@param col - current collective
+	*/
 	void M2M_Population_Init(short n_obj, collective & col);
 
+
+	/**
+	Obtain the algorithm specific parameters.
+	@param weights - weight vectors to be calculated - Output.
+	@param center - vector storing central points - Output.
+	@param pop_size - size of the population for which vectors will be generated.
+	@param n_obj - current number of objectives
+	*/
 	void M2M_Get_Params(std::vector<std::vector<std::vector<double>>> &weights, std::vector<std::vector<double>> &center, int pop_size, short n_obj);
 }
 

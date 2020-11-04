@@ -34,8 +34,73 @@ extern short n_col;
 extern time_t SVM_t;										//Time of SVM
 extern int nfes;
 
-void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_mode, std::string & mode, std::vector<std::ofstream> & graph_v_vector, std::vector<std::vector<collective>> & col_memory)
+void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_mode, std::vector<std::ofstream> & graph_v_vector, std::vector<std::vector<collective>> & col_memory, int ftype)
 {
+
+	
+
+	if (ftype >= 300)
+	{
+		//find "best" individual
+		std::vector<double> fitness = col[0].Indiv_Show(0).Fitness_Show();
+		std::vector<double> best_ind_avg = { std::accumulate(fitness.begin(), fitness.end(), 0.),1000000,1000000,1000000,1000000 };
+		std::vector<short> best_ind_ix(5,0);
+		std::vector<short> best_ind_col(5, 0);
+		for (short iCol = 0; iCol < col.size(); iCol++)
+		{
+			for (short iInd = 0; iInd < col[iCol].Size_Show(); iInd++)
+			{
+				std::vector<double> fitness = col[iCol].Indiv_Show(iInd).Fitness_Show();
+				double curr_fit = std::accumulate(fitness.begin(), fitness.end(), 0.);
+				for (short i = 0; i < 5; i++)
+				{
+					if (curr_fit < best_ind_avg[i])
+					{
+						best_ind_avg.pop_back();
+						best_ind_ix.pop_back();
+						best_ind_col.pop_back();
+
+						best_ind_ix.insert(best_ind_ix.begin() + i, iInd);
+						best_ind_col.insert(best_ind_col.begin() + i, iCol);
+						best_ind_avg.insert(best_ind_avg.begin() + i, curr_fit);
+						break;
+					}
+				}
+			}
+		}
+		
+		std::vector<double> best_ind = col[best_ind_col[0]].Indiv_Show(best_ind_ix[0]).Code_Show();
+		
+		for (short i = 1; i < 5; i++)
+		{
+			std::vector<double> temp_ind = col[best_ind_col[i]].Indiv_Show(best_ind_ix[i]).Code_Show();
+			for (int j = 0; j < best_ind.size(); j++)
+			{
+				best_ind[j] += temp_ind[j];
+				if (i == 4)
+					best_ind[j] /= 5;
+			}
+		}
+
+
+
+
+		std::vector<double> code_saved_temp = col[0].FCode_Show()[0].code_saved;
+		
+		if (!col[0].FCode_Show()[0].const_speed)
+		{
+			if (code_saved_temp.size() == 1)
+				code_saved_temp.push_back(0);
+			code_saved_temp.push_back(0);
+		}
+		code_saved_temp.push_back(0);
+		for (int i = 0; i < code_saved_temp.size(); i++)
+		{
+			code_saved_temp[i] = best_ind[i];
+		}
+		col[0].FCode_Show()[0].code_saved = code_saved_temp;
+
+	}
 
 	if (ONE_OBJ_OVERRIDE != true)
 		//calculate new fitness of the old PF
@@ -47,7 +112,6 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 		for (int i = 0; i < temp_ind.size(); i++)
 			PF.Pareto_Search(temp_ind[i]);
 	}
-
 	//Reinitialize according to mode chosen
 	if (re_mode == "None")
 	{
@@ -78,25 +142,30 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 				//Search for pareto front
 				PF.Pareto_Search(col[iCol]);		//PF search
 			}
-
+			std::string mode = col[iCol].Mode_Show();
 			//For MLSGA create new elite
 			if (mode == "Normal")
 				col[iCol].Elite_Create();
 			else
 				col[iCol].save();
 
-			if (mode == "BCE")
-				BCE::BCE_Time_Update(col[0].FCode_Show()[0]);
-			else if (mode == "HEIA")
-				HEIA::HEIA_Time_Update(col[0].FCode_Show()[0]);
+			
 
 			nfes += col[iCol].Size_Show();
+
+			if (mode == "BCE")
+				BCE::BCE_Time_Update(col[0].FCode_Show()[0], col_index);
+			else if (mode == "HEIA")
+				HEIA::HEIA_Time_Update(col[0].FCode_Show()[0], col_index);
+
+
 		}
+		
 	}
 	else if (re_mode == "Random")
 	{
 		
-		if (mode == "MTS" && col.size() == 1)
+		if (col[0].Mode_Show() == "MTS" && col.size() == 1)
 		{
 			PF.Erase();
 
@@ -543,7 +612,7 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 				//Search for pareto front
 				PF.Pareto_Search(col[iCol]);		//PF search
 			}
-
+			std::string mode = col[iCol].Mode_Show();
 			//For MLSGA create new elite
 			if (mode == "Normal")
 				col[iCol].Elite_Create();
@@ -552,9 +621,9 @@ void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_m
 
 						
 			if (mode == "BCE")
-				BCE::BCE_Time_Update(col[0].FCode_Show()[0]);
+				BCE::BCE_Time_Update(col[0].FCode_Show()[0], col_index);
 			else if (mode == "HEIA")
-				HEIA::HEIA_Time_Update(col[0].FCode_Show()[0]);
+				HEIA::HEIA_Time_Update(col[0].FCode_Show()[0], col_index);
 			
 		}
 		

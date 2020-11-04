@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,7 +14,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>.
+
+*    STRUCT header.
+* Storage of additional struct types
+*/
+
 
 
 #pragma once
@@ -23,22 +28,28 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 
 namespace STRUCTURES
 {
-	
-	struct boundaries				//Structure for boundaries 
-	{ 
-		double upper;				//Upper boundary
-		double lower;				//Lower boundary
+
+	/**
+	* Storage to store boundaries for variables
+	*/
+	struct boundaries
+	{
+		double upper;				///<Upper boundary
+		double lower;				///<Lower boundary
 	};
 
+	/**
+	* Storage to store statistical data
+	*/
 	template <typename tname>
 	struct min_max_avg_std
 	{
-		tname min;			//min value
-		tname max;			//max value
-		tname avg;			//average value
-		tname std_deviation;//standard deviation
+		tname min;			///<min value
+		tname max;			///<max value
+		tname avg;			///<average value
+		tname std_deviation;///<standard deviation
 	};
-}
+};
 
 
 #endif //!STRUCT

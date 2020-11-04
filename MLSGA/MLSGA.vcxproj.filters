@@ -28,17 +28,11 @@
     <Filter Include="Header Files\Tools">
       <UniqueIdentifier>{85056ca4-9f18-472c-892e-996371e9d049}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tools">
-      <UniqueIdentifier>{fae13d5f-f95d-4e0c-9cb0-b732529b6d1a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Imported\OpenCV">
       <UniqueIdentifier>{64ec77af-5e14-4d82-bf30-9f5a79788ffc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Tools\Grouping methods">
       <UniqueIdentifier>{2872de9f-0284-46a6-97fb-891dd3d64b60}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Tools\Grouping methods">
-      <UniqueIdentifier>{a4778e08-8750-4814-8d7c-7cab62dacc84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Tools\Results Processing">
       <UniqueIdentifier>{c1d877ba-4586-429d-95f8-d50833658864}</UniqueIdentifier>
@@ -60,6 +54,12 @@
     </Filter>
     <Filter Include="Source Files\Imported\HV_metric">
       <UniqueIdentifier>{e6404cad-7a8d-48c1-8875-36d02f476fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{fae13d5f-f95d-4e0c-9cb0-b732529b6d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\Grouping methods">
+      <UniqueIdentifier>{a4778e08-8750-4814-8d7c-7cab62dacc84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Tools\Results processing">
       <UniqueIdentifier>{9f7c0c96-15f4-4623-85d3-f4abd470cb87}</UniqueIdentifier>
@@ -124,9 +124,6 @@
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
     <ClInclude Include="MLSGA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GA_Functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Fit_Functions.h">
@@ -207,6 +204,9 @@
     <ClInclude Include="Pen_Const.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="GA_Data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Imported\Chartsheet.cpp">
@@ -237,9 +237,6 @@
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
     <ClCompile Include="MLSGA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GA_Functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Fit_Functions.cpp">
@@ -319,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="Pen_Const.cpp">
       <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="GA_Data.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

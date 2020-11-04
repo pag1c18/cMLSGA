@@ -453,7 +453,7 @@ void MOEAD::Evolve(collective & col, int iGen)
 			short index = 0;
 			if (Random() < 0.5)
 				index = 1;
-			child = col.CCode_Show()[0].Crossover(std::vector<individual>{  col.Indiv_Show(c_sub), col.Indiv_Show(plist[0]) }, col.GAPara_Show()[0], col.FCode_Show()[0])[index];
+			child = col.CCode_Show()[0].Crossover(std::vector<individual>{  col.Indiv_Show(c_sub), col.Indiv_Show(plist[0])}, col.GAPara_Show()[0], col.FCode_Show()[0])[index];
 		}
 		else if (MOEAD_evol_operation_type == 1)
 			child = Diff_Evo_XoverB(col.Indiv_Show(c_sub), col.Indiv_Show(plist[0]), col.Indiv_Show(plist[1]), rate2, col.FCode_Show()[0], col.CCode_Show()[0], col.GAPara_Show()[0]);
@@ -684,7 +684,6 @@ void MOEAD::Problem_Update(individual &indiv, collective & col, int &id, int &ty
 	Permutation(perm);
 
 	//Copy NPCp for ease of operation
-	std::vector<individual> temp_col = col.Indiv_Show();
 
 
 	int MOEAD_limit = col.Size_Show() * MOEAD_limit_multi;				//maximal number of solutions replaced
@@ -699,7 +698,7 @@ void MOEAD::Problem_Update(individual &indiv, collective & col, int &id, int &ty
 		// Pick a subproblem to update
 		int k;
 		if (type == 1) 
-			k = temp_col[id].table[perm[i]];
+			k = col.Indiv_Show(id).table[perm[i]];
 		else       
 			k = perm[i];
 
@@ -707,20 +706,20 @@ void MOEAD::Problem_Update(individual &indiv, collective & col, int &id, int &ty
 		double f1, f2;
 		if (TGM == false)
 		{
-			f1 = Fitness_Function(temp_col[k].Fitness_Show(), temp_col[k].namda, fit_ix, iGen);
-			f2 = Fitness_Function(indiv.Fitness_Show(), temp_col[k].namda, fit_ix, iGen);
+			f1 = Fitness_Function(col.Indiv_Show(k).Fitness_Show(), col.Indiv_Show(k).namda, fit_ix, iGen);
+			f2 = Fitness_Function(indiv.Fitness_Show(), col.Indiv_Show(k).namda, fit_ix, iGen);
 		}
 		else
 		{
-			f1 = Fitness_Function(temp_col[k].TGM_fitness[0], temp_col[k].namda, fit_ix, iGen);
-			f2 = Fitness_Function(indiv.TGM_fitness[0], temp_col[k].namda, fit_ix, iGen);
+			f1 = Fitness_Function(col.Indiv_Show(k).TGM_fitness[0], col.Indiv_Show(k).namda, fit_ix, iGen);
+			f2 = Fitness_Function(indiv.TGM_fitness[0], col.Indiv_Show(k).namda, fit_ix, iGen);
 		}
 		if (f2<f1)
 		{
-			indiv.namda = temp_col[k].namda;
-			indiv.table = temp_col[k].table;
-			indiv.saved_fitness = temp_col[k].saved_fitness;
-			temp_col[k] = indiv;
+			indiv.namda = col.Indiv_Show(k).namda;
+			indiv.table = col.Indiv_Show(k).table;
+			indiv.saved_fitness = col.Indiv_Show(k).saved_fitness;
+			col.Indiv_Set(k) = indiv;
 
 			if (PENALTY_BASED_CONSTRAINTS)
 				if (col.Indiv_Show(k).Cons_Viol_Show() != indiv.Cons_Viol_Show())
@@ -758,7 +757,6 @@ void MOEAD::Problem_Update_Global(individual &indiv, collective & col, int &id, 
 
 	int niche = col.Indiv_Show(0).table.size();
 	//Copy col for ease of operation
-	std::vector<individual> temp_col = col.Indiv_Show();
 	
 	std::vector<short> fit_ix = col.fit_index[0];
 
@@ -767,7 +765,7 @@ void MOEAD::Problem_Update_Global(individual &indiv, collective & col, int &id, 
 	{
 		idx[i] = i;
 		
-		x[i] = Fitness_Function(indiv.Fitness_Show(), temp_col[i].namda, fit_ix, iGen);
+		x[i] = Fitness_Function(indiv.Fitness_Show(), col.Indiv_Show(i).namda, fit_ix, iGen);
 
 	}
 	Min_Fast_Sort(x, idx, pops, niche);
@@ -779,14 +777,13 @@ void MOEAD::Problem_Update_Global(individual &indiv, collective & col, int &id, 
 
 		double fj;
 		
-		fj = Fitness_Function(temp_col[idx[j]].Fitness_Show(), temp_col[idx[j]].namda, fit_ix, iGen);
+		fj = Fitness_Function(col.Indiv_Show(idx[j]).Fitness_Show(), col.Indiv_Show(idx[j]).namda, fit_ix, iGen);
 		
 		if (fj>x[j])
 		{
-			indiv.namda = temp_col[idx[j]].namda;
-			indiv.table = temp_col[idx[j]].table;
-			indiv.saved_fitness = temp_col[idx[j]].saved_fitness;
-			temp_col[idx[j]] = indiv;
+			indiv.namda = col.Indiv_Show(idx[j]).namda;
+			indiv.table = col.Indiv_Show(idx[j]).table;
+			indiv.saved_fitness = col.Indiv_Show(idx[j]).saved_fitness;
 			if (PENALTY_BASED_CONSTRAINTS)
 				if (col.Indiv_Show(idx[j]).Cons_Viol_Show() != indiv.Cons_Viol_Show())
 					Pen_const::R_f_update(indiv.Cons_Viol_Show(), col.Index_Show()-1);

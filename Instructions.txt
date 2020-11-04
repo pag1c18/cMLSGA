@@ -1,5 +1,5 @@
 /****************1. Installation****************/
-Download and extract the OpenCV (3.2.0 win release) and GNUplot directly to C:\ ("opencv" and "gnuplot" folders names respectively). OpenCV is for video and images generation and GNUplot is for graphs.
+Download and extract the OpenCV (4.5.0 win release) and GNUplot directly to C:\ ("opencv" and "gnuplot" folders names respectively). OpenCV is for video and images generation and GNUplot is for graphs.
 
 Follow the instructions from "Install instructions" folder. If the attached VS project file is utilised, only the system.txt has to be followed, as OpenCV has to be added to system environmental variables.
 
@@ -9,22 +9,22 @@ The main routine is in the MLSGA.cpp file.
 The GAs behaviour and parameters are set up in const.h file, while the behaviour of overall program and result processing is set up in define.h. Each value has corresponding comment, explaining its purpose.
 
 /****************2a. Const.h****************/
-The preferred GA is set up in line 46, according to following rule: {{"GA name"}, {"GA name 2}}. Importantly the GAs are used one after another and not simultaneously. If the multiple GAs have to be used in the co-evolutionary approach, they have to be defined in the same bracket, and separated by commas: {{"GA name_a", "GA name_b"}}. Any combinations of normal GAs and co-evolutionary variants can be used. The list of implemented GAs is {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}.
+The preferred GA is set up in line 75, according to following rule: {{"GA name"}, {"GA name 2}}. Importantly the GAs are used one after another and not simultaneously. If the multiple GAs have to be used in the co-evolutionary approach, they have to be defined in the same bracket, and separated by commas: {{"GA name_a", "GA name_b"}}. Any combinations of normal GAs and co-evolutionary variants can be used. The list of implemented GAs is {"Normal"}, {"UNSGAIII"}, {"MOEAD"}, {"MOEADPSF"}, {"MOEADMSF"}, {"MOEADM2M"}, {"MTS"}, {"BCE"}, {"HEIA"}, {"IBEA"}.
 
 If MLSGA have to be utilised or co-evolutionary variant, cMLSGA, the line 47 have to be set to "true". Otherwise, the original algorithm will be utilised.
 
-The MLSGA parameters are defined in lines 49-53.
+The MLSGA parameters are defined in lines 75-84.
 
-The GAs parameters and utilised functions are defined in lines 59-71. The framework has implemented respectable loops for most of them so the min, max value and preferred step can be defined. 
+The GAs parameters and utilised functions are defined in lines 88-100. The framework has implemented respectable loops for most of them so the min, max value and preferred step can be defined. 
 
-The first and last evaluated functions are defined in lines 62-63, according to assigned index (further explained in Section 3. Defining the problems). The list of currently implemented functions with corresponding indexes is provided in lines 17-44.
+The first and last evaluated functions are defined in lines 91-93, according to assigned index (further explained in Section 3. Defining the problems). The list of currently implemented functions with corresponding indexes is provided in lines 43-59.
 
-Line 65 defines if the functions with specific amount of objectives should be skipped. Useful for automatic simulations.
+Line 93 defines if the functions with specific amount of objectives should be skipped. Useful for automatic simulations.
 
 
-Line 75 defines how many times the simulation have to be repeated with the same parameters. Multiple runs allows obtaining more robust data.
+Line 104 defines how many times the simulation have to be repeated with the same parameters. Multiple runs allows obtaining more robust data.
 
-The termination condition is defined in line 76, with exact values defined in lines 77-79
+The termination condition is defined in line 105, with exact values defined in lines 105-108
 
 The performance evaluation method can be defined in line 82. However, for both of those metrics the final POF has to be known.
 
@@ -51,5 +51,5 @@ Here the all objectives are calculated and returned back as the fitness vector "
 Similarly, to Fitness_C but here the constrained values are calculated and returned back to main MLSGA routine via respectable vector. Importantly, in the current version of MLSGA, the constraints are considered met if the constraint value is lower or equal 0. Furthermore, values above 0 indicates the degree in which the constraint is not met, where greater value means a less feasible solution. However it is possible to simply calculate constraints by other means, but for the GA purposes the value of 0 have to be sent if the constraints are met, and any value above 0 (suggested here 1) if are not met.
 
 /****************3f. MLSGA_Add_Functions.cpp***************/
-Finally the new function class have to be added into the "function * Func_Type(short ix)" function in the MLSGA_Add_Functions.cpp. It have to be added at the end of the if check, with new index (ix) value. Importantly this ix value will enable function in const.h file lines 62-63. The function have to be added in following sub-routine: "else if (ix == new index) { new_function_class_name *temp_name = new new_function_class_name; return temp_name}.
+Finally the new function class have to be added into the "function * Func_Type(short ix)" function in the MLSGA_Add_Functions.cpp. It have to be added at the end of the if check, with new index (ix) value. Importantly this ix value will enable function in const.h file lines 91-93. The function have to be added in following sub-routine: "else if (ix == new index) { new_function_class_name *temp_name = new new_function_class_name; return temp_name}.
 

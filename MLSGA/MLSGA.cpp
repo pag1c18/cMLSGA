@@ -62,10 +62,72 @@ extern int nfes;											//number of function evaluations for MOEAD and MTS
 extern int cons_viol_count;		//How many times constrains have been violated in the current run
 
 
-
 int main()
 {
-	//Check for errors in parameters
+	/*ShipParam parameters;
+
+	//speed
+	parameters.service_speed = 10.44323; // m/s - may vary 0.2 - 1.2
+	//Principal Dimensions
+	parameters.length = 232.f;	// m
+	parameters.length_waterline = parameters.length * 1.02;
+	parameters.beam = 32.2f;		// m
+	parameters.depth = 19.f;		// m
+	parameters.lcb = parameters.length * 0.01;		//longitudinal center of buoyancy
+	//floating status
+	parameters.draft = 10.78f;  // m
+	parameters.trim = 0;
+	//coefficients
+	parameters.block_coeff = 0.685;
+	parameters.wind_coeff = 0.82;
+	parameters.midship_coeff = 0.98;
+	parameters.waterplane_coeff = 0.75;
+	//bow and stern
+	parameters.tranverse_section_area_air = (parameters.depth - parameters.draft) * parameters.beam;
+	parameters.tranverse_section_area_immersed = 16.;
+	parameters.tranverse_ratio = 0.1; //Ratio of Bulb Transverse Section Area to Midship Area
+	parameters.bulb_tranverse_section_area = parameters.beam * parameters.draft * parameters.midship_coeff * parameters.tranverse_ratio;
+	parameters.vert_distance = 4; //Vertical distance from baseline to center of bow bulb cross sectional area
+	parameters.angle_entrance = 12.17; //Angle of Half Entrance (angle of Waterline at bow
+	//others
+	parameters.deadweight = 40900; // t
+	parameters.wet_area = parameters.length_waterline * (2 * parameters.draft + parameters.beam) * sqrt(parameters.midship_coeff) * (0.453 + 0.4425 * parameters.block_coeff - 0.2862 * parameters.midship_coeff - 0.003467 * parameters.beam / parameters.draft + 0.3696 * parameters.waterplane_coeff) + 2.38 * parameters.tranverse_ratio / parameters.beam;
+	parameters.wet_area_appendages = 50;
+	parameters.form_factor_appendages = 1.5;
+	parameters.form_factor = 1.1564;
+	parameters.volumetric_dispacement = parameters.block_coeff * parameters.beam * parameters.draft * parameters.length_waterline;
+
+	//efficiency
+	parameters.hull_eff = 0.95;
+	parameters.propeller_eff = 0.95;
+	parameters.shaft_eff = 0.95;
+
+	Calm_Water_Const_Calc(parameters);
+	int wind_delay = 180;
+	int wind_size = 249;
+	try
+	{
+		VOS_Problem_Initialize(146, "VOS11", wind_size, wind_delay);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		system("pause");
+		exit(-1);
+	}
+	std::vector<double> fitness;									//fitness vector - output
+	std::vector<std::vector<float>> decoded_genotype = VOS_Decode_Genotype(std::vector<double>(146, 0.5f), 1, parameters.service_speed);
+	//calculate the fitness and push it to the fitness vector
+	travel_separation_parameters.erase(travel_separation_parameters.begin());
+	for (int i = 140; i < 200; i++)
+	{
+		for (int j = 200; j > i; j--)
+		{
+			travel_separation_parameters[0].min_arrival_time = i; travel_separation_parameters[0].max_arrival_time = j;
+			fitness = VOS_Voyage_Fuel_Time_Calc(decoded_genotype, parameters);				//fitness 1
+			std::cout << i << ", " << j << " time: " << fitness[1] << std::endl;
+		}
+	}*/
 	Error_Check();
 	double IGD_val_final = 0;												//Final IGD value
 	double HV_val_final = 0;										//Final HV value
@@ -80,7 +142,7 @@ int main()
 
 
 	std::vector<std::ofstream> graph_v_vector;
-	std::ofstream PF, PF2, IGD_stream, HV_stream;								//Output files
+	std::ofstream PF, PF2, best_avg_indi, IGD_stream, HV_stream;								//Output files
 	//get the comment to files and folders names
 	std::string comment;										//The comment to the folder and results name
 	std::cout << "Comment (to the folder and results names): ";
@@ -215,7 +277,9 @@ int main()
 								{
 									if (!func_active[ftype - n_func_b])
 										continue;
-
+									if (n_func_obj < 3)
+										if ((ftype > 6 && ftype < 14) || (ftype > 59 && ftype < 62))
+											continue;
 									/*if (((ftype >6 && ftype < 21)|| (ftype > 30 && ftype < 50) || ftype > 59) )
 										continue;*/
 										/*if (((ftype >22 && ftype < 25)|| (ftype > 25 && ftype < 51) || ftype > 59) )
@@ -257,6 +321,10 @@ int main()
 											for (int iRun = 0; iRun < n_runs; iRun++)														//loop for number of runs- Last loop
 											{
 												std::cout << "Run #" << index_r << " started\n";
+
+												if (ftype >300)
+													Func[0].code_saved = { 0. };
+
 
 
 												Clear_Ideal_and_Nadir(Func[0].Objs());
@@ -324,6 +392,7 @@ int main()
 															abort();
 													}
 												}
+												best_avg_indi.open(F_Name_Get("Results/", date, "/") + Name_Get("best_avg_indi.csv", std::string(), index_r, dyn_t));
 												//Open the file for saving IGD results - if needed
 												if (PERF_VAL_GEN == true )
 												{
@@ -572,7 +641,7 @@ int main()
 														temp_size += temp_col[iCol].Size_Show();
 													}
 																
-													if (temp_size != col_temp_size && DEBUG == true)
+													if (temp_size != col_temp_size && DEBUG_MLSGA == true)
 														abort();
 																															
 													//push the collectives to the overall vector
@@ -696,7 +765,7 @@ int main()
 												//check if size is ok
 												if (col.size() != n_col)
 													abort();
-												else if (DEBUG == true)
+												else if (DEBUG_MLSGA == true)
 												{
 													int col_size = 0;
 													for (short iCol = 0; iCol < n_col; iCol++)
@@ -748,6 +817,37 @@ int main()
 													}
 
 												}
+												if (ONE_OBJ_OVERRIDE != true && Pareto_F.Size_Show() != 0)
+												{
+													double lowest_avg = 0;
+													int lowest_avg_index = 0;
+													for (short j = 0; j < Func->Objs(); j++)
+														lowest_avg += Pareto_F.Indiv_Show(0).Fitness_Show(j);
+													//Save the PF
+													for (int i = 0; i < Pareto_F.Size_Show(); i++)
+													{
+														double avg = 0;
+														//Save objectives values
+														for (short j = 0; j < Func->Objs(); j++)
+														{
+															avg += Pareto_F.Indiv_Show(i).Fitness_Show(j);
+														}
+														if (avg < lowest_avg)
+														{
+															lowest_avg = avg;
+															lowest_avg_index = i;
+														}
+													}
+													//Save objectives values
+													for (short j = 0; j < Func->Objs(); j++)
+													{
+														best_avg_indi << Pareto_F.Indiv_Show(lowest_avg_index).Fitness_Show(j) << " ";
+														//Save variables values
+													}
+													for (int k = 0; k < Func->Vars(); k++)
+														best_avg_indi << "," << Pareto_F.Indiv_Show(lowest_avg_index).Code_Show(k);
+													best_avg_indi << std::endl;
+												}
 												col_t += clock() - col_t_temp;
 
 												if (VIDEO == true && FITNESS_ALL == true && Func[0].Objs() == 2)
@@ -779,8 +879,8 @@ int main()
 												/************Genetic Algorithm***************/
 												for (int iGen = 1; iGen < GA_standard.Max_Gen(); iGen++)	//loop for number of generations
 												{
-													if (DEBUG == true)
-														std::cout << iGen + 1 << std::endl;
+													if (DEBUG_MLSGA == true)
+														std::cout << ((clock() - run_t) * 1000 / CLOCKS_PER_SEC)/1000 << " seconds; generation: " << iGen + 1 <<"; iteration: " << nfes << std::endl;
 													double IGD_val_temp;
 													double HV_val_temp;
 													int dyn_change_param = 0;
@@ -789,7 +889,7 @@ int main()
 													{
 
 														//If function require additional "initial" generations
-														if (ftype >= 29 && ftype <= 38 && iGen < JY_const_window)
+														if (((ftype >= 29 && ftype <= 38) || ftype >=300) && nfes < JY_const_window*pop_size)
 														{
 															//set both values to 0
 															dyn_tau = 0;
@@ -811,13 +911,20 @@ int main()
 															else if (T_con == "nfes")
 															{
 																//set dyn_tau to current iteration number
-																dyn_tau = nfes;
-																dyn_change_param = dyn_tau % (T_dyn*pop_size);
+																dyn_tau = nfes - dyn_t*n_steps_dyn* T_dyn * pop_size;
+																if ((ftype >= 29 && ftype <= 38) || ftype >= 300)
+																	dyn_tau -= JY_const_window * pop_size;
+
+																
+																if (dyn_tau >= T_dyn * pop_size)
+																	dyn_change_param = 0;
+																else
+																	dyn_change_param = 1;
 
 																//std::cout << iGen << "; " << nfes << "; " << dyn_change_param << std::endl;
 																//chack according to error
-																if (dyn_change_param <= 0.1*pop_size || dyn_change_param >= (T_dyn*pop_size) - 0.1*pop_size)
-																	dyn_change_param = 0;
+																//if (dyn_change_param <= 0.01*T_dyn*pop_size || dyn_change_param >= (T_dyn*pop_size) - 0.01 * T_dyn * pop_size)
+																	//dyn_change_param = 0;
 															}
 															else
 																//wrong criterion chosen
@@ -896,6 +1003,8 @@ int main()
 																}
 																//Print graphs
 																Print(plotPipe, index_r, index_r_max, date, dyn_t, IGD_on, HV_on);
+																
+
 
 																//Update the t_values - for UDF8 and 9
 																if (Func[0].Name_Show() == "UDF8" || Func[0].Name_Show() == "UDF9" || Func[0].Name_Show() == "CDF13")
@@ -956,11 +1065,12 @@ int main()
 
 
 														//Reinitialisation/fitness calculation for dynamic change - only for dynamic problems
-														if (dyn_change_param == 0 && dynamic_on && !((ftype >= 29 && ftype <= 38) && iGen < JY_const_window))
+														if (dyn_change_param == 0 && dynamic_on && !(((ftype >= 29 && ftype <= 38) || ftype >= 300) && nfes < JY_const_window * pop_size))
 														{
 
 															//Reinitialisation routine
-															Reinit(col, Pareto_F, REINIT_MODE, MODE, graph_v_vector, col_past);
+															
+															Reinit(col, Pareto_F, REINIT_MODE, graph_v_vector, col_past,ftype);
 															iCol = n_col;
 															continue;
 
@@ -1120,7 +1230,7 @@ int main()
 																<< "Wrong MODE chosen. Check Define.h\nProgram will terminate"
 																<< "\n**********************************\n";
 															system("pause");
-															if (DEBUG == true)
+															if (DEBUG_MLSGA == true)
 																abort();
 															else
 																return -1;
@@ -1405,7 +1515,41 @@ int main()
 															//}
 													}
 													//Additional termination criterion check - for overall loop of number of generations
-																
+													if (SKIP_GRAPHS != true || iRun <= 4)
+													{
+														if (ONE_OBJ_OVERRIDE != true && Pareto_F.Size_Show() != 0)
+														{
+															double lowest_avg = 0;
+															int lowest_avg_index = 0;
+															for (short j = 0; j < Func->Objs(); j++)
+																lowest_avg += Pareto_F.Indiv_Show(0).Fitness_Show(j);
+															//Save the PF
+															for (int i = 0; i < Pareto_F.Size_Show(); i++)
+															{
+																double avg = 0;
+																//Save objectives values
+																for (short j = 0; j < Func->Objs(); j++)
+																{
+																	avg += Pareto_F.Indiv_Show(i).Fitness_Show(j);
+																}
+																if (avg < lowest_avg)
+																{
+																	lowest_avg = avg;
+																	lowest_avg_index = i;
+																}
+															}
+															//Save objectives values
+															for (short j = 0; j < Func->Objs(); j++)
+															{
+																best_avg_indi << Pareto_F.Indiv_Show(lowest_avg_index).Fitness_Show(j) << " ";
+															}
+															//Save variables values
+															for (int k = 0; k < Func->Vars(); k++)
+																best_avg_indi << "," << Pareto_F.Indiv_Show(lowest_avg_index).Code_Show(k);
+															best_avg_indi << std::endl;
+
+														}
+													}
 													if (Termination_Check())
 													{
 														if (n_col != 1)
@@ -1438,19 +1582,41 @@ int main()
 															
 												if (ONE_OBJ_OVERRIDE != true)
 												{
-													if (SKIP_GRAPHS != true || iRun <= 4)
+													if ((SKIP_GRAPHS != true || iRun <= 4) && Pareto_F.Size_Show() != 0)
 													{
+														double lowest_avg = 0;
+														int lowest_avg_index = 0;
+														for (short j = 0; j < Func->Objs(); j++)
+															lowest_avg += Pareto_F.Indiv_Show(0).Fitness_Show(j);
 														//Save the PF
 														for (int i = 0; i < Pareto_F.Size_Show(); i++)
 														{
+															double avg = 0;
 															//Save objectives values
 															for (short j = 0; j < Func->Objs(); j++)
+															{
 																PF << Pareto_F.Indiv_Show(i).Fitness_Show(j) << " ";
+																avg += Pareto_F.Indiv_Show(i).Fitness_Show(j);
+															}
 															//Save variables values
 															for (int k = 0; k < Func->Vars(); k++)
 																PF << "," << Pareto_F.Indiv_Show(i).Code_Show(k);
 															PF << std::endl;
+															if (avg < lowest_avg)
+															{
+																lowest_avg = avg;
+																lowest_avg_index = i;
+															}
 														}
+														//Save objectives values
+														for (short j = 0; j < Func->Objs(); j++)
+														{
+															best_avg_indi << Pareto_F.Indiv_Show(lowest_avg_index).Fitness_Show(j) << " ";
+														}
+														//Save variables values
+														for (int k = 0; k < Func->Vars(); k++)
+															best_avg_indi << "," << Pareto_F.Indiv_Show(lowest_avg_index).Code_Show(k);
+														best_avg_indi << std::endl;
 													}
 													if (IGD_on)
 													{
@@ -1510,12 +1676,14 @@ int main()
 														HV_storage.push_back(HV_storage_temp);
 														HV_storage_temp.clear();
 													}
+
 												}
 												save_t += clock() - save_t_temp;
 
 												//close the data files
 												graph.close();
 												PF.close();
+												best_avg_indi.close();
 												IGD_stream.close();
 												HV_stream.close();
 
@@ -1535,9 +1703,12 @@ int main()
 												if (Func[0].Objs() == 2)
 												{
 													generation_video->Make_Video();
+
+													
 													// Video Saving
 													//Print graphs
 													Print(plotPipe, index_r, index_r_max, date, dyn_t, IGD_on, HV_on);
+													
 												}
 
 
@@ -1600,8 +1771,8 @@ int main()
 	fprintf(plotPipe, "exit");
 	fflush(plotPipe);
 	_pclose(plotPipe);
+	system("pause");
 	system("rmdir /q /s Temp");
 	std::cout << "Successful" << std::endl;
-	system("pause");
 	return 0;
 }

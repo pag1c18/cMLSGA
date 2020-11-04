@@ -42,7 +42,8 @@ std::string String_Prec(float v, int p)
 
 }
 
-/**Calculation of the distance between 2 points***/
+/**
+* Calculation of the distance between 2 points.*/
 template <typename tname>
 double Distance<tname>(const std::vector<tname> & vec1, const std::vector<tname> & vec2)
 {
@@ -59,7 +60,8 @@ double Distance<tname>(const std::vector<tname> & vec1, const std::vector<tname>
 	return sqrt(dist);
 }
 
-/**Calculation of the distance between 2 points- 2 diffent values types***/
+/**
+* Calculation of the distance between 2 points with 2 diffent values types.*/
 template <typename tname, typename tname2>
 double Distance2<tname,tname2>(const std::vector<tname> & vec1, const std::vector<tname2> & vec2)
 {
@@ -211,207 +213,6 @@ int Dominance_Check_NCons(individual &ind1, individual &ind2, std::vector<short>
 	else
 		return (0);
 }
-/*
-*Check Dominance for MLSt*
-@param ind1 - first individual
-@param ind2 - 2nd individual
-@param ix - inx of the collective
-Return:
-1 - ind1 dominates
--1 - ind2 dominates
-0 - both nondominated
-*/
-int Dominance_Check2(individual &ind1, individual &ind2, int ix, std::vector<short> &fit_indexes)
-{
-	int flag1, flag2;		//flags
-	flag1 = flag2 = 0;
-
-	int cons_size = ind1.Cons_Show().size();		//nubmer of constrains
-	if (cons_size > 0 && !PENALTY_BASED_CONSTRAINTS)
-	{
-		double constr_val_ind1 = 0., constr_val_ind2 = 0.;	//temporary values of constrains valus sum
-		for (int i = 0; i < cons_size; i++)
-		{
-			if (ind1.Cons_Show()[i] < 0.)
-				constr_val_ind1 += ind1.Cons_Show()[i];
-			if (ind2.Cons_Show()[i] < 0.)
-				constr_val_ind2 += ind2.Cons_Show()[i];
-		}
-		if (constr_val_ind1 < 0. && constr_val_ind2 < 0.)
-		{
-			if (constr_val_ind1 > constr_val_ind2)
-				return 1;
-			else if (constr_val_ind1 < constr_val_ind2)
-				return -1;
-			else
-				return 0;
-		}
-		else if (constr_val_ind1 < 0. && constr_val_ind2 == 0.)
-			return -1;
-		else if (constr_val_ind1 == 0. && constr_val_ind2 < 0.)
-			return 1;
-	}
-
-	std::vector<double>ind1_fitness;		//fitness vector of the 1st individual
-	std::vector<double>ind2_fitness;		//fitness vector of the 2nd individual
-	if (TGM == false)
-	{
-		ind1_fitness = ind1.Fitness_Show();
-		ind2_fitness = ind2.Fitness_Show();
-	}
-	else
-	{
-		ind1_fitness = ind1.TGM_fitness[0];
-		ind2_fitness = ind2.TGM_fitness[0];
-	}
-
-	double fit_ind1 = 0; 		//ith fitness of 1st individual
-	double fit_ind2 = 0;		//ith fitness of 2nd individual
-	
-	short fit_size = fit_indexes.size();
-	for (short i_ix = 0; i_ix < fit_size; i_ix++)
-	{
-		fit_ind1 += ind1_fitness[fit_indexes[i_ix] - 1];
-		fit_ind2 += ind2_fitness[fit_indexes[i_ix] - 1];
-	}
-	/*
-	if (MLSt == 1 || MLSt == 5)
-	{
-		double temp = 0, temp2 = 0;
-
-		for (int i = 0; i < ind1.Fitness_Show().size(); i++)
-		{
-			temp += ind1_fitness[i];
-			temp2 += ind2_fitness[i];
-		}
-		fit_ind1 = temp;
-		fit_ind2 = temp2;
-	}
-	else if (MLSt == 2 || MLSt == 4)
-	{
-		fit_ind1 = ind1_fitness[fit_index_sel - 1];		//ith fitness of 1st individual
-		fit_ind2 = ind2_fitness[fit_index_sel - 1];		//ith fitness of 2nd individual
-	}
-	else if (MLSt == 3 || MLSt == 6)
-	{
-		if (ix % 2 == 0)
-		{
-			fit_ind1 = ind1_fitness[fit_index_col_sel - 1];		//ith fitness of 1st individual
-			fit_ind2 = ind2_fitness[fit_index_col_sel - 1];		//ith fitness of 2nd individual
-		}
-		else
-		{
-			fit_ind1 = ind1_fitness[fit_index_sel - 1];		//ith fitness of 1st individual
-			fit_ind2 = ind2_fitness[fit_index_sel - 1];		//ith fitness of 2nd individual
-		}
-	}
-	else if (MLSt == 7)
-	{
-		if (ix % 3 == 1)
-		{
-			double temp = 0, temp2 = 0;
-
-			for (int i = 0; i < ind1.Fitness_Show().size(); i++)
-			{
-				temp += ind1_fitness[i];
-				temp2 += ind2_fitness[i];
-			}
-			fit_ind1 = temp;
-			fit_ind2 = temp2;
-		}
-		else if (ix % 3 == 0)
-		{
-			fit_ind1 = ind1_fitness[fit_index_col_sel - 1];		//ith fitness of 1st individual
-			fit_ind2 = ind2_fitness[fit_index_col_sel - 1];		//ith fitness of 2nd individual
-		}
-		else
-		{
-			fit_ind1 = ind1_fitness[fit_index_sel - 1];		//ith fitness of 1st individual
-			fit_ind2 = ind2_fitness[fit_index_sel - 1];		//ith fitness of 2nd individual
-		}
-	}*/
-
-	//Check which fitness is greater
-	if (fit_ind1 < fit_ind2)
-		flag1 = 1;
-	else if (fit_ind1 > fit_ind2)
-		flag2 = 1;
-
-	//Check which individual dominate
-	if (flag1 == 1 && flag2 == 0)
-		return (1);
-	else if (flag1 == 0 && flag2 == 1)
-		return (-1);
-	else
-		return (0);
-}
-
-/*
-*Check Dominance - for PAES*
-@param ind1 - first individual
-@param ind2 - 2nd individual
-Return:
-1 - ind1 dominates
--1 - ind2 dominates
-0 - both nondominated
-*/
-int Dominance_Check3(individual &ind1, individual &ind2)
-{
-	abort();
-	/*int flag1, flag2;		//flags
-	flag1 = flag2 = 0;
-	int nobj = ind1.Fitness_Show().size();	//number of objectives
-
-	int cons_size = ind1.Cons_Show().size();		//nubmer of constrains
-	if (cons_size > 0)
-	{
-		double constr_val_ind1 = 0., constr_val_ind2 = 0.;	//temporary values of constrains valus sum
-		for (int i = 0; i < cons_size; i++)
-		{
-			if (ind1.Cons_Show()[i] < 0.)
-				constr_val_ind1 += ind1.Cons_Show()[i];
-			if (ind2.Cons_Show()[i] < 0.)
-				constr_val_ind2 += ind2.Cons_Show()[i];
-		}
-		if (constr_val_ind1 < 0. && constr_val_ind2 < 0.)
-		{
-			if (constr_val_ind1 > constr_val_ind2)
-				return 1;
-			else if (constr_val_ind1 < constr_val_ind2)
-				return -1;
-			else
-				return 0;
-		}
-		else if (constr_val_ind1 < 0. && constr_val_ind2 == 0.)
-			return -1;
-		else if (constr_val_ind1 == 0. && constr_val_ind2 < 0.)
-			return 1;
-	}
-	double fit_ind1;											//fitness of 1st individual
-	double fit_ind2;											//fitness of 2nd individual
-	
-	if (TGM == false)
-	{
-		//Calculate the fitness of each individual
-		fit_ind1 = Fitness_Function(ind1.Fitness_Show(), ind1.namda);		
-		fit_ind2 = Fitness_Function(ind2.Fitness_Show(), ind2.namda);		
-	}
-	else
-	{
-		//Calculate the fitness of each individual
-		fit_ind1 = Fitness_Function(ind1.TGM_fitness[0], ind1.namda);
-		fit_ind2 = Fitness_Function(ind2.TGM_fitness[0], ind2.namda);
-	}
-	//Check which fitness is greater
-	if (fit_ind1 < fit_ind2)
-		return (1);
-	else if (fit_ind1 > fit_ind2)
-		return (-1);
-	else*/
-		return (0);
-}
-
-
 
 
 /*
@@ -504,12 +305,12 @@ double Fitness_Function_PSF(std::vector <double> &fit, std::vector <double> &nam
 
 	if (T_con == "nfes")
 	{
-		gen_val = nfes / max_iterations;
+		gen_val = (float)nfes / max_iterations;
 
 	}
 	else
 	{
-		gen_val = iGen / max_generations;
+		gen_val = (float)iGen / max_generations;
 	}
 
 
@@ -561,8 +362,8 @@ double Fitness_Function_PSF(std::vector <double> &fit, std::vector <double> &nam
 
 	double A1 = norm_vector(realA);
 	double AB = fabs(innerproduct(realA, temp_namda));
-	double d2 = pow(A1, 2.0) - pow(AB, 2.0) / pow(nd, 2.0);;
-	d2 = pow(d2, 0.5);
+	double d2 = pow(A1, 2.0) - pow(AB, 2.0) / pow(nd, 2.0);
+	d2 = pow(abs(d2), 0.5);
 
 	au = nobj * wmin;
 	penalty = (1.0 - gen_val);
@@ -591,12 +392,12 @@ double Fitness_Function_MSF(std::vector <double> &fit, std::vector <double> &nam
 
 	if (T_con == "nfes")
 	{
-		gen_val = nfes / max_iterations;
+		gen_val = (float)nfes / max_iterations;
 
 	}
 	else
 	{
-		gen_val = iGen / max_generations;
+		gen_val = (float)iGen / max_generations;
 	}
 
 	double max_fun = -1.0e+30, min_fun = 1.0e+30;

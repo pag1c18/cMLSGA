@@ -1,1 +1,1 @@
-Control Panel -> System -> Advanced System Settings (on the left) -> Advanced -> Environment Variables... -> System variables (bottom one) -> Path (Edit) -> Add at the end "C:\opencv\build\x64\vc14\bin;" or your path of opencv installation folder.
+Control Panel -> System -> Advanced System Settings (on the left) -> Advanced -> Environment Variables... -> System variables (bottom one) -> Path (Edit) -> Add at the end "C:\opencv\build\x64\vc15\bin;" or your path of opencv installation folder.

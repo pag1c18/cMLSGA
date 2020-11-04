@@ -25,7 +25,7 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 
 #include "Class.h"
 #include "Support_Functions.h"
-#include "GA_Functions.h"
+#include "MLSGA_Add_Functions.h"
 #include "imported.h"
 #include "Sobol.h"
 #include "TGM.h"
@@ -181,13 +181,18 @@ void individual::Cons_Viol_Calc(function & fcode)
 */
 void individual::Fitness_Calc(function & fcode)
 { 
-	
+	if (!fcode.code_saved.empty())
+	{
+		for (short i = 0; i < fcode.code_saved.size(); i++)
+		{
+			code[i] = fcode.code_saved[i];
+		}
+	}
 	//Calculate and assign fitness
 	if (fcode.Time_Dep())
 		this->fitness = fcode.Fitness_C(code, dyn_tau, dyn_t);
 	else
 		this->fitness = fcode.Fitness_C(code); 
-	
 	
 
 
@@ -305,7 +310,45 @@ std::vector<individual> population::Selection() const
 */
 population::population(function & fcode, GA_parameters & gapara, mutation<short> & mcode, selection<individual> & scode, crossover<individual> & ccode, int amt)
 {
-	if (FILE_INPUT == false && SOBOL == false)			//normal random generator
+	if (PARTLY_PREDEFINED_POPULATION == true)
+	{
+		std::vector<double> ideal_matrix(fcode.Vars(), 0.5);
+		
+		for (int i = 0; i < amt; i ++)
+		{
+			//copy the line from the file
+			std::vector<double> matrix_temp;		//temporary matrix for storaging one line of values
+
+			for (int j = 0; j < fcode.Vars(); j++)
+			{
+				double float_temp;
+				if (!fcode.const_speed && j % 2 == 1)
+				{
+					float_temp = fcode.Bound(j, "lower") + Random() * (fcode.Bound(j, "upper") - fcode.Bound(j, "lower"));
+				}
+				else
+				{
+					//get value from data set
+
+					if (i % 5 == 1)
+						float_temp = fcode.Bound(j, "lower") + Random() * (fcode.Bound(j, "upper") - fcode.Bound(j, "lower"));
+					else if (i % 5 == 2)
+						float_temp = ideal_matrix[j] * Random(0.2, 1.8);
+					else if (i % 5 == 3)
+						float_temp = ideal_matrix[j] * Random(0.4, 1.6);
+					else if (i % 5 == 4)
+						float_temp = ideal_matrix[j] * Random(0.6, 1.4);
+					else
+						float_temp = ideal_matrix[j] * Random(0.8, 1.2);
+				}
+				//push to the temporary matrix
+				matrix_temp.push_back(float_temp);
+			}
+			//push temporary matrix to the final matrix
+			indiv.push_back(individual(matrix_temp,fcode));
+		}
+	}
+	else if (FILE_INPUT == false && SOBOL == false)			//normal random generator
 	{
 		//create the individuals and add them to the storage vector
 		for (int i = 0; i < amt; i++)
@@ -369,6 +412,7 @@ population::population(function & fcode, GA_parameters & gapara, mutation<short>
 	}
 	else											//if no right path
 		abort();
+
 
 	if (indiv.size() != amt)
 	{

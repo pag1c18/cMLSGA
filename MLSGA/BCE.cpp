@@ -52,7 +52,6 @@ Modified for the purposes of the MLSGA framework by Przemyslaw A.Grudniewski (20
 #include "Pen_Const.h"
 #include <time.h>
 std::vector<std::vector<individual>> PC_pop;
-std::vector<individual> temp_pop;
 
 extern int nfes;
 extern time_t elit_t;
@@ -66,9 +65,9 @@ namespace BCE
 {
 	void enter_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vector<short>& fit_indexes);
 	void update_PCpop(std::vector<individual> &PCp, individual &ind, std::vector<short>& fit_indexes);
-	void explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vector<individual> &tempp, int iGen, std::vector<short>& fit_indexes);
+	void explore_PCpop(std::vector<individual> &PCp, collective &NPCp,  int iGen, std::vector<short>& fit_indexes);
 	void NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen);
-	void maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &tempp, std::vector<short>& fit_indexes);
+	void maintain_PCpop(std::vector<individual> &PCp, std::vector<short>& fit_indexes);
 	
 	void normalize_bothpop(std::vector<individual> &pop, int PC_popsize, population &NPCp, int NPC_popsize);
 	void normalize_pop(std::vector<individual> &tempp, int PC_popsize, std::vector<short>& fit_indexes);
@@ -101,7 +100,7 @@ std::vector<individual> BCE::BCE_Calc(collective & col, int iGen)
 
 	time_t elite_t_temp = clock();				//starting time of BCE
 	// individual exploration in the PC evolution
-	explore_PCpop(PC_pop[ix], col, temp_pop, iGen, col.fit_index[0]);
+	explore_PCpop(PC_pop[ix], col, iGen, col.fit_index[0]);
 
 	if (!(Termination_Check(col.FCode_Show()[0].Time_Dep())))
 	// NPC evolution
@@ -110,7 +109,7 @@ std::vector<individual> BCE::BCE_Calc(collective & col, int iGen)
 	if (PC_pop[ix].size() > BCE_PC_capacity)
 	{
 		// population maintenance operation in the PC evolution
-		maintain_PCpop(PC_pop[ix], temp_pop, col.fit_index[0]);
+		maintain_PCpop(PC_pop[ix], col.fit_index[0]);
 	}
 
 
@@ -135,7 +134,6 @@ void BCE::BCE_Init(short n_obj, short n_col, population & pop)
 {
 	//clear the vectors
 	PC_pop.clear();
-	temp_pop.clear();
 	
 	//initialise the vector
 	PC_pop = std::vector<std::vector<individual>>(n_col, std::vector<individual>{});
@@ -153,24 +151,23 @@ void BCE::BCE_Pop_Init(short n_obj, collective & col)
 	enter_PCpop(PC_pop[col.Index_Show() - 1], col, col.fit_index[0]);
 }
 
-void BCE::BCE_Time_Update(function &fcode)
+void BCE::BCE_Time_Update(function& fcode, short i_col)
 {
 	//Update the external populations
-	for (int i_col = 0; i_col < PC_pop.size(); i_col++)
-	{
-		//copy the temp parameters
-		int size = PC_pop[i_col].size();
 
-		//Update the population
-		for (int i_ind = 0; i_ind < size; i_ind++)
-		{
-			PC_pop[i_col][i_ind].Fitness_Calc(fcode);
-			nfes++;
-			PC_pop[i_col][i_ind].save();
-		}
-		if (PENALTY_BASED_CONSTRAINTS)
-			Pen_const::Fitness_Recalc(PC_pop[i_col],i_col,false);
+		//copy the temp parameters
+	int size = PC_pop[i_col].size();
+
+	//Update the population
+	for (int i_ind = 0; i_ind < size; i_ind++)
+	{
+		PC_pop[i_col][i_ind].Fitness_Calc(fcode);
+		nfes++;
+		PC_pop[i_col][i_ind].save();
 	}
+	if (PENALTY_BASED_CONSTRAINTS)
+		Pen_const::Fitness_Recalc(PC_pop[i_col], i_col, false);
+
 }
 void BCE::enter_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vector<short>& fit_indexes)
 {
@@ -202,7 +199,7 @@ void BCE::update_PCpop(std::vector<individual> &PCp, individual &ind, std::vecto
 	PCp.push_back(ind);
 }
 
-void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vector<individual> &tempp, int iGen, std::vector<short>& fit_indexes)
+void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, int iGen, std::vector<short>& fit_indexes)
 {
 
 	int i, j, k;
@@ -219,10 +216,10 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 
 
 	// copy PCp into tempp for ease of operation 	
-	tempp = PCp;
+	std::vector<individual>tempp = PCp;
 	
 	//Copy NPCp for ease of operation
-	std::vector<individual> temp_NPCp = NPCp.Indiv_Show();
+	//std::vector<individual> temp_NPCp = NPCp.Indiv_Show();
 
 	//	normalise both poulations according to the PC individuals 
 	normalize_bothpop(tempp, PCp.size(), NPCp, NPCp.Size_Show());
@@ -266,7 +263,7 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 			distance = 0;
 			for (k = 0; k<nobj; k++)
 			{
-				distance += (tempp[i].saved_fitness[k] - temp_NPCp[j].saved_fitness[k]) * (tempp[i].saved_fitness[k] - temp_NPCp[j].saved_fitness[k]);
+				distance += (tempp[i].saved_fitness[k] - NPCp.Indiv_Show(j).saved_fitness[k]) * (tempp[i].saved_fitness[k] - NPCp.Indiv_Show(j).saved_fitness[k]);
 			}
 			distance = sqrt(distance);
 			if (distance <= radius * (double)PCp.size() / (double)BCE_PC_capacity)
@@ -303,7 +300,7 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 					} while (promising[i] == rand);
 					//create the selected vector
 					std::vector<individual> selected{ tempp[promising[i]], tempp[rand] };
-					//crossover(&tempp->ind[promising[i]], &tempp->ind[rand], child, child2);
+					//crossover(&PCp->ind[promising[i]], &PCp->ind[rand], child, child2);
 					child = NPCp.Crossover_NSGAII(selected);
 				}
 				if (BCE_mode == 2)				// DE
@@ -313,15 +310,23 @@ void BCE::explore_PCpop(std::vector<individual> &PCp, collective &NPCp, std::vec
 					{
 						rand2 = Random_I(0, original_size - 1);
 					} while (rand2 == rand);
-					child[0] = MOEAD::Diff_Evo_XoverB(tempp[promising[i]], tempp[rand], tempp[rand2], 0.5, NPCp.FCode_Show()[0], NPCp.CCode_Show()[0], NPCp.GAPara_Show()[0]);
+					if (MOEAD_OVERRIDE)
+					{
+						short index = 0;
+						if (Random() < 0.5)
+							index = 1;
+						child[0] = NPCp.CCode_Show()[0].Crossover(std::vector<individual>{  tempp[promising[i]], tempp[rand] }, NPCp.GAPara_Show()[0], NPCp.FCode_Show()[0])[index];
+					}
+					else
+						child[0] = MOEAD::Diff_Evo_XoverB(tempp[promising[i]], tempp[rand], tempp[rand2], 0.5, NPCp.FCode_Show()[0], NPCp.CCode_Show()[0], NPCp.GAPara_Show()[0]);
 				}
 			}
 			else
 			{
-				child[0] = tempp[0];
+				child[0] = PCp[0];
 			}
 			//copy dummy values
-			child[0].saved_fitness = tempp[0].saved_fitness;
+			child[0].saved_fitness = PCp[0].saved_fitness;
 
 
 
@@ -363,7 +368,7 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 
 
 	//Copy NPCp for ease of operation
-	std::vector<individual> temp_NPCp = NPCp.Indiv_Show();
+	//std::vector<individual> temp_NPCp = NPCp.Indiv_Show();
 
 	for (i = 0; i < NPCp.Size_Show(); i++)
 	{
@@ -374,14 +379,14 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 
 		if (type == 1)
 		{
-			int niche = temp_NPCp[i].table.size();
+			int niche = NPCp.Indiv_Show(i).table.size();
 			r1 = Random_I(0, niche - 1);
 			do {
 				r2 = Random_I(0, niche - 1);
 			} while (r2 == r1);
 
-			p1 = temp_NPCp[i].table[r1];
-			p2 = temp_NPCp[i].table[r2];
+			p1 = NPCp.Indiv_Show(i).table[r1];
+			p2 = NPCp.Indiv_Show(i).table[r2];
 		}
 		else
 		{
@@ -397,14 +402,14 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 			if (p1 != i)
 			{
 				//create the selected vector
-				std::vector<individual> selected{ temp_NPCp[i], temp_NPCp[p1] };
+				std::vector<individual> selected{ NPCp.Indiv_Show(i), NPCp.Indiv_Show(p1) };
 				//crossover(&NPC_pop->ind[i], &NPC_pop->ind[p1], child, child2);
 				child = NPCp.Crossover_NSGAII(selected);
 			}
 			else
 			{
 				//create the selected vector
-				std::vector<individual> selected{ temp_NPCp[i], temp_NPCp[p2] };
+				std::vector<individual> selected{ NPCp.Indiv_Show(i), NPCp.Indiv_Show(p2) };
 				//crossover(&NPC_pop->ind[i], &NPC_pop->ind[p2], child, child2);
 				child = NPCp.Crossover_NSGAII(selected);
 			}
@@ -413,10 +418,18 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 		if (BCE_mode == 2)				// DE
 		{
 			//DE(&NPC_pop->ind[i], &NPC_pop->ind[p1], &NPC_pop->ind[p2], child);
-			child[0] = MOEAD::Diff_Evo_XoverB(temp_NPCp[i], temp_NPCp[p1], temp_NPCp[p2], 0.5, NPCp.FCode_Show()[0], NPCp.CCode_Show()[0], NPCp.GAPara_Show()[0]);
+			if (MOEAD_OVERRIDE)
+			{
+				short index = 0;
+				if (Random() < 0.5)
+					index = 1;
+				child[0] = NPCp.CCode_Show()[0].Crossover(std::vector<individual>{ NPCp.Indiv_Show(p1), NPCp.Indiv_Show(p2) }, NPCp.GAPara_Show()[0], NPCp.FCode_Show()[0])[index];
+			}
+			else
+				child[0] = MOEAD::Diff_Evo_XoverB(NPCp.Indiv_Show(i), NPCp.Indiv_Show(p1), NPCp.Indiv_Show(p2), 0.5, NPCp.FCode_Show()[0], NPCp.CCode_Show()[0], NPCp.GAPara_Show()[0]);
 		}
 		//copy dummy values
-		child[0].saved_fitness = temp_NPCp[i].saved_fitness;
+		child[0].saved_fitness = NPCp.Indiv_Show(i).saved_fitness;
 		
 		NPCp.Mutation(child[0]);		// PM mutation
 
@@ -439,7 +452,7 @@ void BCE::NPC_evolution(collective &NPCp, std::vector<individual> &PCp, int iGen
 	}
 }
 
-void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &tempp, std::vector<short>& fit_indexes)
+void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<short>& fit_indexes)
 {
 
 	int i, j, k;
@@ -449,11 +462,10 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 	int nobj = fit_indexes.size();
 
 	
-	// copy PC_pop into pop for ease of operation 
-	tempp = PCp;
+	
 
 	//	normalise the PC poulation 
-	normalize_pop(tempp, PCp.size(), fit_indexes);
+	normalize_pop(PCp, PCp.size(), fit_indexes);
 
 	std::vector<std::vector<double>> c(PCp.size(), std::vector<double>(PCp.size(), 0));				// for recording the Euclidean distance between any two individuals in the PC population
 
@@ -465,8 +477,8 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 			for (k = 0; k<nobj; k++)
 			{
 				short fit_ix = fit_indexes[k] - 1;
-				distance += (tempp[i].saved_fitness[fit_ix] - tempp[j].saved_fitness[fit_ix]) * (tempp[i].saved_fitness[fit_ix] - tempp[j].saved_fitness[fit_ix]);
-				//distance += (tempp->ind[i].obj_norm[fit_ix] - tempp->ind[j].obj_norm[fit_ix]) * (tempp->ind[i].obj_norm[fit_ix] - tempp->ind[j].obj_norm[fit_ix]);
+				distance += (PCp[i].saved_fitness[fit_ix] - PCp[j].saved_fitness[fit_ix]) * (PCp[i].saved_fitness[fit_ix] - PCp[j].saved_fitness[fit_ix]);
+				//distance += (PCp->ind[i].obj_norm[fit_ix] - PCp->ind[j].obj_norm[fit_ix]) * (PCp->ind[i].obj_norm[fit_ix] - PCp->ind[j].obj_norm[fit_ix]);
 			}
 			distance = sqrt(distance);
 			c[i][j] = distance;
@@ -481,15 +493,15 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 	//	use "mark" to record which idividuals should be removed
 	for (i = 0; i<PCp.size(); i++)
 	{
-		tempp[i].Rank_Set(1);								// "1" means that the individual is in the current PC population
-		tempp[i].Crowd_Dist_Set(1);				// initialisation of PC individuals' crowding degree
-		/*temp = tempp->ind[i].nicheNeighbor->child;	// initialisation of PC individuals' neighbor in their niche
+		PCp[i].Rank_Set(1);								// "1" means that the individual is in the current PC population
+		PCp[i].Crowd_Dist_Set(1);				// initialisation of PC individuals' crowding degree
+		/*temp = PCp->ind[i].nicheNeighbor->child;	// initialisation of PC individuals' neighbor in their niche
 		while (temp != NULL)
 		{
 			temp = del(temp);
 			temp = temp->child;
 		}*/
-		tempp[i].table.clear();
+		PCp[i].table.clear();
 	}
 
 	// find neighbors and calculate the crowding degree
@@ -499,20 +511,20 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 		{
 			if (c[i][j] < radius)
 			{
-				tempp[i].Crowd_Dist_Set(tempp[i].Crowd_Dist_Show() * c[i][j] / radius);
-				tempp[j].Crowd_Dist_Set(tempp[j].Crowd_Dist_Show() * c[i][j] / radius);
+				PCp[i].Crowd_Dist_Set(PCp[i].Crowd_Dist_Show() * c[i][j] / radius);
+				PCp[j].Crowd_Dist_Set(PCp[j].Crowd_Dist_Show() * c[i][j] / radius);
 
-				tempp[i].table.push_back(j);
-				tempp[j].table.push_back(i);
-				//insert(tempp->ind[i].nicheNeighbor, j);
-				//insert(tempp->ind[j].nicheNeighbor, i);
+				PCp[i].table.push_back(j);
+				PCp[j].table.push_back(i);
+				//insert(PCp->ind[i].nicheNeighbor, j);
+				//insert(PCp->ind[j].nicheNeighbor, i);
 			}
 		}
 	}
 	for (i = 0; i<PCp.size(); i++)
 	{
-		tempp[i].Crowd_Dist_Set(1.0 - tempp[i].Crowd_Dist_Show());
-		//tempp->ind[i].crowd_degree = 1.0 - tempp->ind[i].crowd_degree;
+		PCp[i].Crowd_Dist_Set(1.0 - PCp[i].Crowd_Dist_Show());
+		//PCp->ind[i].crowd_degree = 1.0 - PCp->ind[i].crowd_degree;
 	}
 
 
@@ -523,11 +535,11 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 		max_crowding = -1;
 		for (i = 0; i<PCp.size(); i++)
 		{
-			if (tempp[i].Rank_Show() == 1)
+			if (PCp[i].Rank_Show() == 1)
 			{
-				if (tempp[i].Crowd_Dist_Show() > max_crowding)
+				if (PCp[i].Crowd_Dist_Show() > max_crowding)
 				{
-					max_crowding = tempp[i].Crowd_Dist_Show();
+					max_crowding = PCp[i].Crowd_Dist_Show();
 					index = i;
 				}
 			}
@@ -541,26 +553,26 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 				do
 				{
 					index = Random_I(0, PCp.size() - 1);
-				} while (tempp[index].Rank_Show() == 0);
+				} while (PCp[index].Rank_Show() == 0);
 				//mark[index] = 0;
-				tempp[index].Rank_Set(0);
+				PCp[index].Rank_Set(0);
 				current_size--;
 			}
 		}
 		else
 		{
-			tempp[index].Rank_Set(0);					// "0" means that individual "index" is removed from the PC population	
+			PCp[index].Rank_Set(0);					// "0" means that individual "index" is removed from the PC population	
 												// renew the information of the neighbors of individual "index"; 
 												// this includes removing individual "index" from their neighbor list and adjusting their crowding degree  
-			for (int ix = 0; ix < tempp[index].table.size(); ix++)
+			for (int ix = 0; ix < PCp[index].table.size(); ix++)
 			{
-				int n_index = tempp[index].table[ix];
+				int n_index = PCp[index].table[ix];
 				// remove individual "index" from the neighbor list
-				for (int n_ix = 0; n_ix < tempp[n_index].table.size(); n_ix++)
+				for (int n_ix = 0; n_ix < PCp[n_index].table.size(); n_ix++)
 				{
-					if (tempp[n_index].table[n_ix] == index)
+					if (PCp[n_index].table[n_ix] == index)
 					{
-						tempp[n_index].table.erase(tempp[n_index].table.begin() + n_ix);
+						PCp[n_index].table.erase(PCp[n_index].table.begin() + n_ix);
 						break;
 					}
 				}
@@ -568,43 +580,43 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 				// adjust the crowding degree for two situations, i.e. whether the two individuals are overlapping
 				if (c[index][n_index] != 0)
 				{
-					tempp[n_index].Crowd_Dist_Set(1.0 - (1.0 - tempp[n_index].Crowd_Dist_Show()) / (c[index][n_index] / radius));
+					PCp[n_index].Crowd_Dist_Set(1.0 - (1.0 - PCp[n_index].Crowd_Dist_Show()) / (c[index][n_index] / radius));
 				}
 				else
 				{
-					tempp[n_index].Crowd_Dist_Set(1.0);
-					for (int n_ix = 0; n_ix < tempp[n_index].table.size(); n_ix++)
+					PCp[n_index].Crowd_Dist_Set(1.0);
+					for (int n_ix = 0; n_ix < PCp[n_index].table.size(); n_ix++)
 					{
-						int n_index2 = tempp[n_index].table[n_ix];
-						tempp[n_index].Crowd_Dist_Set(tempp[n_index].Crowd_Dist_Show()*c[n_index2][n_index] / radius);
+						int n_index2 = PCp[n_index].table[n_ix];
+						PCp[n_index].Crowd_Dist_Set(PCp[n_index].Crowd_Dist_Show()*c[n_index2][n_index] / radius);
 					}
-					tempp[n_index].Crowd_Dist_Set(1.0 - tempp[n_index].Crowd_Dist_Show());
+					PCp[n_index].Crowd_Dist_Set(1.0 - PCp[n_index].Crowd_Dist_Show());
 				}
 			}
 			current_size--;
 
-			/*temp = tempp->ind[index].nicheNeighbor->child;
+			/*temp = PCp->ind[index].nicheNeighbor->child;
 			while (temp != NULL)
 			{
 				// remove individual "index" from the neighbor list
-				temp2 = findnode(tempp->ind[temp->index].nicheNeighbor->child, index);
+				temp2 = findnode(PCp->ind[temp->index].nicheNeighbor->child, index);
 				temp2 = del(temp2);
 
 				// adjust the crowding degree for two situations, i.e. whether the two individuals are overlapping
 				if (c[index][temp->index] != 0)
 				{
-					tempp->ind[temp->index].crowd_degree = 1.0 - (1.0 - tempp->ind[temp->index].crowd_degree) / (c[index][temp->index] / radius);
+					PCp->ind[temp->index].crowd_degree = 1.0 - (1.0 - PCp->ind[temp->index].crowd_degree) / (c[index][temp->index] / radius);
 				}
 				else
 				{
-					tempp->ind[temp->index].crowd_degree = 1.0;
-					temp2 = tempp->ind[temp->index].nicheNeighbor->child;
+					PCp->ind[temp->index].crowd_degree = 1.0;
+					temp2 = PCp->ind[temp->index].nicheNeighbor->child;
 					while (temp2 != NULL)
 					{
-						tempp->ind[temp->index].crowd_degree *= c[temp2->index][temp->index] / radius;
+						PCp->ind[temp->index].crowd_degree *= c[temp2->index][temp->index] / radius;
 						temp2 = temp2->child;
 					}
-					tempp->ind[temp->index].crowd_degree = 1.0 - tempp->ind[temp->index].crowd_degree;
+					PCp->ind[temp->index].crowd_degree = 1.0 - PCp->ind[temp->index].crowd_degree;
 				}
 				temp = temp->child;
 			}*/
@@ -615,10 +627,9 @@ void BCE::maintain_PCpop(std::vector<individual> &PCp, std::vector<individual> &
 	original_size = PCp.size();
 	for (i = 0; i < original_size; i++)
 	{
-		if (tempp[i].Rank_Show() == 0)
+		if (PCp[i].Rank_Show() == 0)
 		{
 			PCp.erase(PCp.begin() + i);
-			tempp.erase(tempp.begin() + i);
 			i--;
 			original_size--;
 		}

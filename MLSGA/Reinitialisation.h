@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,7 +14,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
+
+REINITIALISATION header
+
+Function for reinitialising the population after dynamic change
+
+*/
 
 
 #pragma once
@@ -23,14 +29,16 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "Class.h"
 #include <ostream>
 
-/*
-*Reinitialize the current population and Pareto Front storage according to chosen mode*
+/**
+*Reinitialise the current population and Pareto Front storage according to the chosen RE mode
 @param col - current population as a set of collectives
 @param PF - current Pareto Front
 @param re_mode - Reinitialisation mode
 @pram mode - current hybrid mode
 @param graph_v_vector - vector of graphs ofstream, for VIDEO creation
+@param col_memory - memory storage of past collectives. For prediction-based reinitialisation methods.
+@param ftype - index of the function. Used to utilise function specific routines.
 */
-void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_mode, std::string & mode, std::vector<std::ofstream> & graph_v_vector, std::vector<std::vector<collective>> & col_memory);
+void Reinit(std::vector<collective> & col, pareto_front & PF, std::string & re_mode,  std::vector<std::ofstream> & graph_v_vector, std::vector<std::vector<collective>> & col_memory, int ftype);
 
 #endif // !REINITIALISATION_H

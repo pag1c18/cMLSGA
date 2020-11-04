@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,85 +14,91 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
 
-/*The polynomial mutation method is based on K. Deb and M. Goyal, “A combined genetic adaptive search (GeneAS) for engineering design,” Comput. Sci. Informatics, vol. 26, no. 4, pp. 30–45, 1996.*/
+				MUTATION header
+		Different mutation types storage
+			and basic mutation class
+
+
+The polynomial mutation method is based on K. Deb and M. Goyal, “A combined genetic adaptive search (GeneAS) for engineering design,” Comput. Sci. Informatics, vol. 26, no. 4, pp. 30–45, 1996.
+*/
+
 
 #pragma once
-//****************************************
-//				MUTATION header
-//		Different mutation types storage 
-//			and basic mutation class
-//****************************************
 #ifndef MUTATION_H
 #define MUTATION_H
 #include <vector>
 #include <string>
 #include "Random.h"
-#include "GA_Functions.h"
+#include "GA_Data.h"
 
+/**
+* Templace for mutation class.
+*/
 template <typename tname>
 class mutation
 {
 private:
-	short mcode;							//Code of the mutation type
-	std::string name;						//Name of the mutation type
+	short mcode;							///<Code of the mutation type. For indexing purposes.
+	std::string name;						///<Name of the mutation type. For results output.
 public:	
-	/*
-	*Default normal constructor*
-	@param mc code of the mutation type
-	@param na name of the mutation type
+	/**
+	*Default normal constructor
+	@param mc - code of the mutation type
+	@param na - name of the mutation type
 	*/
 	mutation(short mc, std::string nm) { mcode = mc; name = nm; };
-	/**Default constructor, throw ERROR - mutation class cannot be empty**/
+
+	/**Default empty constructor. Throws ERROR - mutation class cannot be empty**/
 	mutation() { std::cout << "ERROR#07: MUTATION - CREATION"; system("pause"); abort(); }
 	~mutation() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine template
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	virtual void Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const {};
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine template for binary problems.
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	virtual void Mutate_Bin(std::vector<bool> & code, function & fcode, GA_parameters & gapara) const {};
 	/**Return the name of the current mutation type**/
 	std::string Name_Show() { return name; };
 };
 
-/****************************************
+/**
 			Mutation #1 
-	 real value distribution - suttipong
-****************************************/
+	 real value distribution modified
+*/
 template <typename tname>
 class mutation_1 : public mutation<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default constructor. Calls normal constructor of mutation class**/
 	mutation_1() : mutation(1, "Polynomial - changed") {};
 	~mutation_1() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	void Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const;
 };
 
-/*
-*Mutation algorithm*
-@param code source code which will be mutated
-@param fcode function class type as boundaries source
-@param gapara GA_parameter class type
-*/
+/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
+	*/
 template <typename tname>
 void mutation_1<tname>::Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const
 {
@@ -168,33 +174,33 @@ void mutation_1<tname>::Mutate(std::vector<double> & code, function & fcode, GA_
 
 /*End of Mutation 1*/
 
-/****************************************
+/**
 Mutation #1b
 real value distribution
-****************************************/
+*/
 template <typename tname>
 class mutation_1b : public mutation<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default constructor. Calls normal constructor of mutation class**/
 	mutation_1b() : mutation(1, "Real value distribution") {};
 	~mutation_1b() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	void Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const;
 };
 
-/*
-*Mutation algorithm*
-@param code source code which will be mutated
-@param fcode function class type as boundaries source
-@param gapara GA_parameter class type
-*/
+/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
+	*/
 template <typename tname>
 void mutation_1b<tname>::Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const
 {
@@ -252,35 +258,34 @@ void mutation_1b<tname>::Mutate(std::vector<double> & code, function & fcode, GA
 	}//end of the loop for the variables/code
 };
 
-/*End of Mutation 1b*/
 
-/****************************************
+/**
 			Mutation #2
  real value random - Uniform mutation
-****************************************/
+*/
 template <typename tname>
 class mutation_2 : public mutation<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default constructor. Calls normal constructor of mutation class**/
 	mutation_2() : mutation(2, "Uniform") {};
 	~mutation_2() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	void Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const;
 };
 
-/*
-*Mutation algorithm*
-@param code source code which will be mutated
-@param fcode function class type as boundaries source
-@param gapara GA_parameter class type
-*/
+/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
+	*/
 template <typename tname>
 void mutation_2<tname>::Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const
 {
@@ -305,114 +310,34 @@ void mutation_2<tname>::Mutate(std::vector<double> & code, function & fcode, GA_
 
 /*End of Mutation 2*/
 
-/****************************************
-			Mutation #3
-		real value distribution - PG - not working!!!!!!!!!!!!
-****************************************/
-template <typename tname>
-class mutation_3 : public mutation<tname>
-{
-public:
-	/**Default constructor**/
-	mutation_3() : mutation(3, "Real value distribution - PG") {};
-	~mutation_3() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
-	*/
-	void Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const;
-};
-
-/*
-*Mutation algorithm*
-@param code source code which will be mutated
-@param fcode function class type as boundaries source
-@param gapara GA_parameter class type
-*/
-template <typename tname>
-void mutation_3<tname>::Mutate(std::vector<double> & code, function & fcode, GA_parameters & gapara) const
-{
-	//loop for the variables/code
-	for (int i = 0; i < code.size(); i++)
-	{
-		//Check if mutation occur
-		float mut_rand = Random_F();
-		if (mut_rand <= gapara.Mut_Prob())	//check if mutation occur
-		{
-			//assign values
-			double code_val = code[i];					//variable storage
-			
-			//copy boundaries
-			double upper_b = fcode.Bound(i, "upper");	//upper boundary
-			double lower_b = fcode.Bound(i, "lower");	//lower boundary
-
-			double delta = (upper_b - lower_b) * Di_m2; 								//mutation variable delta - change of variable
-			if (code_val != upper_b && code_val != lower_b)
-			{
-				//calculate the real change
-				double delta_r = Random(1.0, 10.0);					//real variable change
-				delta_r = log(delta_r) * delta;
-
-				//check if new value will be bigger or lower
-				float rand = Random_F();
-				if (rand > 0.5f)
-				{
-					code[i] += delta_r;
-				}
-				else
-				{
-					code[i] -= delta_r;
-				}
-				//Check if is not out of boundary
-				if (code[i] < lower_b)
-					code[i] = lower_b;
-				else if (code[i] > upper_b)
-					code[i] = upper_b;
-			}
-
-			//if code[i] == lower_b || code[i] == upper_b;
-			else
-			{
-				//Assign a random value
-				double x = Random();
-				code[i] = lower_b + x * (upper_b - lower_b);
-			}
-		}
-	}//end of the loop for the variables/code
-}
-
-//end of Mutation #3
-
-/****************************************
+/**
 Mutation #B1
 Binary mutation 1#
-****************************************/
+*/
 template <typename tname>
 class mutation_B1 : public mutation<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default constructor. Calls normal constructor of mutation class**/
 	mutation_B1() : mutation(1, "Binary mutation") {};
 	~mutation_B1() {};
 
-	/*
-	*Mutation algorithm*
-	@param code source code which will be mutated
-	@param fcode function class type as boundaries source
-	@param gapara GA_parameter class type
+	/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
 	*/
 	void Mutate_Bin(std::vector<bool> & code, function & fcode, GA_parameters & gapara) const;
 };
 
-/*
-*Mutation algorithm*
-@param code source code which will be mutated
-@param fcode function class type as boundaries source
-@param gapara GA_parameter class type
-*/
+/**
+	*Mutation routine
+	@param code - source code which will be mutated
+	@param fcode - function class type as boundaries source
+	@param gapara - GA_parameter class type. To get informations about current benchmark.
+	*/
 template <typename tname>
 void mutation_B1<tname>::Mutate_Bin(std::vector<bool> & code, function & fcode, GA_parameters & gapara) const
 {
@@ -430,5 +355,4 @@ void mutation_B1<tname>::Mutate_Bin(std::vector<bool> & code, function & fcode, 
 		}
 	}//end of the loop for the variables/code
 }
-//end of Mutation #4
 #endif // !MUTATION_H

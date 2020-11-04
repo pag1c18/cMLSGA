@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,22 +14,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
 
-/*The SBX crossover method is based on K. Deb and R. Bhushan Agrawal, “Simulated Binary Crossover for Continuous Search Space”, Complex Syst., vol. 9, pp. 115–148, 1995.*/
-/*The CMRDX method is based on S. Khan and Y. S. Muhammad, "A novel 3-component mixture Rayleigh distribution based crossover operator for genetic algorithm", Technical report, 2019*/
+The SBX crossover method is based on K. Deb and R. Bhushan Agrawal, “Simulated Binary Crossover for Continuous Search Space”, Complex Syst., vol. 9, pp. 115–148, 1995.
+The CMRDX method is based on S. Khan and Y. S. Muhammad, "A novel 3-component mixture Rayleigh distribution based crossover operator for genetic algorithm", Technical report, 2019
+
+
+				CROSSOVER header
+	Storage of different crossover types
+			and basic crossover class
+*/
+
 
 
 #pragma once
-//****************************************
-//				CROSSOVER header
-//	Storage of different crossover types
-//			and basic crossover class
-//****************************************
+
 #ifndef CROSSOVER_H
 #define CROSSOVER_H
 
-#include "GA_Functions.h"
+#include "GA_Data.h"
 #include "Fit_Functions.h"
 #include <cmath>
 #include "Define.h"
@@ -39,54 +42,51 @@ template <typename tname>
 class crossover
 {
 private:
-	short ccode;					//code of the crossover type
-	std::string name;				//name of the crossover type
+	short ccode;					///<code of the crossover type. For indexing purposes.
+	std::string name;				///<name of the crossover type. For results output.
 public:
-	/*
-	*Default normal constructor*
-	@param cc crossover type code
-	@param na crossover type name
+	/**Default normal constructor
+	@param cc - crossover type code
+	@param na - crossover type name
 	*/
 	crossover(short cc, std::string na) { ccode = cc; name = na; };
-	/**Default constuctor, throw error - crossover cannot be empty**/
+	/**Default empty constuctor. throw error - crossover cannot be empty**/
 	crossover() { std::cout << "ERROR#08: CROSSOVER - CREATION"; system("pause"); abort(); }
 	~crossover() {};
 	/**Returning name of the current crossover type**/
 	std::string Name_Show() { return name; };
-	/*
-	*Empty crossover - make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	virtual std::vector<tname>  Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const { std::vector<tname> a; abort(); return a; };				//Take 2 individuals and return 2 indi
 };
 
-/****************************************
-Crossover #1 - SBX: Simulated Binary Crossover
-****************************************/
+/**
+Crossover #1 
+SBX: Simulated Binary Crossover
+*/
 template <typename tname>
 class crossover_1_SBX : public crossover<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default empty constructor. Calls normal constructor from crossover class.*/
 	crossover_1_SBX() : crossover(1, "Simulated Binary Crossover") {};
 	~crossover_1_SBX() {};
-	/*
-	*make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	std::vector<tname> Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const;
 };
 
-/*
-*make crossover for the given population*
-@param selected vector containing selected individuals
-@param gapara GA_Parameters class object
-@param fcode function class object
-*/
+/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
+	*/
 template <typename tname>
 std::vector<tname> crossover_1_SBX<tname>::Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const
 {
@@ -292,32 +292,31 @@ std::vector<tname> crossover_1_SBX<tname>::Crossover(const std::vector<tname>& s
 	return cross_indi;
 };
 
-/****************************************
-		Crossover #2 - CMRDX: 3-Component mixture Rayleigh distribution based crossover
-****************************************/
+/**
+		Crossover #2 
+		CMRDX: 3-Component mixture Rayleigh distribution based crossover
+*/
 
 template <typename tname>
 class crossover_2_CMRDX : public crossover<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default empty constructor. Calls normal constructor from crossover class.*/
 	crossover_2_CMRDX() : crossover(1, " 3-Component mixture Rayleigh distribution based crossover") {};
 	~crossover_2_CMRDX() {};
-	/*
-	*make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	std::vector<tname> Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const;
 };
 
-/*
-*make crossover for the given population*
-@param selected vector containing selected individuals
-@param gapara GA_Parameters class object
-@param fcode function class object
-*/
+/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
+	*/
 template <typename tname>
 std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const
 {
@@ -357,7 +356,7 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 			u[0] = Random_F(0, 0.9999999f);
 			u[1] = Random_F(0, 0.9999999f);
 			u[2] = Random_F(0, 0.9999999f);
-			float l[3] = { 2.3f,2.5f,1.7f };
+			float l[3] = { 0.8f,1.f,0.7f };
 			float p[3] = { 0.3f,0.6f,0.1f };
 
 			float betaq[3];
@@ -487,32 +486,31 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 };
 
 
-/****************************************
-		Crossover #3- DE: Differential Evolution based crossover
-****************************************/
+/**
+		Crossover #3
+		DE: Differential Evolution based crossover
+*/
 
 template <typename tname>
 class crossover_3_DE : public crossover<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default empty constructor. Calls normal constructor from crossover class.*/
 	crossover_3_DE() : crossover(1, "Differential Evolution based crossover") {};
 	~crossover_3_DE() {};
-	/*
-	*make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	std::vector<tname> Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const;
 };
 
-/*
-*make crossover for the given population*
-@param selected vector containing selected individuals
-@param gapara GA_Parameters class object
-@param fcode function class object
-*/
+/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
+	*/
 template <typename tname>
 std::vector<tname> crossover_3_DE<tname>::Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const
 {
@@ -630,31 +628,30 @@ std::vector<tname> crossover_3_DE<tname>::Crossover(const std::vector<tname>& se
 			BINARY METHODS
 ****************************************/
 
-/****************************************
-Crossover #B1 - Uniform Crossover
-****************************************/
+/**
+Crossover #B1 
+Uniform Crossover
+*/
 template <typename tname>
 class crossover_B1_Uni : public crossover<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default empty constructor. Calls normal constructor from crossover class.*/
 	crossover_B1_Uni() : crossover(1, "Uniform Binary Crossover") {};
 	~crossover_B1_Uni() {};
-	/*
-	*make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	std::vector<tname> Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const;
 };
 
-/*
-*make crossover for the given population*
-@param selected vector containing selected individuals
-@param gapara GA_Parameters class object
-@param fcode function class object
-*/
+/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
+	*/
 template <typename tname>
 std::vector<tname> crossover_B1_Uni<tname>::Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const
 {
@@ -781,31 +778,30 @@ std::vector<tname> crossover_B1_Uni<tname>::Crossover(const std::vector<tname>& 
 	return cross_indi;
 };
 
-/****************************************
-Crossover #B2 - Mult-Point Binary Crossover
-****************************************/
+/**
+Crossover #B2 
+Mult-Point Binary Crossover
+*/
 template <typename tname>
 class crossover_B2_MP : public crossover<tname>
 {
 public:
-	/**Default constructor**/
+	/**Default empty constructor. Calls normal constructor from crossover class.*/
 	crossover_B2_MP() : crossover(2, "Mult-Point Binary Crossover") {};
 	~crossover_B2_MP() {};
-	/*
-	*make crossover for the given population*
-	@param selected vector containing selected individuals
-	@param gapara GA_Parameters class object
-	@param fcode function class object
+	/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
 	*/
 	std::vector<tname> Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const;
 };
 
-/*
-*make crossover for the given population*
-@param selected vector containing selected individuals
-@param gapara GA_Parameters class object
-@param fcode function class object
-*/
+/**Perform crossover on selected population. Return a vector of offspring. Empty in the template.
+	@param selected - vector containing selected individuals
+	@param gapara - GA_Parameters class object
+	@param fcode - pointer the the current function
+	*/
 template <typename tname>
 std::vector<tname> crossover_B2_MP<tname>::Crossover(const std::vector<tname>& selected, GA_parameters& gapara, function& fcode) const
 {
@@ -946,103 +942,3 @@ std::vector<tname> crossover_B2_MP<tname>::Crossover(const std::vector<tname>& s
 	return cross_indi;
 };
 #endif // !CROSSOVER_H
-
-/*template <typename tname>
-class crossover
-{
-private:
-	int ccode;
-	std::string name;
-public:
-	crossover(int cc, std::string na) { ccode = cc; name = na; };
-	crossover() { std::cout << "ERROR#08: CROSSOVER - CREATION"; abort(); }
-	~crossover() {};
-	std::string Name_Show() { return name; };
-	virtual std::vector<tname>  Crossover(const tname & type1, const tname & type2, GA_parameters & gapara, function & fcode) const { std::vector<tname> a; return a; };				//Take 2 individuals and return 2 indi
-};
-
-/*Crossover 1
-template <typename tname>
-class crossover_1 : public crossover<tname>
-{
-public:
-	crossover_1() : crossover(1, "Crossover_1") {};
-	~crossover_1() {};
-	std::vector<tname>  Crossover(const tname & type1, const tname & type2, GA_parameters & gapara, function & fcode) const;
-};
-
-template <typename tname>
-std::vector<tname> crossover_1<tname>::Crossover(const tname & type1, const tname & type2, GA_parameters & gapara, function & fcode) const
-{
-	std::vector<tname> cross_indi;
-
-	double cross_r = rand() % 101;   //random seed
-	if (cross_r / 100 <= gapara.Cross_Prob())
-	{
-		std::vector<double> code1;
-		std::vector<double> code2;
-		for (int i = 0; i < fcode.Vars(); i++)
-		{
-			double parent1, parent2, y2, y1, beta, alpha, betaq;
-			parent1 = type1.Code_Show(i);
-			parent2 = type2.Code_Show(i);
-			double upper_b = fcode.Bound(i, "upper");
-			double lower_b = fcode.Bound(i, "lower");
-			if (abs(parent1 - parent2) > 0.000001)
-			{
-				if (parent2 > parent1)			//checking which one is greater
-				{
-					y2 = parent2;
-					y1 = parent1;
-				}
-				else
-				{
-					y2 = parent1;
-					y1 = parent2;
-				}
-				if ((y1 - lower_b) > (upper_b - y2))			//find beta
-					beta = 1 + 2 * ((upper_b - y2) / (y2 - y1));
-				else
-					beta = 1 + 2 * ((y1 - lower_b) / (y2 - y1));
-				beta = 1 / beta;
-				alpha = 2 - std::pow(beta, (gapara.Di_C() + 1));
-				double rnd = rand();
-				if (rnd / 100 < 1 / alpha)
-				{
-					alpha *= rnd / 100;
-					betaq = std::pow(alpha, 1 / (gapara.Di_C() + 1));
-				}
-				else
-				{
-					alpha *= rnd / 100;
-					alpha = 1 / (2 - alpha);
-					betaq = std::pow(alpha, 1 / (gapara.Di_C() + 1));
-				}
-				code1.push_back(0.5*((y1 + y2) - betaq*(y2 - y1)));
-				code2.push_back(0.5*((y1 + y2) + betaq*(y2 - y1)));
-			}
-			else
-			{	/*In original was:
-				//cross_indi[1] = parent2;
-				//cross_indi[0] = parent1;
-				code1.push_back(parent2);
-				code2.push_back(parent1);
-			}
-		}
-		tname c1{ code1, fcode };
-		tname c2{ code2, fcode };
-		cross_indi.push_back(c1);
-		cross_indi.push_back(c2);
-	}
-	else
-	{
-		cross_indi.push_back(type1);
-		cross_indi.push_back(type2);
-	}
-	if (cross_indi.size() != 2)
-	{
-		abort();
-		std::cout << "ERROR#10: CROSSOVER - VECTOR SIZE"; //ERROR#10: CROSSOVER - VECTOR SIZE
-	}
-	return cross_indi;
-}; */

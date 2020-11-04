@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -23,7 +23,7 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include <vector>
 #include "Class.h"
 
-/*
+/**
 *Generate random labels for the population*
 @param pop source population for which label will be found
 */

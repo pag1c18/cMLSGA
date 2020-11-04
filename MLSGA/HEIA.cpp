@@ -59,7 +59,6 @@ extern int nfes;
 extern time_t elit_t;
 extern time_t col_t;
 
-
 std::vector<std::vector<individual>> clonepopulation; //Separate population for each collective
 
 std::vector<std::vector<individual>> Archive;	//Archive of individuals for each collective
@@ -109,7 +108,6 @@ std::vector<individual> HEIA::HEIA_Calc(collective & col, int iGen)
 	col_ix = col.Index_Show() - 1;
 	int clonesize = col.Size_Show() / 5;
 
-
 	if (col.Was_Erased())
 	{
 		//Update and create new archive
@@ -141,12 +139,14 @@ std::vector<individual> HEIA::HEIA_Calc(collective & col, int iGen)
 
 	DE_Update(DEpop, col);
 	SBX_Update(SBXpop, col);
+
 	
 	//merge populations back
 	offspringpopulation.clear();
 	offspringpopulation = DEpop;
 	offspringpopulation.insert(offspringpopulation.end(), SBXpop.begin(), SBXpop.end());
 	Archive_Update(offspringpopulation, col.Size_Show(), clonesize, col.fit_index[0]);
+
 
 	//Check if the size is maintained
 	if (offspringpopulation.size() != col.Size_Show())
@@ -217,24 +217,24 @@ void HEIA::HEIA_Pop_Init(collective & col)
 	int clonesize = col.Size_Show() / 5;
 
 	//copy the population for ease of operations
-	std::vector<individual> col_pop = col.Indiv_Show();
+	//std::vector<individual> col_pop = col.Indiv_Show();
 
 	//Calculate the ranks and crowding distances
-	NSGAII::Rank_Crowding_Distance_Assign(col_pop, col.fit_index[0]);
+	NSGAII::Rank_Crowding_Distance_Assign(col.Indiv_Set(), col.fit_index[0]);
 
 	int index = 0;
 	sort_fit_ix = 0;
-	std::sort(col_pop.begin(), col_pop.end(), Sort_Fit);
+	std::sort(col.Indiv_Set().begin(), col.Indiv_Set().end(), Sort_Fit);
 	//copy the first front to archive
 	
-		for (int i = 0; i < col_pop.size(); i++)
+		for (int i = 0; i < col.Indiv_Show().size(); i++)
 		{
-			if (col_pop[i].Rank_Show() == 1)
+			if (col.Indiv_Set(i).Rank_Show() == 1)
 			{
-				col_pop[i].table.clear();
-				col_pop[i].table.push_back(index);
+				col.Indiv_Set(i).table.clear();
+				col.Indiv_Set(i).table.push_back(index);
 				index++;
-				Archive[col_ix].push_back(col_pop[i]);
+				Archive[col_ix].push_back(col.Indiv_Show(i));
 			}
 		}
 
@@ -252,49 +252,50 @@ void HEIA::HEIA_Pop_Init(collective & col)
 
 	temp_arch.clear();
 
-	col.Indiv_Set() = col_pop;
 
 	//calculate time
 	elit_t += clock() - elite_t_temp;
+
+
 }
 
 //Update the external population for the time step
-void HEIA::HEIA_Time_Update(function &fcode)
+void HEIA::HEIA_Time_Update(function& fcode, short i_col)
 {
-	
+
 	//Update the external populations
-	for (int i_col = 0; i_col < Archive.size(); i_col++)
+
+		//copy the temp parameters
+	int arch_size = Archive[i_col].size();
+	std::vector<individual> temp_vect = Archive[i_col];
+	if (PENALTY_BASED_CONSTRAINTS)
+		Pen_const::Fitness_Recalc(temp_vect, i_col, false);
+	//Update the population
+	for (int i_ind = 0; i_ind < arch_size; i_ind++)
 	{
-		//copy the temp parameters
-		int arch_size = Archive[i_col].size();
-		std::vector<individual> temp_vect = Archive[i_col];
-		if (PENALTY_BASED_CONSTRAINTS)
-			Pen_const::Fitness_Recalc(temp_vect,i_col,false);
-		//Update the population
-		for (int i_ind = 0; i_ind < arch_size; i_ind++)
-		{
-			temp_vect[i_ind].Fitness_Calc(fcode);
-			nfes++;
-			temp_vect[i_ind].save();
-		}
-		Archive[i_col] = temp_vect;
-
-		
-		//copy the temp parameters
-		int clone_size = clonepopulation[i_col].size();
-
-		temp_vect = clonepopulation[i_col];
-		if (PENALTY_BASED_CONSTRAINTS)
-			Pen_const::Fitness_Recalc(temp_vect, i_col, false);
-		//Update the population
-		for (int i_ind = 0; i_ind < clone_size; i_ind++)
-		{
-			temp_vect[i_ind].Fitness_Calc(fcode);
-			nfes++;
-			temp_vect[i_ind].save();
-		}
-		clonepopulation[i_col] = temp_vect;
+		temp_vect[i_ind].Fitness_Calc(fcode);
+		nfes++;
+		temp_vect[i_ind].save();
 	}
+	Archive[i_col] = temp_vect;
+
+
+	//copy the temp parameters
+	int clone_size = clonepopulation[i_col].size();
+
+	temp_vect = clonepopulation[i_col];
+	if (PENALTY_BASED_CONSTRAINTS)
+		Pen_const::Fitness_Recalc(temp_vect, i_col, false);
+	//Update the population
+	for (int i_ind = 0; i_ind < clone_size; i_ind++)
+	{
+		temp_vect[i_ind].Fitness_Calc(fcode);
+		nfes++;
+		temp_vect[i_ind].save();
+	}
+	clonepopulation[i_col] = temp_vect;
+
+
 }
 
 //Create offspring population
@@ -429,8 +430,15 @@ void HEIA::DE_Update(std::vector<individual> & DEpop, collective & col)
 				parents.push_back(clonepopulation[col_ix][perm[1]]);
 			}
 		}
-
-		offspring = MOEAD::Diff_Evo_XoverB(parents[0], parents[1], parents[2], DE_rate, col.FCode_Show()[0], col.CCode_Show()[0], col.GAPara_Show()[0]);
+		if (MOEAD_OVERRIDE)
+		{
+			short index = 0;
+			if (Random() < 0.5)
+				index = 1;
+			offspring = col.CCode_Show()[0].Crossover(std::vector<individual>{  parents[0], parents[1]}, col.GAPara_Show()[0], col.FCode_Show()[0])[index];
+		}
+		else
+			offspring = MOEAD::Diff_Evo_XoverB(parents[0], parents[1], parents[2], DE_rate, col.FCode_Show()[0], col.CCode_Show()[0], col.GAPara_Show()[0]);
 		col.Mutation(offspring);
 		offspring.Fitness_Calc(col.FCode_Show()[0]);
 		if (PENALTY_BASED_CONSTRAINTS)
@@ -528,6 +536,8 @@ void HEIA::Archive_Update(std::vector<individual> & merge_pop, int popsize, int 
 	{
 		clonepopulation[col_ix].push_back(front[i]);
 	}
+
+
 }
 
 //Update the crowding distance of current population

@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,16 +14,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
+
+
+		 FIT FUNCTIOCS header
+	Storage of fitness funtions
+			and basic funtionc class
+
+*/
 
 
 #pragma once
 
-//****************************************
-//		 FIT FUNTIOCNS header
-//	Storage of fitness funtions
-//			and basic funtionc class
-//****************************************
 
 #ifndef FIT_FUNCTION_H
 #define FIT_FUNCTION_H
@@ -35,46 +37,50 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "Struct.h"
 #include "Const.h"
 
-
+/**Template for function storage class*/
 class function
 {
 private:
-	std::string name_func;									//Name of  function
-	int num_vars;											//Number of variables in function
-	short num_objs;											//Number of objectives in function
-	short num_cons;											//Number of constaines
-	std::vector<STRUCTURES::boundaries> bound;				// Boundaries for variables
-	std::vector<STRUCTURES::boundaries> max_min_fit;		// Boundaries for max and min fitness
+	std::string name_func;									///<Name of  function
+	int num_vars;											///<Number of variables in function
+	short num_objs;											///<Number of objectives in function
+	short num_cons;											///<Number of constaines
+	std::vector<STRUCTURES::boundaries> bound;				///< Boundaries for variables
+	std::vector<STRUCTURES::boundaries> max_min_fit;		///< Boundaries for max and min fitness
+public: 
+	std::vector<double> code_saved;							///<Currently saved code (variables) for dynamic problems
+	bool const_speed;										///<If the speed is constant (for VOS)
+	double service_speed;									///<Current service speed (for VOS)
+	int temp_cons;											///<Current constraint
+	short wind_delay;										///<The delay in weather data
+	short wind_size;										///<The size of weather data
+	std::vector<short> delay_time_matrix;					///<The matrix where delay weather data is stored (for dynamic problems)
+protected:
+	bool time_dep = false;									///<Dynamic function - 1 Yes, 0 No
+	std::vector<float> t_vector;							///<dynamic t variables for changing random functions
 
 protected:
-	bool time_dep = false;									//Dynamic function - 1 Yes, 0 No
-	std::vector<float> t_vector;							//dynamic t variables for changing random functions
-
-protected:
-	/*
-	*Set boundaries for variables*
-	@param bn vector of the variables boundaries structure
+	/**Set boundaries for variables
+	
+	@param bn - vector of the variables boundaries structure
 	*/
 	virtual void Bound_Set(std::vector<STRUCTURES::boundaries> & bn) { bound = bn; }
-	/*
-	*Set boundaries*
+	/**Set boundaries for fitness
 	@param mmf vector of the fitness boundaries structure
 	*/
 	void Max_Min_Fit_Set(std::vector<STRUCTURES::boundaries> & mmf) { max_min_fit = mmf; }	
-	/*
-	*Create the t_vector*
+	/**Create the t_vector for unpredictable functions
 	@param n - size of the t_vector
 	*/
 	void T_Vector_Create(int n) { t_vector = std::vector<float>(n, 0.f); };
 public:
-	/**Default constructor, throw ERROR - function class cannot be empty**/
+	/**Default constructor. Throws ERROR - function class cannot be empty*/
 	function() {std::cout << "ERROR#02: FUNCTION - CREATION"; system("pause"); abort();};
-	/*
-	*Default normal constructor*
-	@param fname function name
-	@param varsn number of variables
-	@param objsn number of objectives
-	@param ix index of the function
+	/**Default normal constructor.
+	@param fname - function name
+	@param varsn - number of variables
+	@param objsn - number of objectives
+	@param consn - index of constraints
 	*/
 	function(const char * fname, int varsn, short objsn, short consn) 
 	{
@@ -82,21 +88,21 @@ public:
 	};
 	~function() {};
 
-	/*
-	*Pareto Front plotting and saving to file*
-	@param indexr index of the run
+	/**Function where the Pareto Optimal Front is defined and saved to file
+	@param indexr - index of the run
+	@param size - size of the pareto front. Default is defined in const.h
 	*/
-	virtual std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);																//Plotting real PF and saving it to file
+	virtual std::vector<std::vector<double>> Plot_PF(int indexr, int size = PF_real_size);																
 	/*
-	*Pareto Front plotting and saving to file - dynamic*
-	@param indexr index of the run
-	@param t current time
+	***Function where the Pareto Optimal Front is defined and saved to file for dynamic problems.
+	@param indexr - index of the run
+	@param t - current time step
+	@param size - size of the pareto front. Default is defined in const.h
 	*/																																																		
 	virtual std::vector<std::vector<double>> Plot_PF(int indexr, double t, int size = PF_real_size) { std::vector<std::vector<double>> temp; return temp; };
-	/*
-	*Returning boundaries for the variable*
-	@param i index of the variable
-	@param c which boundary - "lower"/"upper"
+	/**Returning the boundary for a single variable
+	@param i - index of the variable
+	@param c - defines which boundary is returned. "lower"/"upper"
 	*/
 	double Bound(int i, const char * c)														
 	{ 
@@ -111,12 +117,11 @@ public:
 		else
 			return bound[i].upper;
 	}
-	/**Returning boundaries for the variables as a vector of structures**/
+	/**Returning the boundaries for a single variables as a vector*/
 	std::vector<STRUCTURES::boundaries> Bound() { return bound; };
-	/*
-	*Returning boundaries for the fitness*
-	@param i index of the variable
-	@param c which boundary - "lower"/"upper"
+	/**Returning boundaries for a single objective
+	@param i - index of the objective
+	@param c - defines which boundary is returned. "lower"/"upper"
 	*/
 	double Max_Min_Fit(int i, const char * c)												
 	{
@@ -131,45 +136,42 @@ public:
 		else
 			return max_min_fit[i].upper;
 	}
-	/**Returning boundaries for the fitness as a vector of structures**/
+	/**Returning the boundaries for a single objective as a vector*/
 	std::vector<STRUCTURES::boundaries> Max_Min_Fit() { return max_min_fit; };													
-	/**Returning the number of variables for the current function**/
+	/**Returning the number of variables for the current function*/
 	int Vars() const { return num_vars; };												
-	/**Returning the number of objectives for the current function**/
+	/**Returning the number of objectives for the current function*/
 	short Objs() const { return num_objs; };	
-	/**Returning the number of constrains for the current function**/
+	/**Returning the number of constrains for the current function*/
 	short Cons() const { return num_cons; };
-	/**Returning time dependency**/
+	/**Returning time dependency*/
 	bool Time_Dep() const { return time_dep; };
-	/**Returning the name of the current function**/
+	/**Returning the name of the current function*/
 	std::string & Name_Show() { return name_func; };	
-	/*
-	*Fitness calculation for the given code*
-	@param code - vector with the code
+	/**Fitness (objectives) calculation for the given code (vector of variables).  Returning error in the template.
+	@param code - vector with the code.
 	*/
 	virtual std::vector<double> Fitness_C(const std::vector<double> &code) { std::cout << "ERROR#: FUNCTION - FITNESS_C"; system("pause"); abort(); };
-	/*
-	*Fitness calculation for the given code - dynamic*
-	@param code - vector with the code
-	@param t -  current time
+	/**Fitness (objectives) calculation for the given code (vector of variables), for dynamic problems.  Returning error in the template.
+	@param code - vector with the code.
+	@param tau - current time indicator
+	@param t -  current time step
 	*/
 	virtual std::vector<double> Fitness_C(const std::vector<double> &code, int tau, double t) { std::cout << "ERROR#: FUNCTION - FITNESS_C"; system("pause"); abort(); };
 	
-	/*
-	*Constrain check - for contrained problems: returns true if constrains are violated**
-	@param code - vector with the code
-	@param fitness - vector with the fitness values
-	@param t -  current time
+	/**Calculate the constraints. For contrained problems: returns true if constrains are violated**
+	@param code - vector with the code.
+	@param fitness - vector with the fitness (objectives) values
+	@param t -  current time step
 	*/
 	virtual std::vector<double> Cons_Calc(const std::vector<double> &code, const std::vector<double> &fit, double t = 0.0) { abort(); }
 
 	/*
-	*Min fitness calculation for one objective optimisation*
-	@param pareto_front real pareto front for which fitness will be calculated
+	*Min fitness calculation for one objective optimisation
+	@param pareto_front - real pareto front for which fitness will be calculated
 	*/
 	double Min_Fitness_Get(const std::vector<std::vector<double>> & pareto_front);
-	/*
-	*Update the t_vector*
+	/**Update the t_vector for random dynamic problems
 	@param s - if it have to be updated by one step (true) or zeroed (false)
 	*/
 	void T_Vector_Update(bool s = true);
@@ -178,14 +180,13 @@ public:
 class dynamic_function : public function
 {
 public:
-	/**Default constructor, throw ERROR - function class cannot be empty**/
+	/**Default empty constructor. throw ERROR - function class cannot be empty**/
 	dynamic_function() { std::cout << "ERROR#02: FUNCTION - CREATION"; system("pause"); abort(); };
-	/*
-	*Default normal constructor*
-	@param fname function name
-	@param varsn number of variables
-	@param objsn number of objectives
-	@param ix index of the function
+	/**Default normal constructor. Calls constructor of fitness class.
+	@param fname - function name
+	@param varsn - number of variables
+	@param objsn - number of objectives
+	@param ix - index of the function
 	*/
 	dynamic_function(const char * fname, int varsn, short objsn, short consn) : function(fname, varsn, objsn, consn)
 	{

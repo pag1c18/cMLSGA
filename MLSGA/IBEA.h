@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,38 +14,44 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
+
+		IBEA header
+		Functions specific to IBEA algorithm
+
+
+*/
 
 #pragma once
 #ifndef IBEA_H
 #define IBEA_H
 #include "Class.h"
 
+
+/**Functions specific to IBEA algorithm*/
 namespace IBEA
 {
-	/*
-	Calculate individuals using IBEA algorithm
+	/**
+	Evolve the individuals using IBEA algorithm
 	@param Col - address of a given collective
 	@param iGen - current generation index
 	*/
 	std::vector<individual> IBEA_Calc(collective & col, int iGen);
 
-	/*
-	Initialise the algorithm specific parameters
+	/**
+	Initialise the algorithm specific parameters, for whole population.
 	@param n_col - current number of collectives
 	@param pop - current (overall) population
 	*/
 	void IBEA_Init(short n_col, population & pop);
 
-	/*
-	Initialise the algorithm specific parameters
+	/**
+	Initialise the algorithm specific parameters, for a single collective
 	@param n_obj - current number of objectives
-	@param col - current (overall) population
+	@param col - address for a selected collective
 	*/
 	void IBEA_Pop_Init(short n_obj, collective & col);
 
-	//Update the external population for the time step
-	void IBEA_Time_Update(function &fcode);
 }
 
 

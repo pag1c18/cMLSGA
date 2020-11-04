@@ -1,5 +1,5 @@
 #pragma once
-/*Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
+/**Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
 

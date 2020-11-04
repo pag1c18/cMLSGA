@@ -1,4 +1,4 @@
-/*MLSGA framework
+/**MLSGA framework
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This program is free software : you can redistribute it and/or modify
@@ -12,23 +12,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>.
 
-/*[1] A.J.Sobey and P.A.Grudniewski, “Re - inspiring the genetic algorithm with multi - level selection theory : Multi - level selection genetic algorithm”, Bioinspiration and Biomimetics, vol. 13, no. 5, pp. 1–13, 2018.
+[1] A.J.Sobey and P.A.Grudniewski, “Re - inspiring the genetic algorithm with multi - level selection theory : Multi - level selection genetic algorithm”, Bioinspiration and Biomimetics, vol. 13, no. 5, pp. 1–13, 2018.
 
 [2] P.A.Grudniewski and A.J.Sobey, “Behaviour of Multi - Level Selection Genetic Algorithm(MLSGA) using different individual - level selection mechanisms”, Swarm Evol.Comput., vol. 44, no.September 2018, pp. 852–862, 2018.
 
-[3] P.A.Grudniewski and A.J.Sobey, "cMLSGA: co-evolutionary Multi-Level Selection Genetic Algorithm", 2019*/
+[3] P.A.Grudniewski and A.J.Sobey, "cMLSGA: co-evolutionary Multi-Level Selection Genetic Algorithm", 2019
 
 
-/*If You have any questions regarding the code, please contact
+If You have any questions regarding the code, please contact
 Przemyslaw A. Grudniewski	at	pag1c18@soton.ac.uk		or
 Adam J. Sobey				at	ajs502@soton.ac.uk
+
+
+				MSLGA header
+
+
+
+
 */
 
-//****************************************
-//				MSLGA header
-//****************************************
+
 
 #pragma once
 #include <Windows.h>

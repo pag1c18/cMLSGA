@@ -1,4 +1,4 @@
-/*
+/**
 Copyright(C) 2019  Przemyslaw A.Grudniewski and Adam J.Sobey
 
 This file is part of the MLSGA framework
@@ -14,7 +14,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>. */
+along with this program.If not, see < https://www.gnu.org/licenses/>. 
+
+     MTS header
+
+Containing the functions typical for MTS algorithm
+
+*/
 
 
 #pragma once
@@ -23,22 +29,23 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 
 #include "Class.h"
 
+/**Containing the functions typical for MTS algorithm*/
 namespace MTS
 {
-	/*
+	/**
 	Set the MTS initial parameters
 	@param pop - current population
 	@param PF - PF address
 	@param ncom - number of collectives
 	*/
 	void MTS_Init(population & pop, pareto_front & PF, short ncol);
-	/*
+	/**
 	Set the MTS initial parameters - collective specific
 	@param col - current collective
 	*/
 	void MTS_Init_Col(collective & col);
-	/*
-	Calculate individuals using MTS algorithm
+	/**
+	Evolve the population using MTS algorithm
 	@param Col - address of a given collective
 	@param iGen - current generation index
 	*/

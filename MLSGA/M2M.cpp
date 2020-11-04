@@ -570,7 +570,7 @@ void M2M::Extract_Pop(collective & new_col, std::vector<individual> & old_col)
 		}
 	}
 
-	if (new_col.Size_Show() != old_col.size() && DEBUG == true)
+	if (new_col.Size_Show() != old_col.size() && DEBUG_MLSGA == true)
 		abort();
 }
 

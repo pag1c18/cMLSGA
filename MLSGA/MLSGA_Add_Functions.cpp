@@ -26,15 +26,6 @@ along with this program.If not, see < https://www.gnu.org/licenses/>. */
 #include "Contour_Plot.h"
 #include "Imported\Workbook.h"
 
-/*#include "imported.h"
-#include "SVM.h"
-#include "Contour_Plot.h"
-#include "Video.h"
-#include "Clustering.h"
-#include "IGD.h"
-#include "GA_Functions.h"
-#include "Random_Label.h"*/
-
 
 
 int cons_viol_count;		//How many times constrains have been violated in the current run
@@ -676,8 +667,9 @@ std::vector<bool> Func_Deactivate()
 	
 	for (int i_func = n_func_b; i_func <= n_func_e; i_func++)
 	{
+		function* function_a = Func_Type(i_func);
 		//Deactivate  functions that are not implemented
-		if (Func_Type(i_func) == NULL)
+		if (function_a == NULL)
 		{
 			output[i_func - n_func_b] = false;
 			continue;
@@ -685,7 +677,7 @@ std::vector<bool> Func_Deactivate()
 		//Deactivate the functions based on func_skip - defined in const_h
 		if (skip_two)
 		{
-			if (Func_Type(i_func)[0].Objs() == 2)
+			if (function_a[0].Objs() == 2)
 			{
 				output[i_func - n_func_b] = false;
 				continue;
@@ -693,7 +685,7 @@ std::vector<bool> Func_Deactivate()
 		}
 		if (skip_three)
 		{
-			if (Func_Type(i_func)[0].Objs() == 3)
+			if (function_a[0].Objs() == 3)
 			{
 				output[i_func - n_func_b] = false;
 				continue;
@@ -701,7 +693,7 @@ std::vector<bool> Func_Deactivate()
 		}
 		if (skip_mobj)
 		{
-			if (Func_Type(i_func)[0].Objs() > 3)
+			if (function_a[0].Objs() > 3)
 			{
 				output[i_func - n_func_b] = false;
 				continue;
@@ -737,11 +729,6 @@ mutation<short> * Mut_Type(short ix, std::string Mode)
 		{
 			mutation_2<short> *M2 = new mutation_2<short>;
 			return M2;
-		}
-		if (ix == 4)
-		{
-			mutation_3<short> * M3 = new mutation_3<short>;
-			return M3;
 		}
 		else
 		{
@@ -1214,136 +1201,135 @@ void Print(FILE * Pipe, int ir, int index_r_max, std::string date, double t, boo
 	fflush(Pipe);
 }
 
-void Directory_Create(std::string &date)
+void Directory_Create(std::string& date)
 {
-	if (DEBUG != true)
+
+	//Create the automatic folder name - if desired
+	if (AUTO_FOLDER_COMMENT == true)
 	{
-		//Create the automatic folder name - if desired
-		if (AUTO_FOLDER_COMMENT == true)
+		//Add the MLSt part
+		//Check if MLSGA occur
+		bool MLSGA_occ = false;					//indicator to MLSGA occurance
+		if (MLSGA_Hybrid == true)
 		{
-			//Add the MLSt part
-			//Check if MLSGA occur
-			bool MLSGA_occ = false;					//indicator to MLSGA occurance
-			if (MLSGA_Hybrid == true)
-			{
-				MLSGA_occ = true;
-			}			
-			//Add the MLSt part only when MLSGA occur
-			if (MLSGA_occ == true)
-			{
+			MLSGA_occ = true;
+		}
+		//Add the MLSt part only when MLSGA occur
+		if (MLSGA_occ == true)
+		{
 
-				date += " MLS";
-				//If the only one value - add only one value
-				if (MLSGA_n_MLS_b == MLSGA_n_MLS_e)
-					date += std::to_string(MLSGA_n_MLS_b);
-				//Else add the range
-				else
-					date += std::to_string(MLSGA_n_MLS_b) + "-" + std::to_string(MLSGA_n_MLS_e);
-			}
-			//Add the selected 
-			std::string temp_date;
-			for (int i = 0; i < GA_mode.size(); i++)
-			{
-				temp_date += " ";
-				for (int iCoevol = 0; iCoevol < GA_mode[i].size(); iCoevol++)
-				{
-					temp_date += GA_mode[i][iCoevol];
-					if (iCoevol != GA_mode[i].size() - 1)
-						temp_date += "v";
-				}
-			}
-			if (temp_date.size() >= 20)
-				temp_date = " Many";
-
-			date += temp_date;
-
-
-			//Add population size
+			date += " MLS";
 			//If the only one value - add only one value
-			if (Pop_size_b == Pop_size_e)
-				date += " " + std::to_string(Pop_size_b);
+			if (MLSGA_n_MLS_b == MLSGA_n_MLS_e)
+				date += std::to_string(MLSGA_n_MLS_b);
 			//Else add the range
 			else
-				date += " " + std::to_string(Pop_size_b) + "-" + std::to_string(Pop_size_e) + "s" + std::to_string(Pop_size_step);
-			date += "pop";
-
-			if (T_con == "nfes")
-			{
-				//Add number of iterations
-				//Add k for each 10^3 multiplication
-				//Copy the value
-				int temp_iteration_n = max_iterations;		//Value of iterations to save - integers
-				int k_n = 0;								//Multiplication of 1000
-				int temp_iteration_n_m = 0;					//Modulo
-				//Derivate every 1000
-				while (temp_iteration_n >= 1000)
-				{
-					//calculate modulo
-					temp_iteration_n_m = temp_iteration_n % 1000;
-					temp_iteration_n /= 1000;
-					k_n++;
-				}
-				//Add to the string
-				//Save the interger part
-				date += " " + std::to_string(temp_iteration_n);
-				//Save the rest
-				if (k_n > 0);
-				{
-					//Add the rest - if exist
-					if (temp_iteration_n_m != 0)
-						date += "." + std::to_string(temp_iteration_n_m);
-					//Add the k
-					for (int i = 0; i < k_n; i++)
-						date += "k";
-					date += "_";
-				}
-				//Add the title
-				date += "iter";
-			}
-			else if (T_con == "ngen")
-			{
-				date += " " + std::to_string(max_generations) + "gen";
-			}
-			else if (T_con == "ntime")
-			{
-				date += " " + std::to_string(max_time) + "sec";
-			}
-
-			//Save the number of collectives
-			//If the only one value - add only one value
-			if (MLSGA_Hybrid == true)
-			{
-				if (MLSGA_n_col_b == MLSGA_n_col_e)
-					date += " " + std::to_string(MLSGA_n_col_b);
-				//Else add the range
-				else
-					date += " " + std::to_string(MLSGA_n_col_b) + "-" + std::to_string(MLSGA_n_col_e);
-				date += "col";
-
-				//Save the number of collective skip
-				date += " " + std::to_string(MLSGA_col_elim_limit) + "elimit";
-			}			
-
-			//Save the number of runs - if greater than 1
-			if (n_runs > 1)
-				date += " " + std::to_string(n_runs) + "run";
+				date += std::to_string(MLSGA_n_MLS_b) + "-" + std::to_string(MLSGA_n_MLS_e);
 		}
-		//Create the directory for results - if not existing
-		CreateDirectoryA("Results/", NULL);
-		//Create the directory for temp - if not existing
-		CreateDirectoryA("Temp/", NULL);
-		//Create the directory for current results
-		std::string temp1 = F_Name_Get("Results/", date, "/");
-		const char * temp = temp1.c_str();
-		if (!CreateDirectoryA(temp, NULL))
+		//Add the selected 
+		std::string temp_date;
+		for (int i = 0; i < GA_mode.size(); i++)
 		{
-			std::cout << "**********************************\n"
-				<< "Folder exists or cannot be created\nProgram will terminate"
-				<< "\n**********************************\n";
-			system("pause");
-			abort();
+			temp_date += " ";
+			for (int iCoevol = 0; iCoevol < GA_mode[i].size(); iCoevol++)
+			{
+				temp_date += GA_mode[i][iCoevol];
+				if (iCoevol != GA_mode[i].size() - 1)
+					temp_date += "v";
+			}
 		}
+		if (temp_date.size() >= 20)
+			temp_date = " Many";
+
+		date += temp_date;
+
+
+		//Add population size
+		//If the only one value - add only one value
+		if (Pop_size_b == Pop_size_e)
+			date += " " + std::to_string(Pop_size_b);
+		//Else add the range
+		else
+			date += " " + std::to_string(Pop_size_b) + "-" + std::to_string(Pop_size_e) + "s" + std::to_string(Pop_size_step);
+		date += "pop";
+
+		if (T_con == "nfes")
+		{
+			//Add number of iterations
+			//Add k for each 10^3 multiplication
+			//Copy the value
+			int temp_iteration_n = max_iterations;		//Value of iterations to save - integers
+			int k_n = 0;								//Multiplication of 1000
+			int temp_iteration_n_m = 0;					//Modulo
+			//Derivate every 1000
+			while (temp_iteration_n >= 1000)
+			{
+				//calculate modulo
+				temp_iteration_n_m = temp_iteration_n % 1000;
+				temp_iteration_n /= 1000;
+				k_n++;
+			}
+			//Add to the string
+			//Save the interger part
+			date += " " + std::to_string(temp_iteration_n);
+			//Save the rest
+			if (k_n > 0);
+			{
+				//Add the rest - if exist
+				if (temp_iteration_n_m != 0)
+					date += "." + std::to_string(temp_iteration_n_m);
+				//Add the k
+				for (int i = 0; i < k_n; i++)
+					date += "k";
+				date += "_";
+			}
+			//Add the title
+			date += "iter";
+		}
+		else if (T_con == "ngen")
+		{
+			date += " " + std::to_string(max_generations) + "gen";
+		}
+		else if (T_con == "ntime")
+		{
+			date += " " + std::to_string(max_time) + "sec";
+		}
+
+		//Save the number of collectives
+		//If the only one value - add only one value
+		if (MLSGA_Hybrid == true)
+		{
+			if (MLSGA_n_col_b == MLSGA_n_col_e)
+				date += " " + std::to_string(MLSGA_n_col_b);
+			//Else add the range
+			else
+				date += " " + std::to_string(MLSGA_n_col_b) + "-" + std::to_string(MLSGA_n_col_e);
+			date += "col";
+
+			//Save the number of collective skip
+			date += " " + std::to_string(MLSGA_col_elim_limit) + "elimit";
+		}
+
+		//Save the number of runs - if greater than 1
+		if (n_runs > 1)
+			date += " " + std::to_string(n_runs) + "run";
 	}
+	//Create the directory for results - if not existing
+	CreateDirectoryA("Results/", NULL);
+	//Create the directory for temp - if not existing
+	CreateDirectoryA("Temp/", NULL);
+	//Create the directory for current results
+	std::string temp1 = F_Name_Get("Results/", date, "/");
+	const char* temp = temp1.c_str();
+	if (!CreateDirectoryA(temp, NULL))
+	{
+		std::cout << "**********************************\n"
+			<< "Folder exists or cannot be created\nProgram will terminate"
+			<< "\n**********************************\n";
+		system("pause");
+		abort();
+	}
+
 }
 
 extern time_t mut_t;										//Time of Mutation
@@ -2276,11 +2262,11 @@ void Error_Check()
 		abort();
 	}
 	//Check if GA parameters are not out of bounds
-	for (int i = n_func_b; i <= n_func_e; i++)
+	/*for (int i = n_func_b; i <= n_func_e; i++)
 	{
 		function * f_temp = Func_Type(i);
 		delete f_temp;
-	}
+	}*/
 	Mut_Type(mut_ix, "Normal");
 	for (int i = 0; i < GA_mode.size(); i++)
 	{
