@@ -352,23 +352,24 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 			std::vector<double> code2;	//code of 2 parent storage vector
 
 			//calculate the control parameters
-			float u[3];
-			u[0] = Random_F(0, 0.9999999f);
-			u[1] = Random_F(0, 0.9999999f);
-			u[2] = Random_F(0, 0.9999999f);
-			float l[3] = { 0.8f,1.f,0.7f };
-			float p[3] = { 0.3f,0.6f,0.1f };
+			float u = Random_F(0.f, 0.9999999f);
+			float lambda[3] = { 0.8f,1.f,0.7f };
+			float p[3] = { 0.3f,0.6f,1.f };
 
-			float betaq[3];
 
 			float bq = 0;
-			for (int i = 0; i < 3; i++)
-			{
-				betaq[i] = sqrt(2 * pow(l[i], 2) * log(1 / (1 - u[i])));
-				bq += betaq[i] * p[i];
-			}
 
+			short ix = -1;
 
+			if (u <= p[0])
+				ix = 0;
+			else if (u <= p[1])
+				ix = 1;
+			else
+				ix = 2;
+			
+
+			bq = sqrt(2.f * pow(lambda[ix], 2) * log(1.f / (1.f - u)));
 
 
 			//Loop for number of variables
@@ -387,8 +388,8 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 				double upper_b = upper_b_v[i];
 				double lower_b = lower_b_v[i];
 
-				y1 = (1.f / 3.f) * ((2 * parent1 + parent2) + bq * abs(parent1 - parent2));
-				y2 = (1.f / 3.f) * ((parent1 + 2 * parent2) - bq * abs(parent1 - parent2));
+				y1 = 0.5 * ((parent1 + parent2) - bq * abs(parent1 - parent2));
+				y2 = 0.5 * ((parent1 + parent2) + bq * abs(parent1 - parent2));
 
 
 				if (y1 < lower_b)
@@ -427,35 +428,7 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 			cross_indi[j + 1].Crowd_Dist_Set(0.0);
 			cross_indi[j + 1].Rank_Set(0);
 		}
-		if (TGM == true)
-		{
-			//Random roll
-			float roll = Random_F();
-			//Create the output vectors
-			std::vector<std::vector<double>> out_1 = selected[j].TGM_fitness;
-			std::vector<std::vector<double>> out_2 = selected[j + 1].TGM_fitness;
 
-			//perform changes (remove the last position, and insert the new one at the beginning)
-			out_1.insert(out_1.begin(), std::vector<double>(fcode.Objs(), 0));
-			out_2.insert(out_2.begin(), std::vector<double>(fcode.Objs(), 0));
-			out_1.pop_back();
-			out_2.pop_back();
-
-			//assign the vectors to the offsprings
-			if (roll < 0.5f)
-			{
-				cross_indi[j].TGM_fitness = out_1;
-				cross_indi[j + 1].TGM_fitness = out_2;
-			}
-			else
-			{
-				cross_indi[j].TGM_fitness = out_2;
-				cross_indi[j + 1].TGM_fitness = out_1;
-			}
-			//check the correct sizes
-			if (cross_indi[j].TGM_fitness.size() != TGM_size + 1 || cross_indi[j + 1].TGM_fitness.size() != TGM_size + 1)
-				abort();
-		}
 	} //end of crossover loop
 
 	  //add the last individual (in the case of odd size vector)
@@ -463,14 +436,7 @@ std::vector<tname> crossover_2_CMRDX<tname>::Crossover(const std::vector<tname>&
 	{
 		//if is, last individual is added to new vector without change
 		cross_indi.push_back(selected.back());
-		if (TGM == true)
-		{
-			cross_indi.back().TGM_fitness.insert(cross_indi.back().TGM_fitness.begin(), std::vector<double>(fcode.Objs(), 0));
-			cross_indi.back().TGM_fitness.pop_back();
 
-			if (cross_indi.back().TGM_fitness.size() != TGM_size + 1)
-				abort();
-		}
 
 	}
 	//Checking if output vector have the right size
